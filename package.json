@@ -2,13 +2,31 @@
   "name": "ranking-tracker",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=10.16.0"
+  },
+  "engineStrict": true,
   "dependencies": {
+    "axios": "^0.19.0",
+    "concurrently": "^4.1.1",
+    "history": "^4.9.0",
+    "json-server": "^0.15.0",
+    "lodash": "^3.0.1",
+    "query-string": "^6.8.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-infinite-scroller": "^1.2.4",
+    "react-redux": "^7.1.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "3.0.1",
+    "redux": "^4.0.4",
+    "redux-form": "^8.2.5",
+    "redux-thunk": "^2.3.0",
+    "semantic-ui-react": "^0.87.3"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-dev": "concurrently \"react-scripts start\" \"cd ../json-api && npm run start-dev\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
