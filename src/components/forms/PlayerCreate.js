@@ -1,4 +1,3 @@
-import _ from "lodash-es";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm } from "redux-form";
@@ -16,7 +15,7 @@ class PlayerCreate extends Component {
   }
 
   onSubmit = formValues => {
-    this.props.createPlayer({ ...formValues, elo: 0 });
+    this.props.createPlayer({ ...formValues, elo: 100 });
   };
 
   onCancel = () => {

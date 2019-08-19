@@ -7,6 +7,8 @@ import {
   PLAYERS_REQUESTED,
   PLAYERS_RETURNED,
   GAME_CREATED,
+  UPDATE_PLAYER,
+  UPDATE_GAME,
 } from "../actions/types";
 
 const initialState = {
@@ -15,7 +17,7 @@ const initialState = {
   playersRequested: false,
   game: {},
   sport: {},
-  players: [],
+  players: {},
 };
 
 export default (state = initialState, action) => {
@@ -41,7 +43,17 @@ export default (state = initialState, action) => {
     case PLAYERS_RETURNED:
       return {
         ...state,
-        players: action.payload,
+        players: _.mapKeys(action.payload, "id"),
+      };
+    case UPDATE_PLAYER:
+      return {
+        ...state,
+        players: { ...state.players, [action.payload.id]: action.payload },
+      };
+    case UPDATE_GAME:
+      return {
+        ...state,
+        game: { [action.payload.id]: { ...action.payload } },
       };
     default:
       return state;

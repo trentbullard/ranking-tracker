@@ -1,4 +1,3 @@
-import _ from "lodash-es";
 import history from "../history";
 import {
   PLAYER_CREATED,

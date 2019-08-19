@@ -14,7 +14,6 @@ export const getGameListData = () => dispatch => {
 
 export const getGamesByPage = (page, limit) => async (dispatch, getState) => {
   getGames(page, limit, dispatch).then(link => {
-    console.log(`TCL: link`, link);
     if (link) {
       let nextUrl = _.filter(
         _.map(link.split(","), pageRef => {

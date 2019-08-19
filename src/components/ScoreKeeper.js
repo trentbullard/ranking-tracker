@@ -125,7 +125,7 @@ class ScoreKeeper extends Component {
       return (
         <PlayAgainButton
           onClick={() => {
-            this.props.playAgain(this.props.game);
+            this.props.playAgain(this.props.game, this.props.players);
           }}
           key="play-again-button"
         />
@@ -171,7 +171,7 @@ class ScoreKeeper extends Component {
 const mapStateToProps = ({ scoreKeeper }, ownProps) => {
   let game = scoreKeeper.game[ownProps.match.params.id] || {};
   let sport = scoreKeeper.sport[game.sport] || {};
-  let players = scoreKeeper.players;
+  let players = Object.values(scoreKeeper.players);
   let createdGame = scoreKeeper.createdGame || {};
   return {
     game,

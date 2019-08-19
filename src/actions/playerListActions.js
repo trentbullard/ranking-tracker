@@ -30,8 +30,8 @@ export const getPlayersByPage = (page, limit) => dispatch => {
 const getPlayers = async (_page, _limit, dispatch) => {
   const response = await tracker.get(`/players`, {
     params: {
-      _sort: "name",
-      _order: "asc",
+      _sort: "elo",
+      _order: "desc",
       _page,
       _limit,
     },

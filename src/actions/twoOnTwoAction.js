@@ -30,7 +30,7 @@ const createGame = async (formValues, dispatch) => {
   dispatch({ type: GAME_CREATION_REQUESTED });
   const response = await tracker.post(`/games`, values);
   dispatch({ type: GAME_CREATED, payload: response.data });
-  await tracker.post("/logs", { ...values, action: "create game" });
+  // await tracker.post("/logs", { ...values, action: "create game" });
   return response.data.id;
 };
 
