@@ -62,7 +62,7 @@ class Home extends Component {
         style={{ margin: "2em 0" }}
         key="divider-1"
       />,
-      // this.renderNewPlayerButton(),
+      this.renderNewPlayerButton(),
       <TopPlayerList key="top-player-list" />,
       <div
         className="ui divider"

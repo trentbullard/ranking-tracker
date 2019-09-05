@@ -1,3 +1,4 @@
+import _ from "lodash-es";
 import history from "../history";
 import {
   PLAYER_CREATED,
@@ -9,16 +10,23 @@ import tracker from "../apis/tracker";
 
 export const getCreatePlayerFormData = () => async dispatch => {
   dispatch({ type: PLAYERS_REQUESTED });
-  const response = await tracker.get("/player");
-  dispatch({ type: PLAYERS_RETURNED, payload: response.data });
+  const playersResponse = await tracker.get("/players");
+  dispatch({ type: PLAYERS_RETURNED, payload: playersResponse.data });
 };
 
 export const createPlayer = formValues => async dispatch => {
-  let { created, ...playerValues } = formValues;
   dispatch({ type: PLAYER_CREATION_REQUESTED });
-  const response = await tracker.post("/player", playerValues);
-  dispatch({ type: PLAYER_CREATED, payload: response.data });
+  const sportsResponse = await tracker.get("/sports");
+  let sports = _.map(sportsResponse.data, sport => {
+    return { id: sport.id };
+  });
+  const playerResonse = await tracker.post("/players", {
+    name: formValues.name,
+    sports,
+    elo: 100,
+  });
+  dispatch({ type: PLAYER_CREATED, payload: playerResonse.data });
   history.push("/");
-  let { id, ...logValues } = response.data;
-  await tracker.post("/log", { ...logValues, action: "create player" });
+  // let { id, ...logValues } = playerResonse.data;
+  // await tracker.post("/logs", { ...logValues, action: "create player" });
 };
