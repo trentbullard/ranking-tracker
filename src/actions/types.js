@@ -5,6 +5,8 @@ export const GET_SPORTS = "GET_SPORTS"; // latestGamesActions, gameListActions
 export const GAME_CREATED = "GAME_CREATED"; // scoreKeeperActions, twoOnTwoActions
 export const SPORT_REQUESTED = "SPORT_REQUESTED"; // scoreKeeperActions, twoOnTwoActions
 export const SPORT_RETURNED = "SPORT_RETURNED"; // scoreKeeperActions, twoOnTwoActions
+export const DATA_LOADING = "DATA_LOADING";
+export const DATA_LOADED = "DATA_LOADED";
 
 // scoreKeeperActions
 export const GAME_REQUESTED = "GAME_REQUESTED";

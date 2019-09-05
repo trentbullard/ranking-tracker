@@ -30,8 +30,8 @@ class TwoOnTwoForm extends Component {
   };
 
   renderPlayerFields = sport => {
-    return _.map(sport.teamNames, teamName =>
-      _.map(sport.positionNames, positionName => (
+    return _.map(sport.teamNames.split(","), teamName =>
+      _.map(sport.positionNames.split(","), positionName => (
         <div className="field" key={`${teamName}${positionName}`}>
           <label>{`${teamName} ${positionName}`}</label>
           <Field
@@ -53,42 +53,46 @@ class TwoOnTwoForm extends Component {
   };
 
   renderForm = () => {
-    if (this.props.players.length >= 4) {
+    if (_.isEmpty(this.props.sport)) {
       return (
-        <form
-          className="ui form error"
-          onSubmit={this.props.handleSubmit(this.onSubmit)}
-        >
-          <Field
-            name="started"
-            label="Timestamp"
-            input={{
-              readOnly: true,
-              value: this.props.timestamp.toLocaleString("en-US"),
-            }}
-            component={this.renderTextInput}
-          />
-          {this.renderPlayerFields(this.props.sport)}
-          <button
-            type="submit"
-            className={`ui button positive ${this.getFormDisabled()}`}
-          >
-            Start
-          </button>
-          <button
-            className={`ui button negative`}
-            onClick={this.props.onCancel}
-          >
-            Cancel
-          </button>
-        </form>
+        <h4 className="ui center aligned header">
+          This page is not accessible from there. Click{" "}
+          <Link to="/">this link</Link> to return home.
+        </h4>
+      );
+    } else if (this.props.players.length < 4) {
+      return (
+        <h4 className="ui center aligned header">
+          There must be at least 4 players to start a game. You can reate a new
+          player by clicking <Link to="/players/new">this link</Link>.
+        </h4>
       );
     }
     return (
-      <h4 className="ui center aligned header">
-        There must be at least 4 players to start a game. You can reate a new
-        player by clicking <Link to="/players/new">this link</Link>.
-      </h4>
+      <form
+        className="ui form error"
+        onSubmit={this.props.handleSubmit(this.onSubmit)}
+      >
+        <Field
+          name="started"
+          label="Timestamp"
+          input={{
+            readOnly: true,
+            value: this.props.timestamp.toLocaleString("en-US"),
+          }}
+          component={this.renderTextInput}
+        />
+        {this.renderPlayerFields(this.props.sport)}
+        <button
+          type="submit"
+          className={`ui button positive ${this.getFormDisabled()}`}
+        >
+          Start
+        </button>
+        <button className={`ui button negative`} onClick={this.props.onCancel}>
+          Cancel
+        </button>
+      </form>
     );
   };
 

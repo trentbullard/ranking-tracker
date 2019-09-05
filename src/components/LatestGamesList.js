@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { icons } from "../img/icons";
 import { getLatestGameData } from "../actions/latestGamesActions";
 
-class GameList extends Component {
+class LatestGamesList extends Component {
   componentDidMount() {
     this.props.getLatestGameData();
   }
@@ -19,11 +19,11 @@ class GameList extends Component {
 
   renderTeams = (teams, winningScore, timestamp) => {
     return _.map(teams, (team, index) => {
-      let positions = Object.keys(team);
+      let positions = team.positions;
       let teamScore = _.reduce(
         positions,
         (sum, p) => {
-          return sum + team[p].score;
+          return sum + p.player.score;
         },
         0,
       );
@@ -31,9 +31,7 @@ class GameList extends Component {
         <div className="item" key={`${timestamp}-${index}`}>
           {this.renderTeam(
             teamScore >= winningScore,
-            `${team[positions[0]].name} & ${
-              team[positions[1]].name
-            }: ${teamScore}`,
+            `${team.positions[0].player.name} & ${team.positions[1].player.name}: ${teamScore}`,
           )}
         </div>
       );
@@ -71,22 +69,25 @@ class GameList extends Component {
   };
 
   renderList = () => {
-    if (
-      this.props.games.length &&
-      Object.keys(this.props.sports).length
-    ) {
+    if (this.props.loading) {
       return (
-        <div
-          className="ui very relaxed middle aligned striped divided list"
-          key="game-list"
-        >
-          {this.renderGames()}
+        <div className="ui center aligned header" key="no-games-error">
+          Loading...
+        </div>
+      );
+    } else if (_.isEmpty(this.props.games) || _.isEmpty(this.props.sports)) {
+      return (
+        <div className="ui center aligned header" key="no-games-error">
+          No Games added. Click a sport above to start.
         </div>
       );
     }
     return (
-      <div className="ui center aligned header" key="no-games-error">
-        No Games added. Click a sport above to start.
+      <div
+        className="ui very relaxed middle aligned striped divided list"
+        key="game-list"
+      >
+        {this.renderGames()}
       </div>
     );
   };
@@ -110,14 +111,15 @@ class GameList extends Component {
   }
 }
 
-const mapStateToProps = ({ latestGames, sports }) => {
+const mapStateToProps = ({ latestGames: { games, sports, loading } }) => {
   return {
-    games: latestGames,
+    games,
     sports,
+    loading,
   };
 };
 
 export default connect(
   mapStateToProps,
   { getLatestGameData },
-)(GameList);
+)(LatestGamesList);

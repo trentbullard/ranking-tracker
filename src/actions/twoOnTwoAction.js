@@ -11,7 +11,7 @@ import tracker from "../apis/tracker";
 
 export const getTwoOnTwoFormData = sportId => dispatch => {
   getSport(sportId, dispatch).then(() => {
-    getPlayers(dispatch);
+    getPlayers(sportId, dispatch);
   });
 };
 
@@ -22,15 +22,10 @@ export const createTwoOnTwoGame = formValues => dispatch => {
 };
 
 const createGame = async (formValues, dispatch) => {
-  let values = {
-    ...formValues,
-    eloAwarded: false,
-    started: new Date().toISOString(),
-  };
   dispatch({ type: GAME_CREATION_REQUESTED });
-  const response = await tracker.post(`/games`, values);
+  const response = await tracker.post(`/games`, formValues);
   dispatch({ type: GAME_CREATED, payload: response.data });
-  // await tracker.post("/logs", { ...values, action: "create game" });
+  // await tracker.post("/log", { ...values, action: "create game" });
   return response.data.id;
 };
 
@@ -50,12 +45,14 @@ const getSport = async (id, dispatch) => {
   });
 };
 
-const getPlayers = async dispatch => {
+const getPlayers = async (sportId, dispatch) => {
   dispatch({
     type: PLAYERS_REQUESTED,
   });
 
-  const response = await tracker.get(`/players`);
+  const response = await tracker.get(`/players`, {
+    params: { fields: ["name", "id"], where: { sportId } },
+  });
   dispatch({
     type: PLAYERS_RETURNED,
     payload: response.data,

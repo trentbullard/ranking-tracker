@@ -76,10 +76,10 @@ class PlayerList extends Component {
   }
 }
 
-const mapStateToProps = ({ playerList }) => {
+const mapStateToProps = ({ playerList: { players, hasMore } }) => {
   return {
-    players: playerList.players,
-    hasMore: playerList.hasMore,
+    players,
+    hasMore,
   };
 };
 

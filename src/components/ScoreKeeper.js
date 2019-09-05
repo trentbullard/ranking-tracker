@@ -4,15 +4,17 @@ import { connect } from "react-redux";
 import {
   getScoreKeeperData,
   scoreGoal,
+  updateElos,
   playAgain,
 } from "../actions/scoreKeeperActions";
 import PlayAgainButton from "./forms/buttons/PlayAgainButton";
 import BackArrow from "./utility/BackArrow";
-import history from "../history";
 
 class ScoreKeeper extends Component {
   componentDidMount() {
-    this.props.getScoreKeeperData(this.props.match.params.id);
+    this.props.getScoreKeeperData(this.props.match.params.id).then(() => {
+      this.setState({ update: true });
+    });
   }
 
   renderLabels = (name, score, color, left) => {
@@ -54,65 +56,88 @@ class ScoreKeeper extends Component {
     ];
   };
 
-  renderScoreButtons = (team, teamIndex, disabled) => {
-    let positions = Object.keys(team);
-    let players = Object.values(team);
-    let color = ["red", "blue"][teamIndex];
+  renderScoreButtons = (team, teamIndex) => {
+    let disabled = this.gameOver() || this.props.loading ? "disabled" : "";
+    let positions = team.positions;
+    let color = ["red", "blue", "green", "orange"][teamIndex];
     let left = teamIndex ? "left" : "";
-    return _.map(players, (player, index) => {
+    return _.map(positions, position => {
       return (
         <div
           className={`ui ${disabled} ${left} labeled button`}
           style={{ maxWidth: "100%", minWidth: "100%", margin: "0 0 2em" }}
-          key={`${positions[index]}-${player.name}`}
+          key={`${team.name}-${position.name}`}
           onClick={() => {
-            this.props.scoreGoal(player, this.props.game).then(() => {
-              this.setState({ update: true });
-            });
+            this.props
+              .scoreGoal(
+                position.player.teamPlayerId,
+                position.player.score + 1,
+              )
+              .then(() => {
+                this.props
+                  .getScoreKeeperData(this.props.match.params.id)
+                  .then(() => {
+                    if (this.gameOver()) {
+                      this.props.updateElos(
+                        this.props.sport,
+                        this.props.game.teams,
+                      );
+                    }
+                    this.setState({ update: true });
+                  });
+              });
           }}
         >
-          {this.renderLabels(player.name, player.score, color, teamIndex)}
+          {this.renderLabels(
+            position.player.name,
+            position.player.score,
+            color,
+            teamIndex,
+          )}
         </div>
       );
     });
   };
 
-  renderTeamColumns = disabled => {
-    return _.map(Object.values(this.props.game.teams), (team, index) => {
+  renderTeamColumns = () => {
+    return _.map(this.props.game.teams, (team, index) => {
       let teamScore = _.reduce(
-        Object.keys(team),
+        team.positions,
         (sum, position) => {
-          return sum + team[position].score;
+          return sum + position.player.score;
         },
         0,
       );
       return (
         <div className="column" key={`${index}-column`}>
           <h4 className="ui center aligned header">Score: {teamScore}</h4>
-          {this.renderScoreButtons(team, index, disabled)}
+          {this.renderScoreButtons(team, index)}
         </div>
       );
     });
   };
 
   renderScoringInterface = () => {
-    if (Object.keys(this.props.game).length) {
-      let disabled = this.gameOver() ? "disabled" : "";
+    if (!_.isEmpty(this.props.game)) {
       return (
         <div className="ui center aligned grid" key="scoring-interface">
           <div className="center aligned two column row">
-            {this.renderTeamColumns(disabled)}
+            {this.renderTeamColumns()}
           </div>
         </div>
       );
     }
-    return <div key="game-not-found">Game not found or game has no teams</div>;
+    return (
+      <h4 className="ui center aligned header" key="game-not-found">
+        Game not found or game has no teams
+      </h4>
+    );
   };
 
   gameOver = () => {
-    return _.map(Object.values(this.props.game.teams), team => {
+    return _.map(this.props.game.teams, team => {
       return (
-        Object.values(team)[0].score + Object.values(team)[1].score >=
+        team.positions[0].player.score + team.positions[1].player.score >=
         this.props.sport.winningScore
       );
     }).some(winning => {
@@ -121,36 +146,17 @@ class ScoreKeeper extends Component {
   };
 
   renderPlayAgainButton = () => {
-    if (Object.keys(this.props.game).length && this.gameOver()) {
+    if (!_.isEmpty(this.props.game) && this.gameOver()) {
       return (
         <PlayAgainButton
           onClick={() => {
-            this.props.playAgain(this.props.game, this.props.players);
+            this.props.playAgain(this.props.game);
           }}
           key="play-again-button"
         />
       );
     }
   };
-
-  onClickBackArrow = () => {
-    history.push("/");
-  };
-
-  renderBackArrow = () => (
-    <div
-      style={{
-        position: "absolute",
-        top: "20px",
-        left: "15px",
-        fontSize: "2em",
-      }}
-      onClick={this.onClickBackArrow}
-      key="back-arrow"
-    >
-      <i className="arrow left blue icon" />
-    </div>
-  );
 
   render() {
     return [
@@ -168,16 +174,14 @@ class ScoreKeeper extends Component {
   }
 }
 
-const mapStateToProps = ({ scoreKeeper }, ownProps) => {
-  let game = scoreKeeper.game[ownProps.match.params.id] || {};
-  let sport = scoreKeeper.sport[game.sport] || {};
-  let players = Object.values(scoreKeeper.players);
-  let createdGame = scoreKeeper.createdGame || {};
+const mapStateToProps = ({
+  scoreKeeper: { game, sport, players, loading },
+}) => {
   return {
+    loading,
     game,
     sport,
     players,
-    createdGame,
   };
 };
 
@@ -187,5 +191,6 @@ export default connect(
     getScoreKeeperData,
     scoreGoal,
     playAgain,
+    updateElos,
   },
 )(ScoreKeeper);

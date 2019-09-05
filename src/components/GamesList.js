@@ -1,12 +1,11 @@
 import _ from "lodash-es";
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
-import { icons } from "../img/icons";
 import { connect } from "react-redux";
 import { getGamesByPage, getGameListData } from "../actions/gameListActions";
 import BackArrow from "./utility/BackArrow";
 import Footer from "./Footer";
+import GamesListItem from "./GamesListItem";
 
 class GamesList extends Component {
   constructor(props) {
@@ -50,9 +49,7 @@ class GamesList extends Component {
         <div className="item" key={`${timestamp}-${index}`}>
           {this.renderTeam(
             teamScore >= winningScore,
-            `${team[positions[0]].name} & ${
-              team[positions[1]].name
-            }: ${teamScore}`,
+            `${team[positions[0]].name} & ${team[positions[1]].name}: ${teamScore}`,
           )}
         </div>
       );
@@ -61,37 +58,30 @@ class GamesList extends Component {
 
   renderGames = () => {
     return _.map(this.props.games, game => {
-      let winningScore = this.props.sports[game.sport].winningScore;
       return (
-        <Link
-          to={`/games/score/${game.id}`}
-          className="item"
+        <GamesListItem
+          game={game}
+          sport={this.props.sports[game.sport]}
           key={`game-${game.id}`}
-        >
-          <div
-            className="right floated content"
-            style={{ paddingTop: ".75em", color: "#000000" }}
-          >
-            {new Date(game.started).toLocaleDateString("en-US")}
-          </div>
-          <img
-            className="ui avatar image"
-            src={icons()[this.props.sports[game.sport].name.toLowerCase()]}
-            alt=""
-          />
-          <div className="content">
-            <div className="ui list" style={{ padding: "0" }}>
-              {this.renderTeams(game.teams, winningScore, game.started)}
-            </div>
-          </div>
-        </Link>
+        ></GamesListItem>
       );
     });
   };
 
   renderGamesList = () => {
+    if (this.props.loading) {
+      return (
+        <div className="ui center aligned header" key="no-games-error">
+          Loading...
+        </div>
+      );
+    }
     if (Object.keys(this.props.sports).length < 1) {
-      return null;
+      return (
+        <div className="ui center aligned header" key="no-games-error">
+          Failed to load sports.
+        </div>
+      );
     }
     return (
       <InfiniteScroll
@@ -99,7 +89,7 @@ class GamesList extends Component {
         key="games-list"
         pageStart={0}
         loadMore={this.props.getGamesByPage}
-        hasMore={this.props.hasMore}
+        hasMore={!this.props.loading && this.props.hasMore}
         loader={
           <div className="item" key="loader">
             <h4 className="ui center aligned header">Loading...</h4>
@@ -121,11 +111,12 @@ class GamesList extends Component {
   }
 }
 
-const mapStateToProps = ({ gameList, sports }) => {
+const mapStateToProps = ({ gameList: { games, hasMore, loading, sports } }) => {
   return {
     sports,
-    games: gameList.games,
-    hasMore: gameList.hasMore,
+    games,
+    hasMore,
+    loading,
   };
 };
 

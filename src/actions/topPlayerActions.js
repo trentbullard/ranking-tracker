@@ -8,11 +8,13 @@ export const getTopPlayerData = () => dispatch => {
 const getTopPlayers = async dispatch => {
   const response = await tracker.get(`/players`, {
     params: {
-      _sort: "elo,name",
-      _order: "desc,asc",
-      _limit: 10,
+      sort: ["elo", "name"],
+      order: ["desc", "asc"],
+      limit: 10,
+      where: {
+        sportid: 1,
+      },
     },
   });
   dispatch({ type: GET_TOP_PLAYERS, payload: response.data });
-  return response.data;
 };

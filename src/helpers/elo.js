@@ -14,14 +14,14 @@ const FB_W_F_GA_WT = "1";
 const CORNHOLE = "Cornhole";
 
 export const getNewElos = (wTeam, lTeam, sport) => {
-  let wTeamName = Object.keys(wTeam)[0];
-  let lTeamName = Object.keys(lTeam)[0];
-  let position1 = Object.keys(wTeam[wTeamName])[0];
-  let position2 = Object.keys(wTeam[wTeamName])[1];
-  let wPlayer1 = wTeam[wTeamName][position1];
-  let wPlayer2 = wTeam[wTeamName][position2];
-  let lPlayer1 = lTeam[lTeamName][position1];
-  let lPlayer2 = lTeam[lTeamName][position2];
+  let wTeamName = wTeam.name;
+  let lTeamName = lTeam.name;
+  let position1 = wTeam.positions[0].name;
+  let position2 = wTeam.positions[1].name;
+  let wPlayer1 = wTeam.positions[0].player;
+  let wPlayer2 = wTeam.positions[1].player;
+  let lPlayer1 = lTeam.positions[0].player;
+  let lPlayer2 = lTeam.positions[1].player;
   let wTeamGoals = wPlayer1.score + wPlayer2.score;
   let lTeamGoals = lPlayer1.score + lPlayer2.score;
   let wTeamAvgElo = (wPlayer1.elo + wPlayer2.elo) / 2.0;
@@ -59,32 +59,32 @@ export const getNewElos = (wTeam, lTeam, sport) => {
     sport,
   );
 
-  return {
-    wPlayer1: {
+  return [
+    {
       ...wPlayer1,
       elo: wPlayer1.elo + wPlayer1Gain <= 0 ? 0 : wPlayer1.elo + wPlayer1Gain,
       teamName: wTeamName,
       position: position1,
     },
-    wPlayer2: {
+    {
       ...wPlayer2,
       elo: wPlayer2.elo + wPlayer2Gain <= 0 ? 0 : wPlayer2.elo + wPlayer2Gain,
       teamName: wTeamName,
       position: position2,
     },
-    lPlayer1: {
+    {
       ...lPlayer1,
       elo: lPlayer1.elo + lPlayer1Gain <= 0 ? 0 : lPlayer1.elo + lPlayer1Gain,
       teamName: lTeamName,
       position: position1,
     },
-    lPlayer2: {
+    {
       ...lPlayer2,
       elo: lPlayer2.elo + lPlayer2Gain <= 0 ? 0 : lPlayer2.elo + lPlayer2Gain,
       teamName: lTeamName,
       position: position2,
     },
-  };
+  ];
 };
 
 const probability = (winner, loser) => {

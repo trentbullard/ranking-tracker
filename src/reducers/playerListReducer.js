@@ -9,7 +9,10 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case GET_PLAYERS_BY_PAGE:
-      return { ...state, players: _.union(state.players, action.payload) };
+      return {
+        ...state,
+        players: _.unionBy(state.players, action.payload, "id"),
+      };
     case PLAYERS_HAS_MORE:
       return { ...state, hasMore: action.payload };
     default:

@@ -1,3 +1,4 @@
+import _ from "lodash-es";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Button } from "semantic-ui-react";
@@ -15,6 +16,11 @@ class Home extends Component {
 
   handleClickNewPlayerButton = () => {
     history.push("/players/new");
+  };
+
+  renderSportList = () => {
+    let sports = _.find(this.props.sports, { enabled: true });
+    return <SportList sports={sports} key="sport-list" />;
   };
 
   renderNewPlayerButton = () => {
@@ -50,13 +56,13 @@ class Home extends Component {
       >
         Pick a Sport
       </h3>,
-      <SportList sports={this.props.sports} key="sport-list" />,
+      this.renderSportList(),
       <div
         className="ui divider"
         style={{ margin: "2em 0" }}
         key="divider-1"
       />,
-      this.renderNewPlayerButton(),
+      // this.renderNewPlayerButton(),
       <TopPlayerList key="top-player-list" />,
       <div
         className="ui divider"

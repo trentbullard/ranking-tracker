@@ -9,7 +9,10 @@ import {
   GAME_CREATED,
   UPDATE_PLAYER,
   UPDATE_GAME,
+  DATA_LOADING,
+  DATA_LOADED,
 } from "../actions/types";
+import { getGamesFromRecords } from "../helpers/games";
 
 const initialState = {
   gameRequested: false,
@@ -18,16 +21,21 @@ const initialState = {
   game: {},
   sport: {},
   players: {},
+  loading: true,
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case DATA_LOADING:
+      return { ...state, loading: true };
+    case DATA_LOADED:
+      return { ...state, loading: false };
     case GAME_REQUESTED:
       return { ...state, gameRequested: true };
     case GAME_RETURNED:
       return {
         ...state,
-        game: _.mapKeys(action.payload, "id"),
+        game: _.first(getGamesFromRecords(action.payload)),
       };
     case GAME_CREATED:
       return { ...state, game: { [action.payload.id]: { ...action.payload } } };
@@ -36,7 +44,7 @@ export default (state = initialState, action) => {
     case SPORT_RETURNED:
       return {
         ...state,
-        sport: _.mapKeys(action.payload, "id"),
+        sport: _.first(action.payload),
       };
     case PLAYERS_REQUESTED:
       return { ...state, playersRequested: true };

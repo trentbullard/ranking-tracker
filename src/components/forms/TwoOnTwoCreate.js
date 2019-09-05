@@ -8,6 +8,7 @@ import {
 import TwoOnTwoForm from "./TwoOnTwoForm";
 import Footer from "../Footer";
 import history from "../../history";
+import { getTeamsFromForm } from "../../helpers/games";
 
 class TwoOnTwoCreate extends Component {
   componentDidMount() {
@@ -15,17 +16,11 @@ class TwoOnTwoCreate extends Component {
   }
 
   onSubmit = ({ started, ...playerPositions }) => {
-    let resetTeams = {};
-    _.each(playerPositions, (playerId, positionPhrase) => {
-      let [teamName, positionName] = positionPhrase.split(" ");
-      resetTeams[teamName] = {
-        ...resetTeams[teamName],
-        [positionName]: { ...this.props.players[playerId], score: 0 },
-      };
-    });
     const formattedValues = {
       sport: this.props.sport.id,
-      teams: resetTeams,
+      eloAwarded: false,
+      teams: getTeamsFromForm(playerPositions),
+      started: new Date().toISOString(),
     };
 
     this.props.createTwoOnTwoGame(formattedValues);
@@ -67,15 +62,12 @@ class TwoOnTwoCreate extends Component {
 }
 
 const mapStateToProps = (
-  { twoOnTwo },
-  {
-    location: {
-      state: { sport },
-    },
-  },
+  { twoOnTwo: { players } },
+  { location: { state } },
 ) => {
+  let sport = state ? state.sport : {};
   return {
-    players: _.mapKeys(twoOnTwo.players, "id"),
+    players,
     sport,
   };
 };
