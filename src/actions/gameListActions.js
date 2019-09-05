@@ -17,7 +17,7 @@ export const getGameListData = () => dispatch => {
 
 export const getGamesByPage = (page, limit) => async dispatch => {
   dispatch({ type: DATA_LOADING });
-  let hasMore = await getGames(page, limit, dispatch)
+  let hasMore = await getGames(page, limit, dispatch);
   dispatch({ type: GAMES_HAS_MORE, payload: !!hasMore });
   dispatch({ type: DATA_LOADED });
 };
@@ -27,7 +27,7 @@ const getSports = async dispatch => {
   dispatch({ type: GET_SPORTS, payload: response.data });
 };
 
-const getGames = async (page, limit, dispatch) => {
+const getGames = async (page, limit = 10, dispatch) => {
   const response = await tracker.get(`/games`, {
     params: {
       sort: ["started"],

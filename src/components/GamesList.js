@@ -28,34 +28,6 @@ class GamesList extends Component {
     );
   };
 
-  renderTeam = (won, string) => {
-    if (won) {
-      return <b>{string}</b>;
-    }
-    return string;
-  };
-
-  renderTeams = (teams, winningScore, timestamp) => {
-    return _.map(teams, (team, index) => {
-      let positions = Object.keys(team);
-      let teamScore = _.reduce(
-        positions,
-        (sum, p) => {
-          return sum + team[p].score;
-        },
-        0,
-      );
-      return (
-        <div className="item" key={`${timestamp}-${index}`}>
-          {this.renderTeam(
-            teamScore >= winningScore,
-            `${team[positions[0]].name} & ${team[positions[1]].name}: ${teamScore}`,
-          )}
-        </div>
-      );
-    });
-  };
-
   renderGames = () => {
     return _.map(this.props.games, game => {
       return (
@@ -69,13 +41,6 @@ class GamesList extends Component {
   };
 
   renderGamesList = () => {
-    if (this.props.loading) {
-      return (
-        <div className="ui center aligned header" key="no-games-error">
-          Loading...
-        </div>
-      );
-    }
     if (Object.keys(this.props.sports).length < 1) {
       return (
         <div className="ui center aligned header" key="no-games-error">
