@@ -3,13 +3,48 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { getTopPlayerData } from "../actions/topPlayerActions";
+import { icons } from "../img/icons";
 
-class PlayerList extends Component {
+class TopPlayerList extends Component {
   componentDidMount() {
-    this.props.getTopPlayerData();
+    this.props.getTopPlayerData(this.props.selectedSportId);
   }
 
-  getPlayers = () => {
+  handleClickSportSelector = sportId => {
+    this.props.getTopPlayerData(sportId).then(() => {
+      this.setState({ update: true });
+    });
+  };
+
+  renderSportSelectorItems = selectedSport => {
+    return _.map(this.props.sports, sport => {
+      let disabled = selectedSport.id === sport.id ? "" : "disabled";
+      return (
+        <div className="item" key={`sport-selector-${sport.id}`}>
+          <img
+            className={`ui avatar image ${disabled}`}
+            src={icons()[sport.name.toLowerCase()]}
+            onClick={() => this.handleClickSportSelector(sport.id)}
+          ></img>
+        </div>
+      );
+    });
+  };
+
+  renderSportSelectorList = () => {
+    let selectedSport = this.props.sports[this.props.selectedSportId];
+    if (!_.isUndefined(selectedSport)) {
+      return (
+        <div className="ui center aligned header" key="sport-selector-list">
+          <div className="ui huge horizontal list">
+            {this.renderSportSelectorItems(selectedSport)}
+          </div>
+        </div>
+      );
+    }
+  };
+
+  renderPlayerItems = () => {
     let ctr = 1;
     return _.map(this.props.players, player => {
       return (
@@ -22,7 +57,7 @@ class PlayerList extends Component {
     });
   };
 
-  getList = () => {
+  renderPlayerList = () => {
     if (this.props.players.length) {
       return (
         <table
@@ -36,7 +71,7 @@ class PlayerList extends Component {
               <th key="elo">ELO</th>
             </tr>
           </thead>
-          <tbody>{this.getPlayers()}</tbody>
+          <tbody>{this.renderPlayerItems()}</tbody>
         </table>
       );
     }
@@ -60,19 +95,22 @@ class PlayerList extends Component {
       <h2 className="ui center aligned header" key="top10Ranks">
         Top 10 Ranks
       </h2>,
-      this.getList(),
+      this.renderSportSelectorList(),
+      this.renderPlayerList(),
       this.renderSeeAllLink(),
     ];
   }
 }
 
-const mapStateToProps = ({ topPlayers }) => {
+const mapStateToProps = ({ topPlayers: { sport, players }, sports }) => {
   return {
-    players: topPlayers,
+    sports,
+    selectedSportId: sport,
+    players,
   };
 };
 
 export default connect(
   mapStateToProps,
   { getTopPlayerData },
-)(PlayerList);
+)(TopPlayerList);

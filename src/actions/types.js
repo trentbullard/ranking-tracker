@@ -19,6 +19,7 @@ export const UPDATE_PLAYER = "UPDATE_PLAYER";
 
 // topPlayerActions
 export const GET_TOP_PLAYERS = "GET_TOP_PLAYERS";
+export const SELECT_SPORT = "SELECT_SPORT";
 
 // latestGamesActions
 export const GET_LATEST_GAMES = "GET_LATEST_GAMES";
