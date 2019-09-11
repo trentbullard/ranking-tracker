@@ -2,21 +2,21 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { icons } from "../img/icons";
 
-const SportAvatarItem = props => (
+const SportAvatarItem = ({ sport }) => (
   <Link
     className="item"
     to={{
-      pathname: `/${props.sport.name.toLowerCase()}/new`,
-      state: { sport: props.sport },
+      pathname: `/${sport.name.toLowerCase()}/new`,
+      state: { sport },
     }}
   >
     <img
       className="ui avatar image"
-      alt={`${props.sport.name.toLowerCase()} icon`}
-      src={icons()[props.sport.name.toLowerCase()]}
+      alt={`${sport.name.toLowerCase()} icon`}
+      src={icons()[sport.name.toLowerCase()]}
       style={{ fontSize: "1.5em" }}
     />
-    <div className="header">{props.sport.name}</div>
+    <div className="header">{sport.name}</div>
   </Link>
 );
 

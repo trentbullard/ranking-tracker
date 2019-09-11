@@ -19,8 +19,10 @@ class Home extends Component {
   };
 
   renderSportList = () => {
-    let sports = _.find(this.props.sports, { enabled: true });
-    return <SportList sports={sports} key="sport-list" />;
+    let sports = Object.values(this.props.sports);
+    if (!_.isEmpty(sports)) {
+      return <SportList sports={sports} key="sport-list" />;
+    }
   };
 
   renderNewPlayerButton = () => {

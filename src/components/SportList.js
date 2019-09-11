@@ -7,10 +7,10 @@ const getSportAvatarItems = sports =>
     return <SportAvatarItem sport={sport} key={`${sport.name}AvatarItem`} />;
   });
 
-const SportList = props => (
+const SportList = ({ sports }) => (
   <div className="ui center aligned header">
     <div className="ui grid massive horizontal list">
-      {getSportAvatarItems(props.sports)}
+      {getSportAvatarItems(sports)}
     </div>
   </div>
 );
