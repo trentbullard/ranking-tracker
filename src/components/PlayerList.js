@@ -2,17 +2,77 @@ import _ from "lodash-es";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import InfiniteScroll from "react-infinite-scroller";
-import { getPlayersByPage } from "../actions/playerListActions";
+import history from "../history";
+import {
+  getPlayersByPage,
+  getSports,
+  selectSport,
+} from "../actions/playerListActions";
 import BackArrow from "./utility/BackArrow";
 import Footer from "./Footer";
+import { icons } from "../img/icons";
 
 class PlayerList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       searchValue: null,
+      ready: false,
     };
   }
+
+  componentDidMount() {
+    this.props.getSports().then(() => {
+      if (!_.isEmpty(this.props.location.hash)) {
+        let hashSport = _.find(Object.values(this.props.sports), value => {
+          return (
+            `#${value.name.toLowerCase()}` ===
+            this.props.location.hash.toLowerCase()
+          );
+        });
+        if (hashSport.id) {
+          this.props.selectSport(hashSport.id);
+        }
+      }
+      this.setState({ ready: true });
+    });
+  }
+
+  handleClickSportSelector = sportId => {
+    this.props.selectSport(sportId).then(() => {
+      let sportName = this.props.sports[sportId].name.toLowerCase();
+      history.push(`/players#${sportName}`);
+      this.setState({ update: true });
+    });
+  };
+
+  renderSportSelectorItems = selectedSport => {
+    return _.map(this.props.sports, sport => {
+      let disabled = selectedSport.id === sport.id ? "" : "disabled";
+      return (
+        <div className="item" key={`sport-selector-${sport.id}`}>
+          <img
+            className={`ui avatar image ${disabled}`}
+            src={icons()[sport.name.toLowerCase()]}
+            onClick={() => this.handleClickSportSelector(sport.id)}
+          ></img>
+        </div>
+      );
+    });
+  };
+
+  renderSportSelectorList = () => {
+    let selectedSport = this.props.sports[this.props.selectedSportId];
+    if (!_.isUndefined(selectedSport)) {
+      return (
+        <div className="ui center aligned header" key="sport-selector-list">
+          <div className="ui huge horizontal list">
+            {this.renderSportSelectorItems(selectedSport)}
+          </div>
+        </div>
+      );
+    }
+  };
 
   renderSearch = () => {
     return (
@@ -37,6 +97,10 @@ class PlayerList extends Component {
   };
 
   renderList = () => {
+    if (!this.state.ready) {
+      return null;
+    }
+
     return (
       <table
         className="ui very basic unstackable celled striped table"
@@ -68,6 +132,7 @@ class PlayerList extends Component {
 
   render() {
     return [
+      this.renderSportSelectorList(),
       this.renderSearch(),
       this.renderList(),
       <BackArrow url="/" key="back-arrow" />,
@@ -76,8 +141,14 @@ class PlayerList extends Component {
   }
 }
 
-const mapStateToProps = ({ playerList: { players, hasMore } }) => {
+const mapStateToProps = (
+  { playerList: { sports, selectedSportId, players, hasMore } },
+  { location: hash },
+) => {
   return {
+    hash,
+    sports,
+    selectedSportId,
     players,
     hasMore,
   };
@@ -85,5 +156,5 @@ const mapStateToProps = ({ playerList: { players, hasMore } }) => {
 
 export default connect(
   mapStateToProps,
-  { getPlayersByPage },
+  { getPlayersByPage, getSports, selectSport },
 )(PlayerList);

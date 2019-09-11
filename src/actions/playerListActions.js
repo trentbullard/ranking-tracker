@@ -1,22 +1,43 @@
-import { GET_PLAYERS_BY_PAGE, PLAYERS_HAS_MORE } from "./types";
+import {
+  GET_PLAYERS_BY_PAGE,
+  PLAYERS_HAS_MORE,
+  GET_SPORTS,
+  SELECT_SPORT,
+} from "./types";
 import tracker from "../apis/tracker";
 
-export const getPlayersByPage = (page, limit) => dispatch => {
-  getPlayers(page, limit, dispatch).then(hasMore => {
+export const getSports = () => async dispatch => {
+  const response = await tracker.get(`/sports`, {
+    params: {
+      where: {
+        enabled: true,
+      },
+    },
+  });
+  dispatch({ type: GET_SPORTS, payload: response.data });
+};
+
+export const getPlayersByPage = (page, limit) => (dispatch, getState) => {
+  let selectedSportId = getState().playerList.selectedSportId;
+  getPlayers(selectedSportId, page, limit, dispatch).then(hasMore => {
     dispatch({ type: PLAYERS_HAS_MORE, payload: !!hasMore });
   });
 };
 
-const getPlayers = async (page, limit = 10, dispatch) => {
+export const selectSport = sportId => async dispatch => {
+  dispatch({ type: SELECT_SPORT, payload: sportId });
+};
+
+const getPlayers = async (sportId, page, limit = 10, dispatch) => {
   const response = await tracker.get(`/players`, {
     params: {
       sort: ["elo", "name"],
       order: ["desc", "asc"],
       page,
       limit,
-      where: { sportId: 1 }, // TODO: Implement dynamic sport selection
+      sportId,
     },
   });
   dispatch({ type: GET_PLAYERS_BY_PAGE, payload: response.data });
-  return response.data.length;
+  return response.data.length == limit;
 };
