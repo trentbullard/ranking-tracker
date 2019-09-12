@@ -25,7 +25,7 @@ export const getGamesByPage = (page, limit) => async dispatch => {
 
 const getSports = async dispatch => {
   const response = await tracker.get(`/sports`, {
-    params: { token: getDigest() },
+    params: { token: getDigest("get", "/sports") },
   });
   dispatch({ type: GET_SPORTS, payload: response.data });
 };
@@ -37,7 +37,7 @@ const getGames = async (page, limit = 10, dispatch) => {
       order: ["desc"],
       page,
       limit,
-      token: getDigest(),
+      token: getDigest("get", "/games"),
     },
   });
   dispatch({ type: GET_GAMES_BY_PAGE, payload: response.data });

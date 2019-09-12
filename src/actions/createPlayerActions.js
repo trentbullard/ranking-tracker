@@ -12,7 +12,7 @@ import tracker from "../apis/tracker";
 export const getCreatePlayerFormData = () => async dispatch => {
   dispatch({ type: PLAYERS_REQUESTED });
   const playersResponse = await tracker.get("/players", {
-    params: { token: getDigest() },
+    params: { token: getDigest("get", "/players") },
   });
   dispatch({ type: PLAYERS_RETURNED, payload: playersResponse.data });
 };
@@ -20,7 +20,7 @@ export const getCreatePlayerFormData = () => async dispatch => {
 export const createPlayer = formValues => async dispatch => {
   dispatch({ type: PLAYER_CREATION_REQUESTED });
   const sportsResponse = await tracker.get("/sports", {
-    params: { token: getDigest() },
+    params: { token: getDigest("get", "/sports") },
   });
   let sports = _.map(sportsResponse.data, sport => {
     return { id: sport.id };
@@ -34,7 +34,7 @@ export const createPlayer = formValues => async dispatch => {
     },
     {
       params: {
-        token: getDigest(),
+        token: getDigest("post", "/players"),
       },
     },
   );

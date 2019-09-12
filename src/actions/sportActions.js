@@ -6,7 +6,7 @@ export const getSports = () => async dispatch => {
   const response = await tracker.get("/sports", {
     params: {
       enabled: true,
-      token: getDigest(),
+      token: getDigest("get", "/sports"),
     },
   });
   dispatch({ type: GET_SPORTS, payload: response.data });

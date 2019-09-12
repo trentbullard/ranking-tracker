@@ -32,7 +32,7 @@ export const scoreGoal = (teamPlayerId, newScore) => async getState => {
     },
     {
       params: {
-        token: getDigest(),
+        token: getDigest("patch", "/goal"),
       },
     },
   );
@@ -69,7 +69,7 @@ export const updateElos = (sport, teams) => async (dispatch, getState) => {
     },
     {
       params: {
-        token: getDigest(),
+        token: getDigest("patch", "/elos"),
       },
     },
   );
@@ -85,7 +85,7 @@ const getGame = async (id, dispatch) => {
       id,
       sort: ["id"],
       order: ["asc"],
-      token: getDigest(),
+      token: getDigest("get", "/games"),
     },
   });
   dispatch({
@@ -102,7 +102,7 @@ const getSport = async (id, dispatch) => {
   const response = await tracker.get(`/sports`, {
     params: {
       id,
-      token: getDigest(),
+      token: getDigest("get", "/sports"),
     },
   });
   dispatch({
@@ -129,7 +129,7 @@ const createGame = async (values, dispatch) => {
         },
         {
           params: {
-            token: getDigest(),
+            token: getDigest("post", "/games"),
           },
         },
       );

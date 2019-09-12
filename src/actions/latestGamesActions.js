@@ -16,7 +16,7 @@ export const getLatestGameData = () => async dispatch => {
 
 const getSports = async dispatch => {
   const response = await tracker.get(`/sports`, {
-    params: { token: getDigest() },
+    params: { token: getDigest("get", "/sports") },
   });
   dispatch({ type: GET_SPORTS, payload: response.data });
 };
@@ -27,7 +27,7 @@ const getLatestGames = async dispatch => {
       sort: ["started"],
       order: ["desc"],
       limit: 10,
-      token: getDigest(),
+      token: getDigest("get", "/games"),
     },
   });
   dispatch({ type: GET_LATEST_GAMES, payload: response.data });

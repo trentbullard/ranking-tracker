@@ -25,7 +25,7 @@ export const createTwoOnTwoGame = formValues => dispatch => {
 const createGame = async (formValues, dispatch) => {
   dispatch({ type: GAME_CREATION_REQUESTED });
   const response = await tracker.post(`/games`, formValues, {
-    params: { token: getDigest() },
+    params: { token: getDigest("post", "/games") },
   });
   dispatch({ type: GAME_CREATED, payload: response.data });
   // await tracker.post(
@@ -46,7 +46,7 @@ const getSport = async (id, dispatch) => {
   const response = await tracker.get(`/sports`, {
     params: {
       id,
-      token: getDigest(),
+      token: getDigest("get", "/sports"),
     },
   });
   dispatch({
@@ -61,7 +61,7 @@ const getPlayers = async (sportId, dispatch) => {
   });
 
   const response = await tracker.get(`/players`, {
-    params: { sportId, token: getDigest() },
+    params: { sportId, token: getDigest("get", "/players") },
   });
   dispatch({
     type: PLAYERS_RETURNED,

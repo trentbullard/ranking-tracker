@@ -15,7 +15,7 @@ const getTopPlayers = async (sportId, dispatch) => {
       where: {
         sportId,
       },
-      token: getDigest(),
+      token: getDigest("get", "/players"),
     },
   });
   dispatch({ type: SELECT_SPORT, payload: sportId });

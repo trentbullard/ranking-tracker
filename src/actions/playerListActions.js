@@ -13,7 +13,7 @@ export const getSports = () => async dispatch => {
       where: {
         enabled: true,
       },
-      token: getDigest(),
+      token: getDigest("get", "/sports"),
     },
   });
   dispatch({ type: GET_SPORTS, payload: response.data });
@@ -38,7 +38,7 @@ const getPlayers = async (sportId, page, limit = 10, dispatch) => {
       page,
       limit,
       sportId,
-      token: getDigest(),
+      token: getDigest("get", "/players"),
     },
   });
   dispatch({ type: GET_PLAYERS_BY_PAGE, payload: response.data });
