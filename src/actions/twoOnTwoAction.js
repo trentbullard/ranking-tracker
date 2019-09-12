@@ -61,7 +61,7 @@ const getPlayers = async (sportId, dispatch) => {
   });
 
   const response = await tracker.get(`/players`, {
-    params: { fields: ["name", "id"], where: { sportId }, token: getDigest() },
+    params: { sportId, token: getDigest() },
   });
   dispatch({
     type: PLAYERS_RETURNED,
