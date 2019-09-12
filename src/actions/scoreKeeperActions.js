@@ -50,8 +50,9 @@ export const playAgain = game => async (dispatch, getState) => {
   history.push(`/games/score/${response.id}`);
 };
 
-export const updateElos = (sport, teams) => async (dispatch, getState) => {
-  let [team1, team2] = teams;
+export const updateElos = (sport, game) => async (dispatch, getState) => {
+  let gameId = game.id;
+  let [team1, team2] = game.teams;
   let [wTeam, lTeam] = [{}, {}];
   if (team1.positions[0].player.score + team1.positions[1].player.score >= 10) {
     wTeam = team1;
@@ -66,6 +67,7 @@ export const updateElos = (sport, teams) => async (dispatch, getState) => {
     {
       sport,
       updatedElos,
+      gameId,
     },
     {
       params: {

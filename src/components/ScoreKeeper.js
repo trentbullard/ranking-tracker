@@ -78,10 +78,7 @@ class ScoreKeeper extends Component {
                   .getScoreKeeperData(this.props.match.params.id)
                   .then(() => {
                     if (this.gameOver()) {
-                      this.props.updateElos(
-                        this.props.sport,
-                        this.props.game.teams,
-                      );
+                      this.props.updateElos(this.props.sport, this.props.game);
                     }
                     this.setState({ update: true });
                   });
@@ -174,9 +171,7 @@ class ScoreKeeper extends Component {
   }
 }
 
-const mapStateToProps = ({
-  scoreKeeper: { game, sport, loading },
-}) => {
+const mapStateToProps = ({ scoreKeeper: { game, sport, loading } }) => {
   return {
     loading,
     game,
