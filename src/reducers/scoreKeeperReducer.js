@@ -4,8 +4,6 @@ import {
   GAME_RETURNED,
   SPORT_REQUESTED,
   SPORT_RETURNED,
-  PLAYERS_REQUESTED,
-  PLAYERS_RETURNED,
   GAME_CREATED,
   UPDATE_PLAYER,
   UPDATE_GAME,
@@ -45,13 +43,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         sport: _.first(action.payload),
-      };
-    case PLAYERS_REQUESTED:
-      return { ...state, playersRequested: true };
-    case PLAYERS_RETURNED:
-      return {
-        ...state,
-        players: _.mapKeys(action.payload, "id"),
       };
     case UPDATE_PLAYER:
       return {

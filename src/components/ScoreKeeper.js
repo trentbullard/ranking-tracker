@@ -175,13 +175,12 @@ class ScoreKeeper extends Component {
 }
 
 const mapStateToProps = ({
-  scoreKeeper: { game, sport, players, loading },
+  scoreKeeper: { game, sport, loading },
 }) => {
   return {
     loading,
     game,
     sport,
-    players,
   };
 };
 

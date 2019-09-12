@@ -6,8 +6,6 @@ import {
   GAME_CREATED,
   SPORT_REQUESTED,
   SPORT_RETURNED,
-  PLAYERS_REQUESTED,
-  PLAYERS_RETURNED,
   DATA_LOADING,
   DATA_LOADED,
 } from "./types";
@@ -23,15 +21,6 @@ export const getScoreKeeperData = gameId => async (dispatch, getState) => {
     throw new Error(`Game ${gameId} not found`);
   }
   await getSport(game.sport, dispatch);
-  let teams = Object.values(game.teams);
-  let playerNames = _.flatten(
-    _.map(teams, position => {
-      return _.map(Object.values(position), player => {
-        return player.name;
-      });
-    }),
-  );
-  await getPlayersByName(game.sport, playerNames, dispatch);
   dispatch({ type: DATA_LOADED });
 };
 
@@ -111,26 +100,6 @@ const getSport = async (id, dispatch) => {
   });
   dispatch({
     type: SPORT_RETURNED,
-    payload: response.data,
-  });
-};
-
-const getPlayersByName = async (sportId, names, dispatch) => {
-  dispatch({
-    type: PLAYERS_REQUESTED,
-  });
-
-  const response = await tracker.get(`/players`, {
-    params: {
-      where: {
-        name: names,
-        sport: sportId,
-        token: getDigest(),
-      },
-    },
-  });
-  dispatch({
-    type: PLAYERS_RETURNED,
     payload: response.data,
   });
 };

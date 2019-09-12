@@ -1,6 +1,6 @@
 // common actions
-export const PLAYERS_REQUESTED = "PLAYERS_REQUESTED"; // scoreKeeperActions, createPlayerActions, twoOnTwoActions
-export const PLAYERS_RETURNED = "PLAYERS_RETURNED"; // scoreKeeperActions, createPlayerActions, twoOnTwoActions
+export const PLAYERS_REQUESTED = "PLAYERS_REQUESTED"; // createPlayerActions, twoOnTwoActions
+export const PLAYERS_RETURNED = "PLAYERS_RETURNED"; // createPlayerActions, twoOnTwoActions
 export const GET_SPORTS = "GET_SPORTS"; // latestGamesActions, gameListActions
 export const GAME_CREATED = "GAME_CREATED"; // scoreKeeperActions, twoOnTwoActions
 export const SPORT_REQUESTED = "SPORT_REQUESTED"; // scoreKeeperActions, twoOnTwoActions
