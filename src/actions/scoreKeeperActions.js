@@ -1,4 +1,3 @@
-import _ from "lodash-es";
 import history from "../history";
 import {
   GAME_REQUESTED,
@@ -81,8 +80,13 @@ const getGame = async (id, dispatch) => {
     type: GAME_REQUESTED,
   });
 
-  const response = await tracker.get(`/games/${id}`, {
-    params: { token: getDigest() },
+  const response = await tracker.get(`/games`, {
+    params: {
+      id,
+      sort: ["id"],
+      order: ["asc"],
+      token: getDigest(),
+    },
   });
   dispatch({
     type: GAME_RETURNED,
@@ -95,8 +99,11 @@ const getSport = async (id, dispatch) => {
     type: SPORT_REQUESTED,
   });
 
-  const response = await tracker.get(`/sports/${id}`, {
-    params: { token: getDigest() },
+  const response = await tracker.get(`/sports`, {
+    params: {
+      id,
+      token: getDigest(),
+    },
   });
   dispatch({
     type: SPORT_RETURNED,

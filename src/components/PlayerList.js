@@ -55,6 +55,7 @@ class PlayerList extends Component {
             className={`ui avatar image ${disabled}`}
             src={icons()[sport.name.toLowerCase()]}
             onClick={() => this.handleClickSportSelector(sport.id)}
+            alt={`${sport.name}-selector`}
           ></img>
         </div>
       );

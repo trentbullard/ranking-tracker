@@ -42,5 +42,5 @@ const getPlayers = async (sportId, page, limit = 10, dispatch) => {
     },
   });
   dispatch({ type: GET_PLAYERS_BY_PAGE, payload: response.data });
-  return response.data.length == limit;
+  return response.data.length === limit;
 };
