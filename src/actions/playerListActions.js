@@ -4,6 +4,7 @@ import {
   GET_SPORTS,
   SELECT_SPORT,
 } from "./types";
+import { getDigest } from "../helpers/hmac";
 import tracker from "../apis/tracker";
 
 export const getSports = () => async dispatch => {
@@ -12,6 +13,7 @@ export const getSports = () => async dispatch => {
       where: {
         enabled: true,
       },
+      token: getDigest(),
     },
   });
   dispatch({ type: GET_SPORTS, payload: response.data });
@@ -36,6 +38,7 @@ const getPlayers = async (sportId, page, limit = 10, dispatch) => {
       page,
       limit,
       sportId,
+      token: getDigest(),
     },
   });
   dispatch({ type: GET_PLAYERS_BY_PAGE, payload: response.data });

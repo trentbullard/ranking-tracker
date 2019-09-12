@@ -8,6 +8,7 @@ import {
   GAME_CREATION_REQUESTED,
 } from "./types";
 import tracker from "../apis/tracker";
+import { getDigest } from "../helpers/hmac";
 
 export const getTwoOnTwoFormData = sportId => dispatch => {
   getSport(sportId, dispatch).then(() => {
@@ -23,9 +24,17 @@ export const createTwoOnTwoGame = formValues => dispatch => {
 
 const createGame = async (formValues, dispatch) => {
   dispatch({ type: GAME_CREATION_REQUESTED });
-  const response = await tracker.post(`/games`, formValues);
+  const response = await tracker.post(`/games`, formValues, {
+    params: { token: getDigest() },
+  });
   dispatch({ type: GAME_CREATED, payload: response.data });
-  // await tracker.post("/log", { ...values, action: "create game" });
+  // await tracker.post(
+  //   "/log",
+  //   { ...values, action: "create game" },
+  //   {
+  //     params: { token: getDigest() },
+  //   },
+  // );
   return response.data.id;
 };
 
@@ -37,6 +46,7 @@ const getSport = async (id, dispatch) => {
   const response = await tracker.get(`/sports`, {
     params: {
       id,
+      token: getDigest(),
     },
   });
   dispatch({
@@ -51,7 +61,7 @@ const getPlayers = async (sportId, dispatch) => {
   });
 
   const response = await tracker.get(`/players`, {
-    params: { fields: ["name", "id"], where: { sportId } },
+    params: { fields: ["name", "id"], where: { sportId }, token: getDigest() },
   });
   dispatch({
     type: PLAYERS_RETURNED,

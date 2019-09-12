@@ -12,6 +12,7 @@ import {
   DATA_LOADED,
 } from "./types";
 import tracker from "../apis/tracker";
+import { getDigest } from "../helpers/hmac";
 import { getNewElos } from "../helpers/elo";
 
 export const getScoreKeeperData = gameId => async (dispatch, getState) => {
@@ -35,10 +36,18 @@ export const getScoreKeeperData = gameId => async (dispatch, getState) => {
 };
 
 export const scoreGoal = (teamPlayerId, newScore) => async getState => {
-  await tracker.patch("/goal", {
-    teamPlayerId,
-    newScore,
-  });
+  await tracker.patch(
+    "/goal",
+    {
+      teamPlayerId,
+      newScore,
+    },
+    {
+      params: {
+        token: getDigest(),
+      },
+    },
+  );
 };
 
 export const playAgain = game => async (dispatch, getState) => {
@@ -64,10 +73,18 @@ export const updateElos = (sport, teams) => async (dispatch, getState) => {
     lTeam = team1;
   }
   let updatedElos = getNewElos(wTeam, lTeam, sport);
-  await tracker.patch("/elos", {
-    sport,
-    updatedElos,
-  });
+  await tracker.patch(
+    "/elos",
+    {
+      sport,
+      updatedElos,
+    },
+    {
+      params: {
+        token: getDigest(),
+      },
+    },
+  );
 };
 
 const getGame = async (id, dispatch) => {
@@ -75,7 +92,9 @@ const getGame = async (id, dispatch) => {
     type: GAME_REQUESTED,
   });
 
-  const response = await tracker.get(`/games/${id}`);
+  const response = await tracker.get(`/games/${id}`, {
+    params: { token: getDigest() },
+  });
   dispatch({
     type: GAME_RETURNED,
     payload: response.data,
@@ -87,7 +106,9 @@ const getSport = async (id, dispatch) => {
     type: SPORT_REQUESTED,
   });
 
-  const response = await tracker.get(`/sports/${id}`);
+  const response = await tracker.get(`/sports/${id}`, {
+    params: { token: getDigest() },
+  });
   dispatch({
     type: SPORT_RETURNED,
     payload: response.data,
@@ -104,6 +125,7 @@ const getPlayersByName = async (sportId, names, dispatch) => {
       where: {
         name: names,
         sport: sportId,
+        token: getDigest(),
       },
     },
   });
@@ -124,9 +146,17 @@ const createGame = async (values, dispatch) => {
   let response = {};
   while (gameCtr < 5) {
     try {
-      response = await tracker.post(`/games`, {
-        ...noIdValues,
-      });
+      response = await tracker.post(
+        `/games`,
+        {
+          ...noIdValues,
+        },
+        {
+          params: {
+            token: getDigest(),
+          },
+        },
+      );
       dispatch({ type: GAME_CREATED, payload: response.data });
       gameCtr = 5;
     } catch (error) {
@@ -138,7 +168,7 @@ const createGame = async (values, dispatch) => {
   // let gameLogCtr = 0;
   // while (gameLogCtr < 5) {
   //   try {
-  //     await tracker.post("/logs", { ...noIdValues, action: "create game" });
+  //     await tracker.post("/logs", { ...noIdValues, action: "create game" }, {params: {token: getDigest()}});
   //     gameLogCtr = 5;
   //   } catch (error) {
   //     console.log(`Failed to log game creation. Trying again`);

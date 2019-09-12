@@ -6,6 +6,7 @@ import {
   DATA_LOADING,
   DATA_LOADED,
 } from "./types";
+import { getDigest } from "../helpers/hmac";
 import tracker from "../apis/tracker";
 
 export const getGameListData = () => dispatch => {
@@ -23,7 +24,9 @@ export const getGamesByPage = (page, limit) => async dispatch => {
 };
 
 const getSports = async dispatch => {
-  const response = await tracker.get(`/sports`);
+  const response = await tracker.get(`/sports`, {
+    params: { token: getDigest() },
+  });
   dispatch({ type: GET_SPORTS, payload: response.data });
 };
 
@@ -34,6 +37,7 @@ const getGames = async (page, limit = 10, dispatch) => {
       order: ["desc"],
       page,
       limit,
+      token: getDigest(),
     },
   });
   dispatch({ type: GET_GAMES_BY_PAGE, payload: response.data });

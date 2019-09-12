@@ -1,5 +1,6 @@
 import { GET_TOP_PLAYERS, SELECT_SPORT } from "./types";
 import tracker from "../apis/tracker";
+import { getDigest } from "../helpers/hmac";
 
 export const getTopPlayerData = sportId => async dispatch => {
   getTopPlayers(sportId, dispatch);
@@ -14,6 +15,7 @@ const getTopPlayers = async (sportId, dispatch) => {
       where: {
         sportId,
       },
+      token: getDigest(),
     },
   });
   dispatch({ type: SELECT_SPORT, payload: sportId });
