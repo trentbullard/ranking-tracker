@@ -75,6 +75,16 @@ export const updateElos = (sport, game) => async (dispatch, getState) => {
       },
     },
   );
+  await tracker.post(
+    "/logs",
+    {
+      actionType: "UPDATE_ELOS",
+      objectType: "games",
+      objectId: gameId,
+      objectJson: JSON.stringify(updatedElos),
+    },
+    { params: { token: getDigest("post", "/logs") } },
+  );
 };
 
 const getGame = async (id, dispatch) => {
@@ -120,38 +130,27 @@ const createGame = async (values, dispatch) => {
     started: new Date().toISOString(),
   };
 
-  let gameCtr = 0;
-  let response = {};
-  while (gameCtr < 5) {
-    try {
-      response = await tracker.post(
-        `/games`,
-        {
-          ...noIdValues,
-        },
-        {
-          params: {
-            token: getDigest("post", "/games"),
-          },
-        },
-      );
-      dispatch({ type: GAME_CREATED, payload: response.data });
-      gameCtr = 5;
-    } catch (error) {
-      console.log(`Failed to create game. Trying again`);
-      gameCtr++;
-    }
-  }
-
-  // let gameLogCtr = 0;
-  // while (gameLogCtr < 5) {
-  //   try {
-  //     await tracker.post("/logs", { ...noIdValues, action: "create game" }, {params: {token: getDigest()}});
-  //     gameLogCtr = 5;
-  //   } catch (error) {
-  //     console.log(`Failed to log game creation. Trying again`);
-  //     gameLogCtr++;
-  //   }
-  // }
+  const response = await tracker.post(
+    `/games`,
+    {
+      ...noIdValues,
+    },
+    {
+      params: {
+        token: getDigest("post", "/games"),
+      },
+    },
+  );
+  dispatch({ type: GAME_CREATED, payload: response.data });
+  await tracker.post(
+    "/logs",
+    {
+      actionType: GAME_CREATED,
+      objectType: "games",
+      objectId: response.data.id,
+      objectJson: JSON.stringify(response.data),
+    },
+    { params: { token: getDigest("post", "/logs") } },
+  );
   return response.data;
 };

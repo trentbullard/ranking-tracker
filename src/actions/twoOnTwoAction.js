@@ -28,13 +28,16 @@ const createGame = async (formValues, dispatch) => {
     params: { token: getDigest("post", "/games") },
   });
   dispatch({ type: GAME_CREATED, payload: response.data });
-  // await tracker.post(
-  //   "/log",
-  //   { ...values, action: "create game" },
-  //   {
-  //     params: { token: getDigest() },
-  //   },
-  // );
+  await tracker.post(
+    "/logs",
+    {
+      actionType: GAME_CREATED,
+      objectType: "games",
+      objectId: response.data.id,
+      objectJson: JSON.stringify(response.data),
+    },
+    { params: { token: getDigest("post", "/logs") } },
+  );
   return response.data.id;
 };
 

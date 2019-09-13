@@ -25,7 +25,7 @@ export const createPlayer = formValues => async dispatch => {
   let sports = _.map(sportsResponse.data, sport => {
     return { id: sport.id };
   });
-  const playerResonse = await tracker.post(
+  const playerResponse = await tracker.post(
     "/players",
     {
       name: formValues.name,
@@ -38,8 +38,16 @@ export const createPlayer = formValues => async dispatch => {
       },
     },
   );
-  dispatch({ type: PLAYER_CREATED, payload: playerResonse.data });
+  dispatch({ type: PLAYER_CREATED, payload: playerResponse.data });
+  await tracker.post(
+    "/logs",
+    {
+      actionType: PLAYER_CREATED,
+      objectType: "players",
+      objectId: playerResponse.data.id,
+      objectJson: JSON.stringify(playerResponse.data),
+    },
+    { params: { token: getDigest("post", "/logs") } },
+  );
   history.push("/");
-  // let { id, ...logValues } = playerResonse.data;
-  // await tracker.post("/logs", { ...logValues, action: "create player" });
 };
