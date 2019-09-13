@@ -8,6 +8,7 @@ import playerListReducer from "./playerListReducer";
 import gameListReducer from "./gameListReducer";
 import twoOnTwoReducer from "./twoOnTwoReducer";
 import createPlayerReducer from "./createPlayerReducer";
+import loginReducer from "./loginReducer";
 
 export default combineReducers({
   form: formReducer,
@@ -19,4 +20,5 @@ export default combineReducers({
   gameList: gameListReducer,
   twoOnTwo: twoOnTwoReducer,
   createPlayer: createPlayerReducer,
+  login: loginReducer,
 });

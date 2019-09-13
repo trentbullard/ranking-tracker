@@ -7,6 +7,9 @@ export const SPORT_REQUESTED = "SPORT_REQUESTED"; // scoreKeeperActions, twoOnTw
 export const SPORT_RETURNED = "SPORT_RETURNED"; // scoreKeeperActions, twoOnTwoActions
 export const DATA_LOADING = "DATA_LOADING";
 export const DATA_LOADED = "DATA_LOADED";
+export const SET_SESSION = "SET_SESSION";
+export const GET_SESSION = "GET_SESSION";
+export const DELETE_SESSION = "DELETE_SESSION";
 
 // scoreKeeperActions
 export const GAME_REQUESTED = "GAME_REQUESTED";
@@ -39,3 +42,6 @@ export const PLAYER_CREATION_REQUESTED = "PLAYER_CREATION_REQUESTED";
 
 // twoOnTwoActions
 export const GAME_CREATION_REQUESTED = "GAME_CREATION_REQUESTED";
+
+// loginActions
+export const GET_USER = "GET_USER";

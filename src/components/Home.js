@@ -30,7 +30,7 @@ class Home extends Component {
       <div
         style={{
           position: "absolute",
-          top: "20px",
+          top: "76px",
           right: "15px",
           fontSize: "2em",
         }}
@@ -77,8 +77,8 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = ({ sports }) => {
-  return { sports };
+const mapStateToProps = ({ sports, login: { currentUser } }) => {
+  return { sports, currentUser };
 };
 
 export default connect(
