@@ -3,42 +3,30 @@ import React from "react";
 import { connect } from "react-redux";
 import { Button, Form } from "semantic-ui-react";
 import { Field, reduxForm } from "redux-form";
+import Text from "./fields/Text";
 
 class RegistrationForm extends React.Component {
-  renderField = ({ input, label, type, meta: { touched, error } }) => {
-    return (
-      <Form.Input
-        {...input}
-        error={touched && (error && { content: error })}
-        label={label}
-        placeholder={label}
-        type={type}
-      />
-    );
-  };
-
   render() {
     return (
       <Form onSubmit={this.props.onSubmit}>
-        <Field
-          name="email"
-          component={this.renderField}
-          type="text"
-          label="email"
-        />
+        <Field name="email" component={Text} type="text" label="email" />
         <Field
           name="password"
-          component={this.renderField}
+          component={Text}
           type="password"
           label="password"
         />
         <Field
           name="passwordConfirmation"
-          component={this.renderField}
+          component={Text}
           type="password"
           label="password confirmation"
         />
-        <Button disabled={!_.isEmpty(this.props.syncErrors)}>Submit</Button>
+        <Button
+          disabled={!_.isEmpty(this.props.syncErrors) || this.props.submitting}
+        >
+          Submit
+        </Button>
       </Form>
     );
   }

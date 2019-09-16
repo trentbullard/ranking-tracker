@@ -45,3 +45,7 @@ export const GAME_CREATION_REQUESTED = "GAME_CREATION_REQUESTED";
 
 // loginActions
 export const GET_USER = "GET_USER";
+
+// registrationActions
+export const USER_CREATED = "CREATE_USER";
+export const USER_CREATION_REQUESTED = "USER_CREATION_REQUESTED";

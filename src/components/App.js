@@ -23,6 +23,12 @@ class App extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    if (_.isEmpty(this.props.currentUser)) {
+      this.props.checkSession();
+    }
+  }
+
   render() {
     return (
       <div className="ui container">

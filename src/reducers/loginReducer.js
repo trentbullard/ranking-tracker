@@ -33,7 +33,17 @@ export default (state = initialState, action) => {
       if (_.isEmpty(action.payload)) {
         return { ...state };
       }
-      return { ...state, currentUser: action.payload[0] };
+      const currentUser = action.payload[0];
+      return {
+        ...state,
+        currentUser: {
+          ...currentUser,
+          isAdmin: currentUser.isadmin,
+          passwordHash: currentUser.passwordhash,
+          createdAt: currentUser.createdat,
+          sessionId: currentUser.sessionid,
+        },
+      };
     default:
       return { ...state };
   }
