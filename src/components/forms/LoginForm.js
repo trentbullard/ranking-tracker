@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { List } from "semantic-ui-react";
 
 export default props => {
   return (
@@ -11,9 +13,16 @@ export default props => {
         <label>password</label>
         <input type="password" name="password" placeholder="password" />
       </div>
-      <button className="ui button" type="submit">
-        Submit
-      </button>
+      <List horizontal>
+        <List.Item>
+          <button className="ui button" type="submit">
+            Submit
+          </button>
+        </List.Item>
+        <List.Item>
+          <Link to="/register">Register</Link>
+        </List.Item>
+      </List>
     </form>
   );
 };

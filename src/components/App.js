@@ -14,6 +14,7 @@ import ErrorBoundary from "./utility/ErrorBoundary";
 import Login from "./Login";
 import { checkSession } from "../actions/loginActions";
 import UserButton from "./UserButton";
+import Registration from "./Registration";
 
 class App extends React.Component {
   componentDidMount() {
@@ -30,13 +31,14 @@ class App extends React.Component {
             <UserButton currentUser={this.props.currentUser} />
             <Header />
             <Switch>
-              <Route path="/" exact component={Home} />
               <Route path="/games" exact component={GamesList} />
               <Route path="/players" exact component={PlayerList} />
               <Route path="/players/new" exact component={PlayerCreate} />
               <Route path="/:sport/new" component={TwoOnTwoCreate} />
-              <Route path="/games/score/:id" component={ScoreKeeper} />
-              <Route path="/login" component={Login} />
+              <Route path="/games/score/:id" exact component={ScoreKeeper} />
+              <Route path="/login" exact component={Login} />
+              <Route path="/register" exact component={Registration} />
+              <Route path="/" component={Home} />
             </Switch>
           </ErrorBoundary>
         </Router>
