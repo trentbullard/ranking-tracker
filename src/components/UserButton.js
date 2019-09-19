@@ -1,22 +1,11 @@
 import _ from "lodash-es";
 import React from "react";
-import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { Button } from "semantic-ui-react";
+import { AppContext } from "../contexts/AppContext";
 import history from "../history";
-import { logout } from "../actions/loginActions";
 
-const handleClickNewPlayerButton = (currentUser, logout) => {
-  if (_.isEmpty(currentUser)) {
-    history.push("/login");
-    return null;
-  }
-  logout();
-};
-
-const UserButton = props => {
-  const text = !_.isEmpty(props.currentUser) ? "Logout" : "Login";
-  const color = !_.isEmpty(props.currentUser) ? "red" : "green";
-
+export default () => {
   return (
     <div
       style={{
@@ -25,18 +14,38 @@ const UserButton = props => {
         right: "15px",
         fontSize: "2em",
       }}
-      onClick={() =>
-        handleClickNewPlayerButton(props.currentUser, props.logout)
-      }
     >
-      <Button circular color={color} className="blue">
-        {text}
-      </Button>
+      <AppContext.Consumer>
+        {context => {
+          if (!!context.currentUser) {
+            return (
+              <>
+                <Link to={`/users/${context.currentUser.id}`}>
+                  <Button attached="left" color="blue">
+                    Profile
+                  </Button>
+                </Link>
+                <Button
+                  onClick={context.logout}
+                  attached="right"
+                  color="red"
+                >
+                  Logout
+                </Button>
+              </>
+            );
+          }
+          return (
+            <Button
+              onClick={() => history.push("/login")}
+              circular
+              color="green"
+            >
+              Login
+            </Button>
+          );
+        }}
+      </AppContext.Consumer>
     </div>
   );
 };
-
-export default connect(
-  null,
-  { logout },
-)(UserButton);

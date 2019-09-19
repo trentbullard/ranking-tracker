@@ -8,8 +8,9 @@ import {
 import Cookies from "js-cookie";
 
 const initialState = {
-  currentUser: {},
+  currentUser: null,
   sessionId: null,
+  referrer: "/",
 };
 
 export default (state = initialState, action) => {
@@ -37,7 +38,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         currentUser: {
-          ...currentUser,
+          id: currentUser.id,
+          email: currentUser.email,
           isAdmin: currentUser.isadmin,
           passwordHash: currentUser.passwordhash,
           createdAt: currentUser.createdat,
