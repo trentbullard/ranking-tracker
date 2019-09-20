@@ -26,10 +26,13 @@ export default props => {
         token: getDigest("get", "/auth"),
       },
     });
-    if (!returnedUser || !!returnedUser.error) {
+    if (!!returnedUser && !!returnedUser.error) {
       setFlash(
         _.concat(flash, `${returnedUser.message}: ${returnedUser.error}`),
       );
+      return null;
+    } else if (!returnedUser) {
+      setFlash(_.concat(flash, `username or password incorrect`));
       return null;
     }
     setCurrentUser(returnedUser);

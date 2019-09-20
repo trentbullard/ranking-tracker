@@ -13,7 +13,6 @@ export default ({ component: Component, ...rest }) => {
             context.currentUser.isadmin)
         ) {
           toRender = props => <Component {...props} />;
-        } else {
           context.setReferrer(rest.location.pathname);
         }
         return <Route {...rest} render={toRender} />;
