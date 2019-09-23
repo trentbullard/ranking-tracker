@@ -1,14 +1,14 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
-import { AppContext } from "../contexts/AppContext";
+import { FlashContext } from "../contexts/FlashContext";
 
 export default props => {
   return (
-    <AppContext.Consumer>
+    <FlashContext.Consumer>
       {context => {
-        context.badRoute();
+        context.addFlash("oops, that page doesn't exist");
         return <Redirect to="/" />;
       }}
-    </AppContext.Consumer>
+    </FlashContext.Consumer>
   );
 };

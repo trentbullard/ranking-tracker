@@ -1,0 +1,14 @@
+.flash-enter {
+  opacity: 0;
+}
+.flash-enter-active {
+  opacity: 1;
+  transition: opacity 200ms;
+}
+.flash-exit {
+  opacity: 1;
+}
+.flash-exit-active {
+  opacity: 0;
+  transition: opacity 200ms;
+}

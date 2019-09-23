@@ -1,5 +1,4 @@
-import _ from "lodash";
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import history from "../history";
 import Header from "./Header";
@@ -16,15 +15,8 @@ import AnyUserRoute from "./routes/AnyUserRoute";
 import UserProfileRoute from "./routes/UserProfileRoute";
 import NotFound from "./NotFound";
 import Flash from "./utility/Flash";
-import { AppContext } from "../contexts/AppContext";
 
 const App = () => {
-  const appContext = useContext(AppContext);
-
-  useEffect(() => {
-    appContext.checkSession();
-  }, []);
-
   return (
     <div className="ui container">
       <Router history={history}>

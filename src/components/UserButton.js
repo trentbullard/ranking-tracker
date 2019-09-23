@@ -1,11 +1,10 @@
-import _ from "lodash-es";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "semantic-ui-react";
-import { AppContext } from "../contexts/AppContext";
+import { AuthContext } from "../contexts/AuthContext";
 import history from "../history";
 
-export default () => {
+const UserButton = () => {
   return (
     <div
       style={{
@@ -15,7 +14,7 @@ export default () => {
         fontSize: "2em",
       }}
     >
-      <AppContext.Consumer>
+      <AuthContext.Consumer>
         {context => {
           if (!!context.currentUser) {
             return (
@@ -25,11 +24,7 @@ export default () => {
                     Profile
                   </Button>
                 </Link>
-                <Button
-                  onClick={context.logout}
-                  attached="right"
-                  color="red"
-                >
+                <Button onClick={context.logout} attached="right" color="red">
                   Logout
                 </Button>
               </>
@@ -45,7 +40,9 @@ export default () => {
             </Button>
           );
         }}
-      </AppContext.Consumer>
+      </AuthContext.Consumer>
     </div>
   );
 };
+
+export default UserButton;
