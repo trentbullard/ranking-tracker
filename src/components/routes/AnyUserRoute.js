@@ -1,23 +1,18 @@
-import _ from "lodash";
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Redirect } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import { FlashContext } from "../../contexts/FlashContext";
 
 export default ({ component: Component, ...rest }) => {
-  return (
-    <AuthContext.Consumer>
-      {context => {
-        let toRender = _props => <Redirect to="/login" />;
-        if (!context.currentUser) {
-          context.setFlash(
-            _.concat(context.flash, "you must login to access that page"),
-          );
-          context.setReferrer(rest.location.pathname);
-        } else {
-          toRender = props => <Component {...props} />;
-        }
-        return <Route {...rest} render={toRender} />;
-      }}
-    </AuthContext.Consumer>
-  );
+  const authContext = useContext(AuthContext);
+  const flashContext = useContext(FlashContext);
+
+  let toRender = _props => <Redirect to="/login" />;
+  if (!authContext.currentUser) {
+    flashContext.addFlash("you must login to access that page");
+    authContext.setReferrer(rest.location.pathname);
+  } else {
+    toRender = props => <Component {...props} />;
+  }
+  return <Route {...rest} render={toRender} />;
 };
