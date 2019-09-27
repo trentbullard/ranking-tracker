@@ -18,6 +18,7 @@ import NotFound from "./NotFound";
 import Flash from "./utility/Flash";
 import Footer from "./Footer";
 import NewGame from "./NewGame";
+import ErrorBoundary from "./utility/ErrorBoundary";
 
 const App = () => {
   return (
@@ -25,23 +26,29 @@ const App = () => {
       <Router history={history}>
         <Header />
         <Flash />
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/games" exact component={GamesList} />
-          <Route path="/players" exact component={PlayerList} />
-          <AnyUserRoute path="/players/new" exact component={PlayerCreate} />
-          <AnyUserRoute path="/:sport/new" component={NewGame} />
-          <AnyUserRoute path="/games/score/:id" exact component={ScoreKeeper} />
-          <UserProfileRoute
-            path="/users/:userId"
-            exact
-            component={UserProfile}
-          />
-          <Route path="/login" exact component={Login} />
-          <Route path="/register" exact component={Registration} />
-          <AdminRoute path="/admin" exact component={AdminDashboard} />
-          <Route component={NotFound} />
-        </Switch>
+        <ErrorBoundary>
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/games" exact component={GamesList} />
+            <Route path="/players" exact component={PlayerList} />
+            <AnyUserRoute path="/players/new" exact component={PlayerCreate} />
+            <AnyUserRoute path="/:sport/new" component={NewGame} />
+            <AnyUserRoute
+              path="/games/score/:id"
+              exact
+              component={ScoreKeeper}
+            />
+            <UserProfileRoute
+              path="/users/:userId"
+              exact
+              component={UserProfile}
+            />
+            <Route path="/login" exact component={Login} />
+            <Route path="/register" exact component={Registration} />
+            <AdminRoute path="/admin" exact component={AdminDashboard} />
+            <Route component={NotFound} />
+          </Switch>
+        </ErrorBoundary>
         <Footer />
       </Router>
     </div>

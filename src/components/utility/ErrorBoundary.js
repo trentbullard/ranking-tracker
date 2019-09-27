@@ -7,6 +7,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    console.log(`TCL: componentDidCatch -> error`, error);
     this.setState({
       error,
       errorInfo,
@@ -15,9 +16,10 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.errorInfo) {
-      return "something went wrong";
+      return <div>something went wrong</div>;
+    } else {
+      return this.props.children;
     }
-    return this.props.children;
   }
 }
 
