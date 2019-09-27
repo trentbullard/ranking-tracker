@@ -7,7 +7,6 @@ import AdminRoute from "./routes/AdminRoute";
 import AdminDashboard from "./AdminDashboard";
 import Header from "./Header";
 import Home from "./Home";
-import TwoOnTwoCreate from "./forms/TwoOnTwoCreate";
 import ScoreKeeper from "./ScoreKeeper";
 import GamesList from "./GamesList";
 import PlayerList from "./PlayerList";
@@ -17,6 +16,8 @@ import Registration from "./Registration";
 import UserProfile from "./UserProfile";
 import NotFound from "./NotFound";
 import Flash from "./utility/Flash";
+import Footer from "./Footer";
+import NewGame from "./NewGame";
 
 const App = () => {
   return (
@@ -29,14 +30,19 @@ const App = () => {
           <Route path="/games" exact component={GamesList} />
           <Route path="/players" exact component={PlayerList} />
           <Route path="/players/new" exact component={PlayerCreate} />
-          <AnyUserRoute path="/:sport/new" component={TwoOnTwoCreate} />
+          <AnyUserRoute path="/:sport/new" component={NewGame} />
           <Route path="/games/score/:id" exact component={ScoreKeeper} />
-          <UserProfileRoute path="/users/:userId" exact component={UserProfile} />
+          <UserProfileRoute
+            path="/users/:userId"
+            exact
+            component={UserProfile}
+          />
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Registration} />
           <AdminRoute path="/admin" exact component={AdminDashboard} />
           <Route component={NotFound} />
         </Switch>
+        <Footer />
       </Router>
     </div>
   );

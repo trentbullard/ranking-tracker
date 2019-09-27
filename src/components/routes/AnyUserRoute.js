@@ -1,18 +1,26 @@
 import React, { useContext } from "react";
-import { Route, Redirect } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
+import { Dimmer, Loader } from "semantic-ui-react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { FlashContext } from "../../contexts/FlashContext";
 
-export default ({ component: Component, ...rest }) => {
-  const authContext = useContext(AuthContext);
-  const flashContext = useContext(FlashContext);
+const AnyUserRoute = ({ component: Component, ...rest }) => {
+  const { fetching, currentUser, setReferrer } = useContext(AuthContext);
+  const { addFlash } = useContext(FlashContext);
 
-  let toRender = _props => <Redirect to="/login" />;
-  if (!authContext.currentUser) {
-    flashContext.addFlash("you must login to access that page");
-    authContext.setReferrer(rest.location.pathname);
+  if (fetching) {
+    return (
+      <Dimmer active inverted>
+        <Loader>Loading</Loader>
+      </Dimmer>
+    );
+  } else if (!currentUser) {
+    addFlash("you must login to access that page");
+    setReferrer(rest.location.pathname);
+    return <Redirect to="/login" />;
   } else {
-    toRender = props => <Component {...props} />;
+    return <Route {...rest} render={props => <Component {...props} />} />;
   }
-  return <Route {...rest} render={toRender} />;
 };
+
+export default AnyUserRoute;

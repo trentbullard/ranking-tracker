@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Route, Redirect } from "react-router-dom";
 import { Dimmer, Loader } from "semantic-ui-react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { FlashContext } from "../../contexts/FlashContext";
 
-export default ({ component: Component, ...rest }) => {
+const UserProfileRoute = ({ component: Component, ...rest }) => {
   const { addFlash } = useContext(FlashContext);
   const { fetching, currentUser, setReferrer } = useContext(AuthContext);
 
@@ -28,3 +28,5 @@ export default ({ component: Component, ...rest }) => {
     return <Route {...rest} render={props => <Component {...props} />} />;
   }
 };
+
+export default UserProfileRoute;

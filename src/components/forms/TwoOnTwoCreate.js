@@ -6,7 +6,6 @@ import {
   createTwoOnTwoGame,
 } from "../../actions/twoOnTwoAction";
 import TwoOnTwoForm from "./TwoOnTwoForm";
-import Footer from "../Footer";
 import history from "../../history";
 import { getTeamsFromForm } from "../../helpers/games";
 
@@ -56,7 +55,6 @@ class TwoOnTwoCreate extends Component {
         sport={this.props.sport}
         key="2on2-form"
       />,
-      <Footer key="footer" />,
     ];
   }
 }

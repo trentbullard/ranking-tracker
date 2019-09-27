@@ -77,8 +77,8 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = ({ sports, login: { currentUser } }) => {
-  return { sports, currentUser };
+const mapStateToProps = ({ sports }) => {
+  return { sports };
 };
 
 export default connect(
