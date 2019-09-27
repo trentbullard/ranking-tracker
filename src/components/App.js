@@ -31,7 +31,7 @@ const App = () => {
           <Route path="/players/new" exact component={PlayerCreate} />
           <AnyUserRoute path="/:sport/new" component={TwoOnTwoCreate} />
           <Route path="/games/score/:id" exact component={ScoreKeeper} />
-          <UserProfileRoute path="/users/:id" exact component={UserProfile} />
+          <UserProfileRoute path="/users/:userId" exact component={UserProfile} />
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Registration} />
           <AdminRoute path="/admin" exact component={AdminDashboard} />

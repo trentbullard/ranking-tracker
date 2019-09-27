@@ -31,20 +31,10 @@ export default (state = initialState, action) => {
       Cookies.remove("session-id");
       return initialState;
     case GET_USER:
-      if (_.isEmpty(action.payload)) {
-        return { ...state };
-      }
-      const currentUser = action.payload[0];
+      const [currentUser] = action.payload;
       return {
         ...state,
-        currentUser: {
-          id: currentUser.id,
-          email: currentUser.email,
-          isAdmin: currentUser.isadmin,
-          passwordHash: currentUser.passwordhash,
-          createdAt: currentUser.createdat,
-          sessionId: currentUser.sessionid,
-        },
+        currentUser,
       };
     default:
       return { ...state };

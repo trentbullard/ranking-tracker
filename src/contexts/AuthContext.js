@@ -6,39 +6,39 @@ import { FlashContext } from "./FlashContext";
 
 export const AuthContext = React.createContext();
 
-const checkSession = async sessionId => {
-  const {
-    data: [returnedUser],
-  } = await tracker.get("/session", {
-    params: {
-      sessionId,
-      token: getDigest("get", "/session"),
-    },
-  });
-  return returnedUser;
-};
-
 const AuthProvider = props => {
   const [sessionId, setSessionId] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [referrer, setReferrer] = useState("/");
+  const [fetching, setFetching] = useState(true);
 
   const { addFlash } = useContext(FlashContext);
 
   useEffect(() => {
-    setSessionId(Cookies.get("mrank-session-id"));
-    if (!currentUser && !!sessionId) {
-      checkSession(sessionId).then(returnedUser => {
-        setCurrentUser(returnedUser);
+    const getSession = async () => {
+      const {
+        data: [returnedUser],
+      } = await tracker.get("/session", {
+        params: {
+          sessionId: Cookies.get("mrank-session-id"),
+          token: getDigest("get", "/session"),
+        },
       });
-    }
-  }, [currentUser, sessionId]);
+      const user = await returnedUser;
+      setCurrentUser(user);
+    };
+
+    setFetching(true);
+    getSession().then(() => {
+      setFetching(false);
+    });
+  }, []);
 
   const logout = () => {
+    setReferrer("/");
     Cookies.remove("mrank-session-id");
     setSessionId(null);
     setCurrentUser(null);
-    setReferrer("/");
     addFlash("signed out successfully");
   };
 
@@ -50,6 +50,7 @@ const AuthProvider = props => {
     referrer,
     setReferrer,
     logout,
+    fetching,
   };
 
   return (

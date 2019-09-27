@@ -4,9 +4,9 @@ import { AuthContext } from "../contexts/AuthContext";
 import LoginForm from "./forms/LoginForm";
 
 const Login = _props => {
-  const authContext = useContext(AuthContext);
-  if (!!authContext.currentUser) {
-    return <Redirect to={authContext.referrer} />;
+  const { currentUser, referrer } = useContext(AuthContext);
+  if (!!currentUser) {
+    return <Redirect to={referrer} />;
   }
   return (
     <>

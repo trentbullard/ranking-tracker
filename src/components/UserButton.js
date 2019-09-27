@@ -1,47 +1,36 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "semantic-ui-react";
 import { AuthContext } from "../contexts/AuthContext";
 import history from "../history";
+import "../styles/userButton.css";
+
+const UserButtonWrapper = ({ children }) => {
+  return <div className="user-button">{children}</div>;
+};
 
 const UserButton = () => {
+  const authContext = useContext(AuthContext);
+  if (!!authContext.currentUser) {
+    return (
+      <UserButtonWrapper>
+        <Link to={`/users/${authContext.currentUser.id}`}>
+          <Button attached="left" color="blue">
+            Profile
+          </Button>
+        </Link>
+        <Button onClick={authContext.logout} attached="right" color="red">
+          Logout
+        </Button>
+      </UserButtonWrapper>
+    );
+  }
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: "20px",
-        right: "15px",
-        fontSize: "2em",
-      }}
-    >
-      <AuthContext.Consumer>
-        {context => {
-          if (!!context.currentUser) {
-            return (
-              <>
-                <Link to={`/users/${context.currentUser.id}`}>
-                  <Button attached="left" color="blue">
-                    Profile
-                  </Button>
-                </Link>
-                <Button onClick={context.logout} attached="right" color="red">
-                  Logout
-                </Button>
-              </>
-            );
-          }
-          return (
-            <Button
-              onClick={() => history.push("/login")}
-              circular
-              color="green"
-            >
-              Login
-            </Button>
-          );
-        }}
-      </AuthContext.Consumer>
-    </div>
+    <UserButtonWrapper>
+      <Button onClick={() => history.push("/login")} circular color="green">
+        Login
+      </Button>
+    </UserButtonWrapper>
   );
 };
 
