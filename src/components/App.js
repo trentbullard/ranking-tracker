@@ -19,6 +19,7 @@ import ScoreKeeper from "./ScoreKeeper";
 import UserProfile from "./UserProfile";
 import ErrorBoundary from "./utility/ErrorBoundary";
 import Flash from "./utility/Flash";
+import NoAuthRoute from "./routes/NoAuthRoute";
 
 const App = () => {
   return (
@@ -29,10 +30,13 @@ const App = () => {
         <ErrorBoundary>
           <Switch>
             <Route path="/" exact component={Home} />
+            <AdminRoute path="/admin" exact component={AdminDashboard} />
             <Route path="/games" exact component={GamesList} />
             <Route path="/players" exact component={PlayerList} />
             <AnyUserRoute path="/players/new" exact component={NewPlayer} />
-            <AnyUserRoute path="/:sport/new" component={NewGame} />
+            <NoAuthRoute path="/login" exact component={Login} />
+            <NoAuthRoute path="/register" exact component={Registration} />
+            <NoAuthRoute path="/users/new" exact component={Registration} />
             <AnyUserRoute
               path="/games/score/:id"
               exact
@@ -43,9 +47,7 @@ const App = () => {
               exact
               component={UserProfile}
             />
-            <Route path="/login" exact component={Login} />
-            <Route path="/register" exact component={Registration} />
-            <AdminRoute path="/admin" exact component={AdminDashboard} />
+            <AnyUserRoute path="/:sport/new" exact component={NewGame} />
             <Route component={NotFound} />
           </Switch>
         </ErrorBoundary>

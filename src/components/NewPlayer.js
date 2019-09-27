@@ -54,6 +54,7 @@ const NewPlayer = props => {
 
   const handleSubmit = async event => {
     event.preventDefault();
+    setLoading(true);
 
     const formValues = {
       name,
@@ -88,6 +89,7 @@ const NewPlayer = props => {
       { params: { token: getDigest("post", "/logs") } },
     );
 
+    setLoading(false);
     return returnedPlayer;
   };
 

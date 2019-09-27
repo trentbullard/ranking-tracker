@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "semantic-ui-react";
+import { Button, Loader } from "semantic-ui-react";
 import { AuthContext } from "../contexts/AuthContext";
 import history from "../history";
 import "../styles/userButton.css";
@@ -11,6 +11,13 @@ const UserButtonWrapper = ({ children }) => {
 
 const UserButton = () => {
   const authContext = useContext(AuthContext);
+  if (authContext.fetching) {
+    return (
+      <UserButtonWrapper>
+        <Loader active inline />
+      </UserButtonWrapper>
+    );
+  }
   if (!!authContext.currentUser) {
     return (
       <UserButtonWrapper>

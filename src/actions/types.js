@@ -36,9 +36,3 @@ export const GAMES_RESET = "GAMES_RESET";
 // createPlayerActions
 export const PLAYER_CREATED = "PLAYER_CREATED";
 export const PLAYER_CREATION_REQUESTED = "PLAYER_CREATION_REQUESTED";
-
-// registrationActions
-export const GET_USER = "GET_USER";
-export const USER_CREATED = "CREATE_USER";
-export const USER_CREATION_REQUESTED = "USER_CREATION_REQUESTED";
-export const SET_SESSION = "SET_SESSION";

@@ -6,7 +6,6 @@ import latestGamesReducer from "./latestGamesReducer";
 import topPlayerReducer from "./topPlayerReducer";
 import playerListReducer from "./playerListReducer";
 import gameListReducer from "./gameListReducer";
-import registrationReducer from "./registrationReducer";
 
 export default combineReducers({
   form: formReducer,
@@ -16,5 +15,4 @@ export default combineReducers({
   topPlayers: topPlayerReducer,
   playerList: playerListReducer,
   gameList: gameListReducer,
-  registration: registrationReducer,
 });

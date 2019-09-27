@@ -19,7 +19,7 @@ const UserProfileRoute = ({ component: Component, ...rest }) => {
     setReferrer(rest.location.pathname);
     return <Redirect to="/login" />;
   } else if (
-    rest.computedMatch.params.id !== currentUser.id.toString() &&
+    rest.computedMatch.params.userId !== currentUser.id.toString() &&
     !currentUser.isAdmin
   ) {
     addFlash("you are not authorized to access that page");
