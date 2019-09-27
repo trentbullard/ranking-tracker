@@ -29,9 +29,9 @@ const App = () => {
           <Route path="/" exact component={Home} />
           <Route path="/games" exact component={GamesList} />
           <Route path="/players" exact component={PlayerList} />
-          <Route path="/players/new" exact component={PlayerCreate} />
+          <AnyUserRoute path="/players/new" exact component={PlayerCreate} />
           <AnyUserRoute path="/:sport/new" component={NewGame} />
-          <Route path="/games/score/:id" exact component={ScoreKeeper} />
+          <AnyUserRoute path="/games/score/:id" exact component={ScoreKeeper} />
           <UserProfileRoute
             path="/users/:userId"
             exact

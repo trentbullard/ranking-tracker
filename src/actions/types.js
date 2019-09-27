@@ -1,14 +1,14 @@
 // common actions
-export const PLAYERS_REQUESTED = "PLAYERS_REQUESTED"; // createPlayerActions, twoOnTwoActions
-export const PLAYERS_RETURNED = "PLAYERS_RETURNED"; // createPlayerActions, twoOnTwoActions
+export const PLAYERS_REQUESTED = "PLAYERS_REQUESTED"; // createPlayerActions
+export const PLAYERS_RETURNED = "PLAYERS_RETURNED"; // createPlayerActions
 export const GET_SPORTS = "GET_SPORTS"; // latestGamesActions, gameListActions
-export const GAME_CREATED = "GAME_CREATED"; // scoreKeeperActions, twoOnTwoActions
-export const SPORT_REQUESTED = "SPORT_REQUESTED"; // scoreKeeperActions, twoOnTwoActions
-export const SPORT_RETURNED = "SPORT_RETURNED"; // scoreKeeperActions, twoOnTwoActions
 export const DATA_LOADING = "DATA_LOADING"; // gameListActions, latestGamesActions, scoreKeeperActions
 export const DATA_LOADED = "DATA_LOADED"; // gameListActions, latestGamesActions, scoreKeeperActions
 
 // scoreKeeperActions
+export const GAME_CREATED = "GAME_CREATED";
+export const SPORT_REQUESTED = "SPORT_REQUESTED";
+export const SPORT_RETURNED = "SPORT_RETURNED";
 export const GAME_REQUESTED = "GAME_REQUESTED";
 export const GAME_RETURNED = "GAME_RETURNED";
 export const GAME_FETCH_ERROR = "GAME_FETCH_ERROR";
@@ -36,9 +36,6 @@ export const GAMES_RESET = "GAMES_RESET";
 // createPlayerActions
 export const PLAYER_CREATED = "PLAYER_CREATED";
 export const PLAYER_CREATION_REQUESTED = "PLAYER_CREATION_REQUESTED";
-
-// twoOnTwoActions
-export const GAME_CREATION_REQUESTED = "GAME_CREATION_REQUESTED";
 
 // registrationActions
 export const GET_USER = "GET_USER";
