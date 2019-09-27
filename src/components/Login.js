@@ -29,7 +29,7 @@ const LoginForm = () => {
       },
     });
     if (!!returnedUser && !!returnedUser.error) {
-      addFlash(`${returnedUser.message}: ${returnedUser.error}`);
+      addFlash(returnedUser.message);
       return null;
     } else if (!returnedUser) {
       addFlash(`username or password incorrect`);

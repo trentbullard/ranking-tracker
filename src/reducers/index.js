@@ -6,7 +6,6 @@ import latestGamesReducer from "./latestGamesReducer";
 import topPlayerReducer from "./topPlayerReducer";
 import playerListReducer from "./playerListReducer";
 import gameListReducer from "./gameListReducer";
-import createPlayerReducer from "./createPlayerReducer";
 import registrationReducer from "./registrationReducer";
 
 export default combineReducers({
@@ -17,6 +16,5 @@ export default combineReducers({
   topPlayers: topPlayerReducer,
   playerList: playerListReducer,
   gameList: gameListReducer,
-  createPlayer: createPlayerReducer,
   registration: registrationReducer,
 });
