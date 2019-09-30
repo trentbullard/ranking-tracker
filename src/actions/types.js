@@ -5,18 +5,6 @@ export const GET_SPORTS = "GET_SPORTS"; // latestGamesActions, gameListActions
 export const DATA_LOADING = "DATA_LOADING"; // gameListActions, latestGamesActions, scoreKeeperActions
 export const DATA_LOADED = "DATA_LOADED"; // gameListActions, latestGamesActions, scoreKeeperActions
 
-// scoreKeeperActions
-export const GAME_CREATED = "GAME_CREATED";
-export const SPORT_REQUESTED = "SPORT_REQUESTED";
-export const SPORT_RETURNED = "SPORT_RETURNED";
-export const GAME_REQUESTED = "GAME_REQUESTED";
-export const GAME_RETURNED = "GAME_RETURNED";
-export const GAME_FETCH_ERROR = "GAME_FETCH_ERROR";
-export const UPDATE_GAME = "UPDATE_GAME";
-export const POST_GAME_ACTION_STARTED = "POST_GAME_ACTION_STARTED";
-export const POST_GAME_ACTION_COMPLETED = "POST_GAME_ACTION_COMPLETED";
-export const UPDATE_PLAYER = "UPDATE_PLAYER";
-
 // topPlayerActions
 export const GET_TOP_PLAYERS = "GET_TOP_PLAYERS";
 export const SELECT_SPORT = "SELECT_SPORT";

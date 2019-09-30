@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
+import BackArrow from "./utility/BackArrow";
 
 const UserProfile = ({
   match: {
@@ -24,9 +25,12 @@ const UserProfile = ({
     getUser(userId);
   }, [userId]);
   return (
-    <h1 className="ui center aligned header">
-      {selectedUser.firstName} {selectedUser.lastName}
-    </h1>
+    <>
+      <h1 className="ui center aligned header">
+        {selectedUser.firstName} {selectedUser.lastName}
+      </h1>
+      <BackArrow url="/" key="back-arrow" />
+    </>
   );
 };
 
