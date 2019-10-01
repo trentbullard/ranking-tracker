@@ -7,6 +7,7 @@ import { getGamesFromRecords } from "../helpers/games";
 import { getDigest } from "../helpers/hmac";
 import BackArrow from "./utility/BackArrow";
 import history from "../history";
+import { getNewElos } from "../helpers/elo";
 
 const PlayAgainButton = props => {
   const { game } = useContext(ScoreContext);
@@ -246,9 +247,64 @@ const ScoreKeeper = props => {
 
   // game end condition check
   useEffect(() => {
+    const updateElos = async (wTeam, lTeam) => {
+      const updatedElos = getNewElos(wTeam, lTeam, sport);
+      await tracker.patch(
+        "/elos",
+        {
+          sport,
+          updatedElos,
+          gameId: game.id,
+        },
+        {
+          params: {
+            token: getDigest("patch", "/elos"),
+          },
+        },
+      );
+      await tracker.post(
+        "/logs",
+        {
+          actionType: "UPDATE_ELOS",
+          objectType: "games",
+          objectId: game.id,
+          objectJson: JSON.stringify(updatedElos),
+        },
+        { params: { token: getDigest("post", "/logs") } },
+      );
+    };
+
+    if (!game || game.eloAwarded) {
+      return;
+    }
+
     const { winningScore } = sport || { winningScore: 9999 };
-    setGameOver(redTeamScore >= winningScore || blueTeamScore >= winningScore);
-  }, [sport, redTeamScore, blueTeamScore]);
+    const gameIsOver =
+      redTeamScore >= winningScore || blueTeamScore >= winningScore;
+    setGameOver(gameIsOver);
+
+    if (gameIsOver) {
+      const wTeam =
+        redTeamScore >= winningScore
+          ? { positions: [{ player: redKeeper }, { player: redForward }] }
+          : { positions: [{ player: blueKeeper }, { player: blueForward }] };
+      const lTeam =
+        redTeamScore >= winningScore
+          ? { positions: [{ player: blueKeeper }, { player: blueForward }] }
+          : { positions: [{ player: redKeeper }, { player: redForward }] };
+
+      updateElos(wTeam, lTeam);
+    }
+  }, [
+    blueForward,
+    blueKeeper,
+    blueTeamScore,
+    game,
+    redForward,
+    redKeeper,
+    redTeamScore,
+    sport,
+  ]);
 
   // game disabled
   useEffect(() => {

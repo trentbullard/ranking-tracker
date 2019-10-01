@@ -127,7 +127,5 @@ const foosballCalulation = (delta, position, player, goalsAgainst) => {
 
 const cornholeCalulation = (delta, player) => {
   let earned = delta / 2.0;
-  let goals = player.score;
-  earned = earned * (goals / 21.0);
   return Math.round(earned);
 };
