@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Route, Router, Switch } from "react-router-dom";
 import history from "../history";
 import AdminDashboard from "./AdminDashboard";
@@ -20,8 +20,11 @@ import UserProfile from "./UserProfile";
 import ErrorBoundary from "./utility/ErrorBoundary";
 import Flash from "./utility/Flash";
 import NoAuthRoute from "./routes/NoAuthRoute";
+import SportProvider from "../contexts/SportContext";
 
 const App = () => {
+  const [selectedSport, setSelectedSport] = useState(null);
+
   return (
     <div className="ui container">
       <Router history={history}>
@@ -29,10 +32,34 @@ const App = () => {
         <Flash />
         <ErrorBoundary>
           <Switch>
-            <Route path="/" exact component={Home} />
+            <Route
+              path="/"
+              exact
+              render={props => (
+                <SportProvider>
+                  <Home
+                    {...props}
+                    selectedSport={selectedSport}
+                    setSelectedSport={setSelectedSport}
+                  />
+                </SportProvider>
+              )}
+            />
             <AdminRoute path="/admin" exact component={AdminDashboard} />
             <Route path="/games" exact component={GamesList} />
-            <Route path="/players" exact component={PlayerList} />
+            <Route
+              path="/players"
+              exact
+              render={props => (
+                <SportProvider>
+                  <PlayerList
+                    {...props}
+                    selectedSport={selectedSport}
+                    setSelectedSport={setSelectedSport}
+                  />
+                </SportProvider>
+              )}
+            />
             <AnyUserRoute path="/players/new" exact component={NewPlayer} />
             <NoAuthRoute path="/login" exact component={Login} />
             <NoAuthRoute path="/register" exact component={Registration} />
