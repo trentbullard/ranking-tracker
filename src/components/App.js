@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Route, Router, Switch } from "react-router-dom";
 import history from "../history";
 import AdminDashboard from "./AdminDashboard";
@@ -23,8 +23,6 @@ import NoAuthRoute from "./routes/NoAuthRoute";
 import SportProvider from "../contexts/SportContext";
 
 const App = () => {
-  const [selectedSport, setSelectedSport] = useState(null);
-
   return (
     <div className="ui container">
       <Router history={history}>
@@ -37,11 +35,7 @@ const App = () => {
               exact
               render={props => (
                 <SportProvider>
-                  <Home
-                    {...props}
-                    selectedSport={selectedSport}
-                    setSelectedSport={setSelectedSport}
-                  />
+                  <Home {...props} />
                 </SportProvider>
               )}
             />
@@ -52,11 +46,7 @@ const App = () => {
               exact
               render={props => (
                 <SportProvider>
-                  <PlayerList
-                    {...props}
-                    selectedSport={selectedSport}
-                    setSelectedSport={setSelectedSport}
-                  />
+                  <PlayerList {...props} />
                 </SportProvider>
               )}
             />
