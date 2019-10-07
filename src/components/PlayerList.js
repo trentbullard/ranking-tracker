@@ -1,4 +1,4 @@
-import _ from "lodash-es";
+import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import tracker from "../apis/tracker";

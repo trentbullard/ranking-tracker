@@ -1,4 +1,4 @@
-import _ from "lodash-es";
+import _ from "lodash";
 import React, { useContext } from "react";
 import SportAvatarItem from "./SportAvatarItem";
 import { SportContext } from "../contexts/SportContext";

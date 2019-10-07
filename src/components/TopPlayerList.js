@@ -1,4 +1,4 @@
-import _ from "lodash-es";
+import _ from "lodash";
 import React, { useState, useEffect, useContext } from "react";
 import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";

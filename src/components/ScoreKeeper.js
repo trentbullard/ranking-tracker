@@ -1,4 +1,4 @@
-import _ from "lodash-es";
+import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import tracker from "../apis/tracker";
 import { FlashContext } from "../contexts/FlashContext";

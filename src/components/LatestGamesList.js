@@ -1,4 +1,4 @@
-import _ from "lodash-es";
+import _ from "lodash";
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import tracker from "../apis/tracker";
