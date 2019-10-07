@@ -1,8 +1,8 @@
-import _ from "lodash-es";
-import React, { Component } from "react";
-import InfiniteScroll from "react-infinite-scroller";
+import React from "react";
+// import InfiniteScroll from "react-infinite-scroller";
 import BackArrow from "./utility/BackArrow";
 import Footer from "./Footer";
+import "../styles/gamesList.css";
 
 const GamesList = props => {
   return (

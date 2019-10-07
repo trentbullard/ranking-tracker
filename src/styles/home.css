@@ -1,0 +1,18 @@
+h2.home {
+  margin-top: 2em;
+}
+
+h3.home {
+  margin-top: 3em;
+}
+
+div.divider.home {
+  margin: 2em 0;
+}
+
+.secondary.menu.item {
+  position: absolute;
+  top: 76px;
+  right: 15px;
+  font-size: 2em;
+}
