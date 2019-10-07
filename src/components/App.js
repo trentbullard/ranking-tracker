@@ -40,7 +40,15 @@ const App = () => {
               )}
             />
             <AdminRoute path="/admin" exact component={AdminDashboard} />
-            <Route path="/games" exact component={GamesList} />
+            <Route
+              path="/games"
+              exact
+              render={props => (
+                <SportProvider>
+                  <GamesList {...props} />
+                </SportProvider>
+              )}
+            />
             <Route
               path="/players"
               exact
