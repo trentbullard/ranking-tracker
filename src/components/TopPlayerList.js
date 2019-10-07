@@ -38,6 +38,7 @@ const PlayerList = () => {
         params: {
           sort: ["elo", "name"],
           order: ["desc", "asc"],
+          page: 1,
           limit: 10,
           sportId: selectedSport.id,
           token: getDigest("get", "/players"),

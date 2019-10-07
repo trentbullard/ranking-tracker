@@ -32,14 +32,14 @@ const SportSelectorList = () => {
 const PlayerItems = () => {
   const { selectedSport } = useContext(SportContext);
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [hasMore, setHasMore] = useState(false);
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
-    setPage(0);
-    setHasMore(true);
+    setPage(1);
+    setHasMore(false);
     setPlayers([]);
   }, [selectedSport]);
 
@@ -56,14 +56,18 @@ const PlayerItems = () => {
         },
       });
       const returnedPlayers = await data;
-      setPlayers(p => _.concat(p, returnedPlayers));
-      setHasMore(returnedPlayers.count >= itemLimit);
+      setPlayers(p => _.uniqBy(_.concat(p, returnedPlayers), "id"));
+      setHasMore(returnedPlayers.length >= itemLimit);
     };
     if (selectedSport) {
-      const { id: sportId } = selectedSport;
-      getPlayers(sportId, page, limit);
+      getPlayers(selectedSport.id, page, limit);
     }
   }, [limit, page, selectedSport]);
+
+  const getNextPage = async page => {
+    setPage(page);
+    setHasMore(false);
+  };
 
   if (_.isEmpty(players)) {
     return (
@@ -76,10 +80,6 @@ const PlayerItems = () => {
       </tbody>
     );
   }
-
-  const loadMore = page => {
-    setPage(page);
-  };
 
   const items = _.map(players, (player, index) => {
     return (
@@ -94,8 +94,8 @@ const PlayerItems = () => {
   return (
     <InfiniteScroll
       element="tbody"
-      pageStart={0}
-      loadMore={loadMore}
+      pageStart={1}
+      loadMore={page => getNextPage(page)}
       hasMore={hasMore}
       loader={
         <tr key={`loading`}>
