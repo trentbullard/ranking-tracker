@@ -13,10 +13,10 @@ const UserProfile = ({
     const getUser = async () => {
       const {
         data: [returnedUser],
-      } = await tracker.get("/users", {
+      } = await tracker.get(`/users/${userId}`, {
         params: {
           userId,
-          token: getDigest("get", "/users"),
+          token: getDigest("get", "/users/:id"),
         },
       });
       const user = await returnedUser;
