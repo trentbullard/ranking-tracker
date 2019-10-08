@@ -1,13 +1,13 @@
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import tracker from "../apis/tracker";
-import { FlashContext } from "../contexts/FlashContext";
 import ScoreProvider, { ScoreContext } from "../contexts/ScoreContext";
 import { getGamesFromRecords } from "../helpers/games";
 import { getDigest } from "../helpers/hmac";
 import BackArrow from "./utility/BackArrow";
 import history from "../history";
 import { getNewElos } from "../helpers/elo";
+import SportProvider, { SportContext } from "../contexts/SportContext";
 
 const PlayAgainButton = props => {
   const { game } = useContext(ScoreContext);
@@ -140,10 +140,9 @@ const ScoreButton = props => {
 };
 
 const ScoreKeeper = props => {
-  const { addFlash } = useContext(FlashContext);
-  const { scores, setGame, game } = useContext(ScoreContext);
+  const { setGame, game } = useContext(ScoreContext);
+  const { sports } = useContext(SportContext);
 
-  const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(true);
   const [sport, setSport] = useState(null);
   const [sportName, setSportName] = useState("");
@@ -155,7 +154,6 @@ const ScoreKeeper = props => {
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
-  // get game data
   useEffect(() => {
     const getGame = async () => {
       const { data } = await tracker.get(`/games`, {
@@ -167,52 +165,26 @@ const ScoreKeeper = props => {
         },
       });
       const returnedGame = await data;
-      if (!!returnedGame && !!returnedGame.error) {
-        addFlash(returnedGame.message);
-        return null;
-      } else if (_.isEmpty(returnedGame)) {
-        addFlash("failed to get game records");
-        return null;
-      }
-      const [game] = getGamesFromRecords(returnedGame);
-      return game;
+      setGame(_.first(getGamesFromRecords(returnedGame)));
     };
 
-    const getSport = async id => {
-      const { data } = await tracker.get(`/sports/${id}`, {
-        params: {
-          token: getDigest("get", `/sports/:id`),
-        },
-      });
-      const [returnedSport] = await data;
-      if (!!returnedSport && !!returnedSport.error) {
-        addFlash(returnedSport.message);
-        return null;
-      } else if (_.isEmpty(returnedSport)) {
-        addFlash("failed to get sport");
-        return null;
-      }
-      return returnedSport;
-    };
+    getGame();
+  }, [props.match.params.id, setGame]);
 
-    setLoading(true);
-    getGame()
-      .then(game => {
-        setGame(game);
-        return game.sport;
-      })
-      .then(sportId => {
-        getSport(sportId).then(returnedSport => {
-          setSport(returnedSport);
-          setSportName(`- ${returnedSport.name}`);
-        });
-      })
-      .then(() => {
-        setLoading(false);
-      });
-  }, [addFlash, props.match.params.id, setGame, scores]);
+  useEffect(() => {
+    if (game) {
+      const { sport } = game;
+      setSport(_.find(sports, { id: sport }));
+    }
+  }, [game, sports]);
 
-  // update players from game
+  useEffect(() => {
+    if (sport) {
+      const { name } = sport;
+      setSportName(sport.name);
+    }
+  }, [sport]);
+
   useEffect(() => {
     if (game) {
       const { teams } = game;
@@ -233,7 +205,6 @@ const ScoreKeeper = props => {
     }
   }, [game]);
 
-  // get team scores
   useEffect(() => {
     if (redKeeper && redForward && blueKeeper && blueForward) {
       const { score: redKeeperScore } = redKeeper;
@@ -245,7 +216,6 @@ const ScoreKeeper = props => {
     }
   }, [blueForward, blueKeeper, redForward, redKeeper]);
 
-  // game end condition check
   useEffect(() => {
     const updateElos = async (wTeam, lTeam) => {
       const updatedElos = getNewElos(wTeam, lTeam, sport);
@@ -274,11 +244,20 @@ const ScoreKeeper = props => {
       );
     };
 
-    if (!game || game.eloAwarded) {
+    if (!game) {
       return;
     }
 
-    const { winningScore } = sport || { winningScore: 9999 };
+    if (game.eloAwarded) {
+      setGameOver(true);
+      return;
+    }
+
+    if (!sport) {
+      return;
+    }
+
+    const { winningScore } = sport;
     const gameIsOver =
       redTeamScore >= winningScore || blueTeamScore >= winningScore;
     setGameOver(gameIsOver);
@@ -306,10 +285,9 @@ const ScoreKeeper = props => {
     sport,
   ]);
 
-  // game disabled
   useEffect(() => {
-    setDisabled(loading || gameOver);
-  }, [gameOver, loading]);
+    setDisabled(gameOver);
+  }, [gameOver]);
 
   return (
     <>
@@ -352,9 +330,11 @@ const ScoreKeeper = props => {
 
 const ScoreKeeperProvider = props => {
   return (
-    <ScoreProvider>
-      <ScoreKeeper {...props} />
-    </ScoreProvider>
+    <SportProvider>
+      <ScoreProvider>
+        <ScoreKeeper {...props} />
+      </ScoreProvider>
+    </SportProvider>
   );
 };
 
