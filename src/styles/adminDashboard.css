@@ -1,0 +1,17 @@
+.flex-container {
+  display: flex;
+}
+
+.tab.pane.menu.divider {
+  border-left: 1px solid #bbbbbb;
+  margin: 0 3px;
+}
+
+.tab.pane.menu.search {
+  width: 100%;
+  margin-left: 3.5px;
+}
+
+.tab.pane.menu.button {
+  padding-top: 1px;
+}

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { useState, useEffect } from "react";
-import { Tab, Table } from "semantic-ui-react";
+import { Tab, Table, Button } from "semantic-ui-react";
 import tracker from "../../apis/tracker";
 import { getDigest } from "../../helpers/hmac";
 
@@ -80,9 +80,21 @@ const UsersPane = props => {
 
   return (
     <Tab.Pane attached={false}>
-      <div className="ui fluid icon input">
-        <input type="text" placeholder="Search..." onChange={handleSearch} />
-        <i aria-hidden="true" className="search icon" />
+      <div className="flex-container">
+        <div className="tab pane menu button">
+          <Button className="green" circular icon="add user" />
+        </div>
+        <div className="tab pane menu divider" />
+        <div className="tab pane menu search">
+          <div className="ui fluid icon input">
+            <input
+              type="text"
+              placeholder="Search..."
+              onChange={handleSearch}
+            />
+            <i aria-hidden="true" className="search icon" />
+          </div>
+        </div>
       </div>
       <Table unstackable celled striped id="usersTable">
         <Table.Header>
