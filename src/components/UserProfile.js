@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
+import _ from "lodash";
+import React, { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
+import { Header } from "semantic-ui-react";
 import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
 import BackArrow from "./utility/BackArrow";
+import { AuthContext } from "../contexts/AuthContext";
 
 const UserProfile = ({
   match: {
     params: { userId },
   },
 }) => {
-  const [selectedUser, setSelectedUser] = useState({});
+  const { currentUser } = useContext(AuthContext);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   useEffect(() => {
     const getUser = async () => {
       const {
@@ -24,11 +30,50 @@ const UserProfile = ({
     };
     getUser(userId);
   }, [userId]);
+
+  const ProfileTitle = () => {
+    if (selectedUser) {
+      return `${selectedUser.firstName} ${selectedUser.lastName}`;
+    }
+    return `User ${userId}`;
+  };
+
+  const AdminButton = () => {
+    const loggedIn = !!currentUser;
+    if (!loggedIn) {
+      return null;
+    }
+
+    const isAdmin = currentUser.isAdmin;
+    if (!isAdmin) {
+      return null;
+    }
+
+    const foundSelectedUser = !!selectedUser;
+    if (!foundSelectedUser) {
+      return null;
+    }
+
+    const selectedSelf = _.isEqual(currentUser, selectedUser);
+    if (!selectedSelf) {
+      return null;
+    }
+
+    return (
+      <Header.Subheader>
+        <Link to="/admin">(admin)</Link>
+      </Header.Subheader>
+    );
+  };
+
   return (
     <>
-      <h1 className="ui center aligned header">
-        {selectedUser.firstName} {selectedUser.lastName}
-      </h1>
+      <Header as="h1" textAlign="center">
+        <Header.Content>
+          <ProfileTitle />
+          <AdminButton />
+        </Header.Content>
+      </Header>
       <BackArrow url="/" key="back-arrow" />
     </>
   );

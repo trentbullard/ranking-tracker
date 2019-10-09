@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Router, Switch } from "react-router-dom";
 import history from "../history";
-import AdminDashboard from "./AdminDashboard";
+import AdminDashboard from "./adminDashboard/AdminDashboard";
 import Footer from "./Footer";
 import GamesList from "./GamesList";
 import Header from "./Header";
