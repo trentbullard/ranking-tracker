@@ -181,7 +181,7 @@ const ScoreKeeper = props => {
   useEffect(() => {
     if (sport) {
       const { name } = sport;
-      setSportName(sport.name);
+      setSportName(name);
     }
   }, [sport]);
 
