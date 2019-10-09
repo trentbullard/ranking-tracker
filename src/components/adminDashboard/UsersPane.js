@@ -4,6 +4,12 @@ import { Tab, Table } from "semantic-ui-react";
 import tracker from "../../apis/tracker";
 import { getDigest } from "../../helpers/hmac";
 
+const fieldMap = {
+  id: "id",
+  username: "email",
+  "is admin?": "isAdmin",
+};
+
 const UserRows = ({ users, sorted: { column, order } }) => {
   return _.map(_.orderBy(users, [column], [order]), (user, index) => {
     return (
@@ -18,8 +24,9 @@ const UserRows = ({ users, sorted: { column, order } }) => {
 
 const UsersPane = props => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [term, setTerm] = useState("");
-  const [sorted, setSorted] = useState({ column: "id", order: "ascending" });
+  const [sorted, setSorted] = useState({ column: "id", order: "asc" });
 
   useEffect(() => {
     const getUsers = async () => {
@@ -30,20 +37,51 @@ const UsersPane = props => {
       });
       const returnedUsers = await data;
       setUsers(returnedUsers);
+      setFilteredUsers(returnedUsers);
     };
     getUsers();
   }, []);
 
-  useEffect(() => {});
+  useEffect(() => {
+    setFilteredUsers(
+      _.filter(users, user => {
+        return (
+          user.id.toString().includes(term) ||
+          user.email.includes(term) ||
+          user.isAdmin.toString().includes(term)
+        );
+      }),
+    );
+  }, [term, users]);
+
+  useEffect(() => {
+    const { column, order } = sorted;
+    setFilteredUsers(fuArr => _.orderBy(fuArr, [column], [order]));
+  }, [sorted]);
+
+  const handleSearch = event => {
+    event.preventDefault();
+    setTerm(event.currentTarget.value);
+  };
 
   const handleClickHeader = event => {
-    setSorted({ column: event.currentTarget.value, order: "ascending" });
+    event.preventDefault();
+    const field = fieldMap[event.currentTarget.innerText];
+    if (sorted.column === field) {
+      if (sorted.order === "asc") {
+        setSorted({ column: field, order: "desc" });
+      } else {
+        setSorted({ column: field, order: "asc" });
+      }
+    } else {
+      setSorted({ column: field, order: "asc" });
+    }
   };
 
   return (
     <Tab.Pane attached={false}>
-      <div className="ui fluid icon input disabled">
-        <input type="text" placeholder="Search..." />
+      <div className="ui fluid icon input">
+        <input type="text" placeholder="Search..." onChange={handleSearch} />
         <i aria-hidden="true" className="search icon" />
       </div>
       <Table unstackable celled striped id="usersTable">
@@ -61,7 +99,7 @@ const UsersPane = props => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          <UserRows users={users} sorted={sorted} />
+          <UserRows users={filteredUsers} sorted={sorted} />
         </Table.Body>
       </Table>
     </Tab.Pane>
