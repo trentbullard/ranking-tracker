@@ -1,0 +1,8 @@
+.ui.table thead th.sortable-header {
+  cursor: pointer;
+}
+
+button#submit-btn:disabled {
+  opacity: 1 !important;
+  background: #838586;
+}

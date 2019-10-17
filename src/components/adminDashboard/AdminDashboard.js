@@ -1,6 +1,6 @@
 import React from "react";
 import { Tab } from "semantic-ui-react";
-import UsersPane from "./UsersPane";
+import UsersPane from "./usersPane/UsersPane";
 import PlayersPane from "./PlayersPane";
 import GamesPane from "./GamesPane";
 import "../../styles/adminDashboard.css";
