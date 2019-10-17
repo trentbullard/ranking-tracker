@@ -1,0 +1,17 @@
+.ui.table thead th.sortable-header {
+  cursor: pointer;
+}
+
+.ui.table thead th.sortable-header:hover {
+  background: #e0e0e0 !important;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+table.ui.table tbody tr {
+  cursor: pointer;
+}
+
+table.ui.table tbody tr:hover {
+  background: #e0e0e0 !important;
+  color: rgba(0, 0, 0, 0.87);
+}

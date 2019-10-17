@@ -3,7 +3,7 @@ import { Tab } from "semantic-ui-react";
 import UsersPane from "./usersPane/UsersPane";
 import PlayersPane from "./PlayersPane";
 import GamesPane from "./GamesPane";
-import "../../styles/adminDashboard.css";
+import "../../styles/adminDashboard/adminDashboard.css";
 
 const panes = [
   {

@@ -5,6 +5,7 @@ import tracker from "../../../apis/tracker";
 import { encryptData } from "../../../helpers/aes";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
+import "../../../styles/adminDashboard/usersPane/userModal.css";
 
 const NewUserModal = props => {
   const { addFlash } = useContext(FlashContext);
@@ -75,18 +76,7 @@ const NewUserModal = props => {
   };
 
   return (
-    <Modal
-      trigger={
-        <Button
-          className="green"
-          circular
-          icon="add user"
-          onClick={_event => props.setShowModal(true)}
-        />
-      }
-      open={props.showModal}
-      basic
-    >
+    <Modal trigger={props.children} open={!!props.showModal} basic>
       <Header icon="add user" content="Create User" />
       <Form inverted onSubmit={handleSubmit}>
         <Form.Input
