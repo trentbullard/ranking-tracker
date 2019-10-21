@@ -54,7 +54,9 @@ const UserProfile = ({
       return null;
     }
 
-    const selectedSelf = _.isEqual(currentUser, selectedUser);
+    const selectedSelf = _.isEqualWith(currentUser, selectedUser, (a, b) => {
+      return a.id === b.id;
+    });
     if (!selectedSelf) {
       return null;
     }

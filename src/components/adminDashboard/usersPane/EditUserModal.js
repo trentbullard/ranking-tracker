@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { useContext, useState, useEffect } from "react";
-import { Button, Modal, Form, Header, Icon } from "semantic-ui-react";
+import { Button, Modal, Form, Header, Icon, Message } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { encryptData } from "../../../helpers/aes";
 import { getDigest } from "../../../helpers/hmac";
@@ -13,11 +13,23 @@ const EditUserModal = ({ showModal, setShowModal, setUserUpdated }) => {
   const [userPassword, setUserPassword] = useState("");
   const [userPasswordConfirmation, setUserPasswordConfirmation] = useState("");
   const [userFormValid, setUserFormValid] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     const userEmailBlank = _.isEmpty(userEmail);
     const passwordConfirmed = userPassword === userPasswordConfirmation;
     setUserFormValid(!userEmailBlank && passwordConfirmed);
+    setFormErrors(oErrors => {
+      return {
+        ...oErrors,
+        email: userEmailBlank ? (
+          <Message error content="email cannot be blank" />
+        ) : null,
+        password: passwordConfirmed ? null : (
+          <Message error content="password and confirmation do not match" />
+        ),
+      };
+    });
   }, [userEmail, userPassword, userPasswordConfirmation]);
 
   useEffect(() => {
@@ -35,7 +47,6 @@ const EditUserModal = ({ showModal, setShowModal, setUserUpdated }) => {
       email: userEmail,
       password: userPassword,
     };
-    console.log(`TCL: formValues`, formValues);
 
     const cipher = encryptData(formValues);
     let returnedUser;
@@ -72,15 +83,20 @@ const EditUserModal = ({ showModal, setShowModal, setUserUpdated }) => {
   };
 
   return (
-    <Modal trigger={null} open={!!showModal} basic>
+    <Modal
+      trigger={null}
+      open={!!showModal}
+      onClose={() => setShowModal(false)}
+      basic
+    >
       <Header>
         <Icon.Group size="big">
           <Icon name="user" />
           <Icon corner color="black" name="pencil" />
-        </Icon.Group>
+        </Icon.Group>{" "}
         Edit User
       </Header>
-      <Form inverted onSubmit={handleSubmit}>
+      <Form inverted onSubmit={handleSubmit} error>
         <Form.Input
           name="email"
           type="text"
@@ -89,6 +105,7 @@ const EditUserModal = ({ showModal, setShowModal, setUserUpdated }) => {
           value={userEmail}
           onChange={(_event, { value }) => setUserEmail(value)}
         />
+        {formErrors.email}
         <Form.Input
           name="password"
           type="password"
@@ -105,6 +122,7 @@ const EditUserModal = ({ showModal, setShowModal, setUserUpdated }) => {
           value={userPasswordConfirmation}
           onChange={(_event, { value }) => setUserPasswordConfirmation(value)}
         />
+        {formErrors.password}
         <Button disabled={!userFormValid} id="submit-btn">
           Submit
         </Button>
