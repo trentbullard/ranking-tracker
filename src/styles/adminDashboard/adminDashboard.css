@@ -1,5 +1,6 @@
 .flex-container {
   display: flex;
+  margin-bottom: 1em;
 }
 
 .tab.pane.menu.divider {

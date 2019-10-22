@@ -4,9 +4,10 @@ import { Tab, Table, Button } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { FlashContext } from "../../../contexts/FlashContext";
 import { getDigest } from "../../../helpers/hmac";
-import "../../../styles/adminDashboard/usersPane/usersPane.css";
+import SortIcon from "../SortIcon";
 import NewUserModal from "./NewUserModal";
 import EditUserModal from "./EditUserModal";
+import "../../../styles/adminDashboard/usersPane/usersPane.css";
 
 const fieldMap = {
   id: "id",
@@ -117,7 +118,7 @@ const UsersPane = props => {
 
   const handleClickHeader = event => {
     event.preventDefault();
-    const field = fieldMap[event.currentTarget.innerText];
+    const field = fieldMap[event.currentTarget.innerText.trim()];
     if (sorted.column === field) {
       if (sorted.order === "asc") {
         setSorted({ column: field, order: "desc" });
@@ -165,19 +166,19 @@ const UsersPane = props => {
               className="sortable-header"
               onClick={handleClickHeader}
             >
-              id
+              id <SortIcon header="id" sorted={sorted} />
             </Table.HeaderCell>
             <Table.HeaderCell
               className="sortable-header"
               onClick={handleClickHeader}
             >
-              username
+              username <SortIcon header="email" sorted={sorted} />
             </Table.HeaderCell>
             <Table.HeaderCell
               className="sortable-header"
               onClick={handleClickHeader}
             >
-              is admin?
+              is admin? <SortIcon header="isAdmin" sorted={sorted} />
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>

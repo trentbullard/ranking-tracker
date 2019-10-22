@@ -4,6 +4,7 @@ import UsersPane from "./usersPane/UsersPane";
 import PlayersPane from "./playersPane/PlayersPane";
 import GamesPane from "./gamesPane/GamesPane";
 import "../../styles/adminDashboard/adminDashboard.css";
+import SportProvider from "../../contexts/SportContext";
 
 const panes = [
   {
@@ -12,7 +13,11 @@ const panes = [
   },
   {
     menuItem: "players",
-    render: () => <PlayersPane />,
+    render: () => (
+      <SportProvider>
+        <PlayersPane />
+      </SportProvider>
+    ),
   },
   {
     menuItem: "games",

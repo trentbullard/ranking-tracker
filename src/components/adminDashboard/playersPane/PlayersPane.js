@@ -3,10 +3,13 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Tab, Table, Button } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { FlashContext } from "../../../contexts/FlashContext";
+import { SportContext } from "../../../contexts/SportContext";
 import { getDigest } from "../../../helpers/hmac";
-import "../../../styles/adminDashboard/usersPane/usersPane.css";
+import SportSelectorList from "../../utility/SportSelectorList";
 import NewPlayerModal from "./NewPlayerModal";
 import PlayerRows from "./PlayerRows";
+import SortIcon from "../SortIcon";
+import "../../../styles/adminDashboard/playersPane/playersPane.css";
 
 const fieldMap = {
   id: "id",
@@ -31,6 +34,9 @@ const PlayersPane = props => {
     playerAdded,
   ]);
 
+  const { selectedSport } = useContext(SportContext);
+  useEffect(() => {}, [selectedSport]);
+
   // getPlayers
   useEffect(() => {
     const getPlayers = async () => {
@@ -50,6 +56,9 @@ const PlayersPane = props => {
   useEffect(() => {
     setFilteredPlayers(
       _.filter(players, player => {
+        if (!selectedSport || player.sport !== selectedSport.id) {
+          return false;
+        }
         return (
           player.id.toString().includes(term) ||
           player.name.includes(term) ||
@@ -58,7 +67,7 @@ const PlayersPane = props => {
         );
       }),
     );
-  }, [term, players]);
+  }, [term, players, selectedSport]);
 
   // sorting
   useEffect(() => {
@@ -81,7 +90,7 @@ const PlayersPane = props => {
 
   const handleClickHeader = event => {
     event.preventDefault();
-    const field = fieldMap[event.currentTarget.innerText];
+    const field = fieldMap[event.currentTarget.innerText.trim()];
     if (sorted.column === field) {
       if (sorted.order === "asc") {
         setSorted({ column: field, order: "desc" });
@@ -122,6 +131,7 @@ const PlayersPane = props => {
           </div>
         </div>
       </div>
+      <SportSelectorList />
       <Table unstackable celled striped id="playersTable">
         <Table.Header>
           <Table.Row>
@@ -129,25 +139,25 @@ const PlayersPane = props => {
               className="sortable-header"
               onClick={handleClickHeader}
             >
-              id
+              id <SortIcon header="id" sorted={sorted} />
             </Table.HeaderCell>
             <Table.HeaderCell
               className="sortable-header"
               onClick={handleClickHeader}
             >
-              name
+              name <SortIcon header="name" sorted={sorted} />
             </Table.HeaderCell>
             <Table.HeaderCell
               className="sortable-header"
               onClick={handleClickHeader}
             >
-              elo
+              elo <SortIcon header="elo" sorted={sorted} />
             </Table.HeaderCell>
             <Table.HeaderCell
               className="sortable-header"
               onClick={handleClickHeader}
             >
-              created at
+              created at <SortIcon header="createdat" sorted={sorted} />
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
