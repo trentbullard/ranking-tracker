@@ -14,7 +14,12 @@ const fieldMap = {
   "is admin?": "isAdmin",
 };
 
-const UserRows = ({ users, sorted: { column, order }, setUserUpdated }) => {
+const UserRows = ({
+  users,
+  sorted: { column, order },
+  setUserUpdated,
+  setUserDeleted,
+}) => {
   const [showEditUserModal, setShowEditUserModal] = useState(null);
   const rows = _.map(_.orderBy(users, [column], [order]), (user, index) => {
     return (
@@ -41,6 +46,7 @@ const UserRows = ({ users, sorted: { column, order }, setUserUpdated }) => {
         showModal={showEditUserModal}
         setShowModal={setShowEditUserModal}
         setUserUpdated={setUserUpdated}
+        setUserDeleted={setUserDeleted}
       />
     </>
   );
@@ -54,6 +60,7 @@ const UsersPane = props => {
   const [showNewUserModal, setShowNewUserModal] = useState(false);
   const [userAdded, setUserAdded] = useState(null);
   const [userUpdated, setUserUpdated] = useState(null);
+  const [userDeleted, setUserDeleted] = useState(null);
 
   const { addFlash } = useContext(FlashContext);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,7 +81,7 @@ const UsersPane = props => {
       setFilteredUsers(returnedUsers);
     };
     getUsers();
-  }, [userAdded, userUpdated]);
+  }, [userAdded, userUpdated, userDeleted]);
 
   // filtering
   useEffect(() => {
@@ -179,6 +186,7 @@ const UsersPane = props => {
             users={filteredUsers}
             sorted={sorted}
             setUserUpdated={setUserUpdated}
+            setUserDeleted={setUserDeleted}
           />
         </Table.Body>
       </Table>

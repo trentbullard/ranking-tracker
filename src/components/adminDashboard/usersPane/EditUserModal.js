@@ -7,13 +7,91 @@ import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
 import "../../../styles/adminDashboard/usersPane/userModal.css";
 
-const EditUserModal = ({ showModal, setShowModal, setUserUpdated }) => {
+const DeleteUserConfirmationModal = ({
+  showConfirmationModal,
+  setShowConfirmationModal,
+  user,
+  setUserDeleted,
+  setShowEditModal,
+}) => {
+  const { addFlash } = useContext(FlashContext);
+  const [disabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    setDisabled(_.isEmpty(user));
+  }, [user]);
+
+  const handleConfirmation = async event => {
+    event.preventDefault();
+    try {
+      await tracker.delete(`/users/${user.id}`, {
+        params: {
+          token: getDigest("delete", "/users/:id"),
+        },
+      });
+      setUserDeleted(user);
+
+      await tracker.post(
+        "/logs",
+        {
+          actionType: "USER_DELETED",
+          objectType: "users",
+          objectId: user.id,
+          objectJson: JSON.stringify(user),
+        },
+        { params: { token: getDigest("post", "/logs") } },
+      );
+    } catch (error) {
+      addFlash(`failed to delete user`);
+      return null;
+    }
+    setShowConfirmationModal(false);
+    setShowEditModal(false);
+  };
+
+  return (
+    <Modal
+      trigger={
+        <Button
+          type="button"
+          onClick={() => setShowConfirmationModal(true)}
+          color="red"
+        >
+          Delete
+        </Button>
+      }
+      open={!!showConfirmationModal}
+      onOpen={() => setShowConfirmationModal(true)}
+      onClose={() => setShowConfirmationModal(false)}
+    >
+      <Modal.Content>
+        Are you sure you want to delete this user? This cannot be undone
+      </Modal.Content>
+      <Modal.Actions>
+        <Button onClick={() => setShowConfirmationModal(false)} secondary>
+          Nevermind
+        </Button>
+        <Button onClick={handleConfirmation} color="red" disabled={disabled}>
+          I'm Sure
+        </Button>
+      </Modal.Actions>
+    </Modal>
+  );
+};
+
+const EditUserModal = ({
+  showModal,
+  setShowModal,
+  setUserUpdated,
+  setUserDeleted,
+}) => {
   const { addFlash } = useContext(FlashContext);
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userPasswordConfirmation, setUserPasswordConfirmation] = useState("");
   const [userFormValid, setUserFormValid] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   useEffect(() => {
     const userEmailBlank = _.isEmpty(userEmail);
@@ -126,6 +204,13 @@ const EditUserModal = ({ showModal, setShowModal, setUserUpdated }) => {
         <Button disabled={!userFormValid} id="submit-btn">
           Submit
         </Button>
+        <DeleteUserConfirmationModal
+          showConfirmationModal={showConfirmationModal}
+          setShowConfirmationModal={setShowConfirmationModal}
+          user={showModal}
+          setUserDeleted={setUserDeleted}
+          setShowEditModal={setShowModal}
+        />
         <Button
           className="ui button negative"
           floated="right"
