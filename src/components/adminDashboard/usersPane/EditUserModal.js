@@ -65,7 +65,7 @@ const DeleteUserConfirmationModal = ({
       onClose={() => setShowConfirmationModal(false)}
     >
       <Modal.Content>
-        Are you sure you want to delete this user? This cannot be undone
+        Are you sure you want to delete this user? This cannot be undone.
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={() => setShowConfirmationModal(false)} secondary>
@@ -141,7 +141,7 @@ const EditUserModal = ({
       );
       returnedUser = await response.data;
     } catch (error) {
-      addFlash(`failed to create user`);
+      addFlash(`failed to update user`);
       setShowModal(false);
       return null;
     }
