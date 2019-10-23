@@ -107,7 +107,7 @@ const PlayersPane = props => {
       <div className="flex-container">
         <div className="tab pane menu button">
           <NewPlayerModal
-            userAdded={setPlayerAdded}
+            setPlayerAdded={setPlayerAdded}
             showModal={showNewPlayerModal}
             setShowModal={setShowNewPlayerModal}
           >

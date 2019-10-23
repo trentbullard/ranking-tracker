@@ -90,7 +90,7 @@ const EditPlayerModal = ({
     >
       <Modal.Header>
         <Icon.Group size="big">
-          <Icon name="game" />
+          <Icon name="users" />
           <Icon corner color="black" name="pencil" />
         </Icon.Group>{" "}
         Edit Player
