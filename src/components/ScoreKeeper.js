@@ -9,8 +9,8 @@ import history from "../history";
 import { getNewElos } from "../helpers/elo";
 import SportProvider, { SportContext } from "../contexts/SportContext";
 
-const PlayAgainButton = props => {
-  const { game } = useContext(ScoreContext);
+const PlayAgainButton = ({ show, setRedTeamScore, setBlueTeamScore }) => {
+  const { game, setGame } = useContext(ScoreContext);
   const [loading, setLoading] = useState(false);
 
   const handleClick = async event => {
@@ -34,6 +34,7 @@ const PlayAgainButton = props => {
       },
     );
     const returnedGame = await data;
+    setLoading(false);
 
     await tracker.post(
       "/logs",
@@ -49,12 +50,15 @@ const PlayAgainButton = props => {
     return returnedGame.id;
   };
 
-  return props.show ? (
+  return show ? (
     <div className="ui center aligned header">
       <div
         className={`ui positive ${loading ? "disabled" : ""} button`}
         onClick={event =>
           handleClick(event).then(gameId => {
+            setGame(null);
+            setRedTeamScore(0);
+            setBlueTeamScore(0);
             history.push(`/games/score/${gameId}`);
           })
         }
@@ -66,7 +70,6 @@ const PlayAgainButton = props => {
 };
 
 const ScoreButton = props => {
-  const { setScores } = useContext(ScoreContext);
   const [disabled, setDisabled] = useState(true);
   const [currentPlayerTeamId, setCurrentPlayerTeamId] = useState(null);
   const [currentPlayerScore, setCurrentPlayerScore] = useState(0);
@@ -93,7 +96,10 @@ const ScoreButton = props => {
     }
   }, [props.player]);
 
-  const handleClick = async _event => {
+  const handleClick = async event => {
+    event.preventDefault();
+    const alreadyDisabled = disabled;
+    setDisabled(true);
     await tracker.patch(
       "/goal",
       {
@@ -106,22 +112,15 @@ const ScoreButton = props => {
         },
       },
     );
+    props.setScored(s => s + 1);
+    setDisabled(alreadyDisabled);
   };
 
   return (
     <div
       className={linkClassName}
       style={{ maxWidth: "100%", minWidth: "100%", margin: "0 0 2em" }}
-      onClick={event =>
-        handleClick(event).then(() => {
-          setScores(scores => {
-            return {
-              ...scores,
-              [currentPlayerTeamId]: currentPlayerScore + 1,
-            };
-          });
-        })
-      }
+      onClick={handleClick}
     >
       <div
         className={nameClassName}
@@ -140,7 +139,7 @@ const ScoreButton = props => {
 };
 
 const ScoreKeeper = props => {
-  const { setGame, game } = useContext(ScoreContext);
+  const { game, setGame } = useContext(ScoreContext);
   const { sports } = useContext(SportContext);
 
   const [disabled, setDisabled] = useState(true);
@@ -153,7 +152,9 @@ const ScoreKeeper = props => {
   const [redTeamScore, setRedTeamScore] = useState(0);
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const [scored, setScored] = useState(0);
 
+  // get game from db
   useEffect(() => {
     const getGame = async () => {
       const { data } = await tracker.get(`/games`, {
@@ -169,8 +170,9 @@ const ScoreKeeper = props => {
     };
 
     getGame();
-  }, [props.match.params.id, setGame]);
+  }, [props.match.params.id, setGame, scored]);
 
+  // set sport from game
   useEffect(() => {
     if (game) {
       const { sport } = game;
@@ -178,6 +180,7 @@ const ScoreKeeper = props => {
     }
   }, [game, sports]);
 
+  // set sport name from sport
   useEffect(() => {
     if (sport) {
       const { name } = sport;
@@ -185,6 +188,7 @@ const ScoreKeeper = props => {
     }
   }, [sport]);
 
+  // update teams and positions
   useEffect(() => {
     if (game) {
       const { teams } = game;
@@ -205,6 +209,7 @@ const ScoreKeeper = props => {
     }
   }, [game]);
 
+  // update team scores
   useEffect(() => {
     if (redKeeper && redForward && blueKeeper && blueForward) {
       const { score: redKeeperScore } = redKeeper;
@@ -216,6 +221,7 @@ const ScoreKeeper = props => {
     }
   }, [blueForward, blueKeeper, redForward, redKeeper]);
 
+  // update elos when game is over
   useEffect(() => {
     const updateElos = async (wTeam, lTeam) => {
       const updatedElos = getNewElos(wTeam, lTeam, sport);
@@ -302,8 +308,18 @@ const ScoreKeeper = props => {
         <div className="center aligned two column row">
           <div className="column">
             <h4 className="ui center aligned header">Score: {redTeamScore}</h4>
-            <ScoreButton player={redKeeper} color="red" disabled={disabled} />
-            <ScoreButton player={redForward} color="red" disabled={disabled} />
+            <ScoreButton
+              player={redKeeper}
+              color="red"
+              disabled={disabled}
+              setScored={setScored}
+            />
+            <ScoreButton
+              player={redForward}
+              color="red"
+              disabled={disabled}
+              setScored={setScored}
+            />
           </div>
           <div className="column">
             <h4 className="ui center aligned header">Score: {blueTeamScore}</h4>
@@ -312,17 +328,23 @@ const ScoreKeeper = props => {
               color="blue"
               left
               disabled={disabled}
+              setScored={setScored}
             />
             <ScoreButton
               player={blueForward}
               color="blue"
               left
               disabled={disabled}
+              setScored={setScored}
             />
           </div>
         </div>
       </div>
-      <PlayAgainButton show={gameOver} />
+      <PlayAgainButton
+        show={gameOver}
+        setRedTeamScore={setRedTeamScore}
+        setBlueTeamScore={setBlueTeamScore}
+      />
       <BackArrow url="/" />
     </>
   );
