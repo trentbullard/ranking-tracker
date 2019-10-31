@@ -271,12 +271,32 @@ const ScoreKeeper = props => {
     if (gameIsOver) {
       const wTeam =
         redTeamScore >= winningScore
-          ? { positions: [{ player: redKeeper }, { player: redForward }] }
-          : { positions: [{ player: blueKeeper }, { player: blueForward }] };
+          ? {
+              positions: [
+                { name: "Keeper", player: redKeeper },
+                { name: "Forward", player: redForward },
+              ],
+            }
+          : {
+              positions: [
+                { name: "Keeper", player: blueKeeper },
+                { name: "Forward", player: blueForward },
+              ],
+            };
       const lTeam =
         redTeamScore >= winningScore
-          ? { positions: [{ player: blueKeeper }, { player: blueForward }] }
-          : { positions: [{ player: redKeeper }, { player: redForward }] };
+          ? {
+              positions: [
+                { name: "Keeper", player: blueKeeper },
+                { name: "Forward", player: blueForward },
+              ],
+            }
+          : {
+              positions: [
+                { name: "Keeper", player: redKeeper },
+                { name: "Forward", player: redForward },
+              ],
+            };
 
       updateElos(wTeam, lTeam);
     }

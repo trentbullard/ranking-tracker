@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { useContext, useState, useEffect } from "react";
-import { Button, Modal, Form, Icon, Message } from "semantic-ui-react";
+import { Button, Modal, Form, Icon } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
