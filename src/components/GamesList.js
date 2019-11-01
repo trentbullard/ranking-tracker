@@ -78,7 +78,9 @@ const GameItems = ({ term }) => {
         }
         return _.map(value.teams, team => {
           return _.map(team.positions, position => {
-            return position.player.name.includes(term);
+            return position.player.name
+              .toLowerCase()
+              .includes(term.toLowerCase());
           }).some(v => {
             return !!v;
           });

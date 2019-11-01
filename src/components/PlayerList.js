@@ -1,5 +1,6 @@
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
+import { Input } from "semantic-ui-react";
 import InfiniteScroll from "react-infinite-scroller";
 import tracker from "../apis/tracker";
 import { SportContext } from "../contexts/SportContext";
@@ -29,13 +30,14 @@ const SportSelectorList = () => {
   });
 };
 
-const PlayerItems = () => {
+const PlayerItems = ({ term }) => {
   const { selectedSport } = useContext(SportContext);
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [hasMore, setHasMore] = useState(false);
   const [players, setPlayers] = useState([]);
+  const [filteredPlayers, setFilteredPlayers] = useState([]);
 
   useEffect(() => {
     setPage(1);
@@ -69,7 +71,19 @@ const PlayerItems = () => {
     setHasMore(false);
   };
 
-  if (_.isEmpty(players)) {
+  useEffect(() => {
+    if (_.isEmpty(term)) {
+      setFilteredPlayers(players);
+      return;
+    }
+    setFilteredPlayers(p => {
+      return _.filter(players, value => {
+        return value.name.toLowerCase().includes(term.toLowerCase());
+      });
+    });
+  }, [players, term]);
+
+  if (_.isEmpty(filteredPlayers)) {
     return (
       <tbody>
         <tr>
@@ -81,7 +95,7 @@ const PlayerItems = () => {
     );
   }
 
-  const items = _.map(players, (player, index) => {
+  const items = _.map(filteredPlayers, (player, index) => {
     return (
       <tr key={`player-${player.id}-rank`}>
         <td className="collapsing">{index + 1}</td>
@@ -109,6 +123,8 @@ const PlayerItems = () => {
 };
 
 const PlayerList = () => {
+  const [term, setTerm] = useState("");
+
   return (
     <>
       <div className="ui center aligned header">
@@ -116,10 +132,13 @@ const PlayerList = () => {
           <SportSelectorList />
         </div>
       </div>
-      <div className="ui fluid icon input disabled">
-        <input type="text" placeholder="Search..." />
-        <i aria-hidden="true" className="search icon" />
-      </div>
+      <Input
+        placeholder="Search..."
+        value={term}
+        fluid
+        icon="search"
+        onChange={(_event, { value }) => setTerm(value)}
+      />
       <table
         className="ui very basic unstackable celled striped table"
         key="player-rank-table"
@@ -131,7 +150,7 @@ const PlayerList = () => {
             <th key="elo">ELO</th>
           </tr>
         </thead>
-        <PlayerItems />
+        <PlayerItems term={term} />
       </table>
       <BackArrow url="/" />
       <Footer />
