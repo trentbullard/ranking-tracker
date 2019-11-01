@@ -1,5 +1,6 @@
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
+import { Input } from "semantic-ui-react";
 import InfiniteScroll from "react-infinite-scroller";
 import { Link } from "react-router-dom";
 import tracker from "../apis/tracker";
@@ -32,14 +33,16 @@ const PlayerItems = ({ teams, winningScore, gameId }) => {
   });
 };
 
-const GameItems = props => {
+const GameItems = ({ term }) => {
   const { sports } = useContext(SportContext);
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [hasMore, setHasMore] = useState(false);
   const [games, setGames] = useState([]);
+  const [filteredGames, setFilteredGames] = useState([]);
 
+  // fetch games
   useEffect(() => {
     const getGames = async (currentPage, itemLimit = 10) => {
       const { data } = await tracker.get(`/games`, {
@@ -60,6 +63,32 @@ const GameItems = props => {
     getGames(page, limit);
   }, [limit, page]);
 
+  // filter games
+  useEffect(() => {
+    if (_.isEmpty(term)) {
+      setFilteredGames(games);
+    }
+    setFilteredGames(g => {
+      return _.filter(games, value => {
+        const started = new Date(Date.parse(value.started)).toLocaleDateString(
+          "en-us",
+        );
+        if (started.includes(term)) {
+          return true;
+        }
+        return _.map(value.teams, team => {
+          return _.map(team.positions, position => {
+            return position.player.name.includes(term);
+          }).some(v => {
+            return !!v;
+          });
+        }).some(v => {
+          return !!v;
+        });
+      });
+    });
+  }, [games, term]);
+
   const getNextPage = async page => {
     setPage(page);
     setHasMore(false);
@@ -73,7 +102,7 @@ const GameItems = props => {
     );
   }
 
-  const items = _.map(games, game => {
+  const items = _.map(filteredGames, game => {
     const sport = _.find(sports, { id: game.sport });
     let winningScore = sport.winningScore;
     return (
@@ -117,13 +146,18 @@ const GameItems = props => {
 };
 
 const GamesList = props => {
+  const [term, setTerm] = useState("");
+
   return (
     <>
-      <div className="ui fluid icon input disabled" key="gamesSearch">
-        <input type="text" placeholder="Search..." />
-        <i aria-hidden="true" className="search icon" />
-      </div>
-      <GameItems />
+      <Input
+        placeholder="Search..."
+        value={term}
+        fluid
+        icon="search"
+        onChange={(_event, { value }) => setTerm(value)}
+      />
+      <GameItems term={term} />
       <BackArrow url="/" key="back-arrow" />
       <Footer key="footer" />
     </>

@@ -78,7 +78,6 @@ const TopPlayerList = props => {
       </div>
       <table
         className="ui very basic unstackable celled striped table"
-        key="player-rank-table"
       >
         <thead>
           <tr>
