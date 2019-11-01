@@ -5,6 +5,7 @@ import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
 import { titleize } from "../helpers/string";
 import history from "../history";
+import BackArrow from "./utility/BackArrow";
 
 const NewGame = props => {
   const [timestamp] = useState(new Date());
@@ -229,6 +230,7 @@ const NewGame = props => {
           Submit
         </Button>
       </Form>
+      <BackArrow url="/" />
     </>
   );
 };

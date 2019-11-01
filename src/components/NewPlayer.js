@@ -5,6 +5,7 @@ import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
 import history from "../history";
 import { FlashContext } from "../contexts/FlashContext";
+import BackArrow from "./utility/BackArrow";
 
 const NewPlayer = props => {
   const { addFlash } = useContext(FlashContext);
@@ -140,6 +141,7 @@ const NewPlayer = props => {
           Cancel
         </Button>
       </Form>
+      <BackArrow url="/" />
     </>
   );
 };
