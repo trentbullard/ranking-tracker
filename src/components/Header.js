@@ -9,6 +9,7 @@ const Header = () => [
     key="site-header"
   >
     <Link to="/">Rank Tracker</Link>
+    <span className="ui green sub header">Season 1</span>
     <span className="ui red sub header">BETA</span>
   </h1>,
   <UserButton key="user-button" />,
