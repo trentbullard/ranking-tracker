@@ -63,11 +63,11 @@ const EditPlayerModal = ({
       returnedPlayer = await response.data;
     } catch (error) {
       addFlash(`failed to update player`);
-      setShowModal(false);
+      setShowModal(null);
       return null;
     }
     setPlayerUpdated(returnedPlayer);
-    setShowModal(false);
+    setShowModal(null);
 
     await tracker.post(
       "/logs",
@@ -85,7 +85,7 @@ const EditPlayerModal = ({
     <Modal
       trigger={null}
       open={!!showModal}
-      onClose={() => setShowModal(false)}
+      onClose={() => setShowModal(null)}
       basic
     >
       <Modal.Header>
