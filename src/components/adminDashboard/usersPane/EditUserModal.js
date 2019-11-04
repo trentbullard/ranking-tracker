@@ -5,6 +5,7 @@ import tracker from "../../../apis/tracker";
 import { encryptData } from "../../../helpers/aes";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
+import Log from "../../../helpers/log";
 import "../../../styles/adminDashboard/usersPane/userModal.css";
 
 const DeleteUserConfirmationModal = ({
@@ -13,6 +14,7 @@ const DeleteUserConfirmationModal = ({
   user,
   setUserDeleted,
   setShowEditModal,
+  currentUser,
 }) => {
   const { addFlash } = useContext(FlashContext);
   const [disabled, setDisabled] = useState(true);
@@ -30,17 +32,7 @@ const DeleteUserConfirmationModal = ({
         },
       });
       setUserDeleted(user);
-
-      await tracker.post(
-        "/logs",
-        {
-          actionType: "USER_DELETED",
-          objectType: "users",
-          objectId: user.id,
-          objectJson: JSON.stringify(user),
-        },
-        { params: { token: getDigest("post", "/logs") } },
-      );
+      Log("USER_DELETED", user.id, user, null, "users", currentUser.id);
     } catch (error) {
       addFlash(`failed to delete user`);
       return null;
@@ -84,6 +76,7 @@ const EditUserModal = ({
   setShowModal,
   setUserUpdated,
   setUserDeleted,
+  currentUser,
 }) => {
   const { addFlash } = useContext(FlashContext);
   const [userEmail, setUserEmail] = useState("");
@@ -148,15 +141,13 @@ const EditUserModal = ({
     setUserUpdated(returnedUser);
     setShowModal(false);
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "USER_UPDATED",
-        objectType: "users",
-        objectId: returnedUser.id,
-        objectJson: JSON.stringify(returnedUser),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "USER_UPDATED",
+      returnedUser.id,
+      returnedUser,
+      null,
+      "users",
+      currentUser.id,
     );
   };
 

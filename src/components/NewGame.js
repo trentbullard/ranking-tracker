@@ -6,6 +6,7 @@ import { getDigest } from "../helpers/hmac";
 import { titleize } from "../helpers/string";
 import history from "../history";
 import BackArrow from "./utility/BackArrow";
+import Log from "../helpers/log";
 
 const NewGame = props => {
   const [timestamp] = useState(new Date());
@@ -130,15 +131,13 @@ const NewGame = props => {
 
     const createdGame = await data;
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "GAME_CREATED",
-        objectType: "games",
-        objectId: createdGame.id,
-        objectJson: JSON.stringify(createdGame),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "GAME_CREATED",
+      createdGame.id,
+      createdGame,
+      null,
+      "games",
+      props.currentUser.id,
     );
 
     return createdGame.id;

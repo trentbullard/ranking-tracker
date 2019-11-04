@@ -8,6 +8,7 @@ import { FlashContext } from "../contexts/FlashContext";
 import { encryptData } from "../helpers/aes";
 import { getDigest } from "../helpers/hmac";
 import history from "../history";
+import Log from "../helpers/log";
 
 const Registration = props => {
   const { setCurrentUser, setSessionId } = useContext(AuthContext);
@@ -62,15 +63,13 @@ const Registration = props => {
       return null;
     }
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "USER_CREATED",
-        objectType: "users",
-        objectId: returnedUser.id,
-        objectJson: JSON.stringify(returnedUser),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "USER_CREATED",
+      returnedUser.id,
+      returnedUser,
+      null,
+      "users",
+      returnedUser.id,
     );
 
     Cookies.set("mrank-session-id", returnedUser.sessionid);

@@ -5,6 +5,7 @@ import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
 import DeletePlayerConfirmationModal from "./DeletePlayerConfirmationModal";
+import Log from "../../../helpers/log";
 import "../../../styles/adminDashboard/playersPane/playerModal.css";
 
 const EditPlayerModal = ({
@@ -12,6 +13,7 @@ const EditPlayerModal = ({
   setShowModal,
   setPlayerUpdated,
   setPlayerDeleted,
+  currentUser,
 }) => {
   const { addFlash } = useContext(FlashContext);
   const [playerName, setPlayerName] = useState("");
@@ -69,15 +71,13 @@ const EditPlayerModal = ({
     setPlayerUpdated(returnedPlayer);
     setShowModal(null);
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "PLAYER_UPDATED",
-        objectType: "players",
-        objectId: returnedPlayer.id,
-        objectJson: JSON.stringify(returnedPlayer),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "PLAYER_UPDATED",
+      returnedPlayer.id,
+      returnedPlayer,
+      null,
+      "players",
+      currentUser.id,
     );
   };
 
@@ -115,6 +115,7 @@ const EditPlayerModal = ({
             player={showModal}
             setPlayerDeleted={setPlayerDeleted}
             setShowEditModal={setShowModal}
+            currentUser={currentUser}
           />
           <Button
             className="ui button negative"

@@ -19,7 +19,12 @@ const AnyUserRoute = ({ component: Component, ...rest }) => {
     setReferrer(rest.location.pathname);
     return <Redirect to="/login" />;
   } else {
-    return <Route {...rest} render={props => <Component {...props} />} />;
+    return (
+      <Route
+        {...rest}
+        render={props => <Component {...props} currentUser={currentUser} />}
+      />
+    );
   }
 };
 

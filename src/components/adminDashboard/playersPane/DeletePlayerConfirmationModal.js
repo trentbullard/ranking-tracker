@@ -4,6 +4,7 @@ import { Button, Modal } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
+import Log from "../../../helpers/log";
 
 const DeletePlayerConfirmationModal = ({
   showConfirmationModal,
@@ -11,6 +12,7 @@ const DeletePlayerConfirmationModal = ({
   player,
   setPlayerDeleted,
   setShowEditModal,
+  currentUser,
 }) => {
   const { addFlash } = useContext(FlashContext);
   const [disabled, setDisabled] = useState(true);
@@ -29,15 +31,13 @@ const DeletePlayerConfirmationModal = ({
       });
       setPlayerDeleted(player);
 
-      await tracker.post(
-        "/logs",
-        {
-          actionType: "PLAYER_DELETED",
-          objectType: "players",
-          objectId: player.id,
-          objectJson: JSON.stringify(player),
-        },
-        { params: { token: getDigest("post", "/logs") } },
+      Log(
+        "PLAYER_DELETED",
+        player.id,
+        player,
+        null,
+        "players",
+        currentUser.id,
       );
     } catch (error) {
       addFlash(`failed to delete player`);

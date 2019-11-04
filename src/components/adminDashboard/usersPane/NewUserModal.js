@@ -5,6 +5,7 @@ import tracker from "../../../apis/tracker";
 import { encryptData } from "../../../helpers/aes";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
+import Log from "../../../helpers/log";
 import "../../../styles/adminDashboard/usersPane/userModal.css";
 
 const NewUserModal = props => {
@@ -63,15 +64,13 @@ const NewUserModal = props => {
     props.userAdded(returnedUser);
     props.setShowModal(false);
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "USER_CREATED",
-        objectType: "users",
-        objectId: returnedUser.id,
-        objectJson: JSON.stringify(returnedUser),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "USER_CREATED",
+      returnedUser.id,
+      returnedUser,
+      null,
+      "users",
+      props.currentUser.id,
     );
   };
 

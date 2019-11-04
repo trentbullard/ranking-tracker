@@ -5,12 +5,14 @@ import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
 import { SportContext } from "../../../contexts/SportContext";
+import Log from "../../../helpers/log";
 
 const NewPlayerModal = ({
   setPlayerAdded,
   showModal,
   setShowModal,
   children,
+  currentUser,
 }) => {
   const [timestamp, setTimestamp] = useState(new Date());
   const [valid, setValid] = useState(false);
@@ -85,17 +87,15 @@ const NewPlayerModal = ({
       return null;
     }
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "PLAYER_CREATED",
-        objectType: "players",
-        objectId: returnedPlayer.id,
-        objectJson: JSON.stringify(returnedPlayer),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "PLAYER_CREATED",
+      returnedPlayer.id,
+      returnedPlayer,
+      null,
+      "players",
+      currentUser.id,
     );
-    
+
     setPlayerAdded(returnedPlayer);
     setShowModal(false);
   };

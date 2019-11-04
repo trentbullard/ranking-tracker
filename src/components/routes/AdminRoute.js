@@ -22,6 +22,11 @@ export default ({ component: Component, ...rest }) => {
     addFlash("you are not authorized to access that page");
     return <Redirect to="/" />;
   } else {
-    return <Route {...rest} render={props => <Component {...props} />} />;
+    return (
+      <Route
+        {...rest}
+        render={props => <Component {...props} currentUser={currentUser} />}
+      />
+    );
   }
 };

@@ -6,8 +6,9 @@ import { getDigest } from "../helpers/hmac";
 import history from "../history";
 import { FlashContext } from "../contexts/FlashContext";
 import BackArrow from "./utility/BackArrow";
+import Log from "../helpers/log";
 
-const NewPlayer = props => {
+const NewPlayer = ({ currentUser }) => {
   const { addFlash } = useContext(FlashContext);
   const [loading, setLoading] = useState(true);
   const [timestamp] = useState(new Date());
@@ -79,15 +80,13 @@ const NewPlayer = props => {
       return null;
     }
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "PLAYER_CREATED",
-        objectType: "players",
-        objectId: returnedPlayer.id,
-        objectJson: JSON.stringify(returnedPlayer),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "PLAYER_CREATED",
+      returnedPlayer.id,
+      returnedPlayer,
+      null,
+      "users",
+      currentUser.id,
     );
 
     setLoading(false);

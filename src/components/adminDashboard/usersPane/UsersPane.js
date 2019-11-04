@@ -20,6 +20,7 @@ const UserRows = ({
   sorted: { column, order },
   setUserUpdated,
   setUserDeleted,
+  currentUser,
 }) => {
   const [showEditUserModal, setShowEditUserModal] = useState(null);
   const rows = _.map(_.orderBy(users, [column], [order]), (user, index) => {
@@ -48,12 +49,13 @@ const UserRows = ({
         setShowModal={setShowEditUserModal}
         setUserUpdated={setUserUpdated}
         setUserDeleted={setUserDeleted}
+        currentUser={currentUser}
       />
     </>
   );
 };
 
-const UsersPane = props => {
+const UsersPane = ({ currentUser }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [term, setTerm] = useState("");
@@ -138,6 +140,7 @@ const UsersPane = props => {
             userAdded={setUserAdded}
             showModal={showNewUserModal}
             setShowModal={setShowNewUserModal}
+            currentUser={currentUser}
           >
             <Button
               className="green"

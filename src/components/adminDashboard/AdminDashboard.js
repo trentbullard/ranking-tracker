@@ -6,30 +6,35 @@ import GamesPane from "./gamesPane/GamesPane";
 import "../../styles/adminDashboard/adminDashboard.css";
 import SportProvider from "../../contexts/SportContext";
 
-const panes = [
-  {
-    menuItem: "users",
-    render: () => <UsersPane />,
-  },
-  {
-    menuItem: "players",
-    render: () => (
-      <SportProvider>
-        <PlayersPane />
-      </SportProvider>
-    ),
-  },
-  {
-    menuItem: "games",
-    render: () => <GamesPane />,
-  },
-];
+const panes = currentUser => {
+  return [
+    {
+      menuItem: "users",
+      render: () => <UsersPane currentUser={currentUser} />,
+    },
+    {
+      menuItem: "players",
+      render: () => (
+        <SportProvider>
+          <PlayersPane currentUser={currentUser} />
+        </SportProvider>
+      ),
+    },
+    {
+      menuItem: "games",
+      render: () => <GamesPane currentUser={currentUser} />,
+    },
+  ];
+};
 
-const AdminDashboard = props => {
+const AdminDashboard = ({ currentUser }) => {
   return (
     <>
       <h3 className="ui center aligned header">Admin Dashboard</h3>
-      <Tab menu={{ secondary: true, pointing: true }} panes={panes} />
+      <Tab
+        menu={{ secondary: true, pointing: true }}
+        panes={panes(currentUser)}
+      />
     </>
   );
 };

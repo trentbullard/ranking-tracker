@@ -18,7 +18,7 @@ const fieldMap = {
   elo: "elo",
 };
 
-const PlayersPane = props => {
+const PlayersPane = ({ currentUser }) => {
   const [players, setPlayers] = useState([]);
   const [filteredPlayers, setFilteredPlayers] = useState([]);
   const [term, setTerm] = useState("");
@@ -110,6 +110,7 @@ const PlayersPane = props => {
             setPlayerAdded={setPlayerAdded}
             showModal={showNewPlayerModal}
             setShowModal={setShowNewPlayerModal}
+            currentUser={currentUser}
           >
             <Button
               className="green"
@@ -167,6 +168,7 @@ const PlayersPane = props => {
             sorted={sorted}
             setPlayerUpdated={setPlayerUpdated}
             setPlayerDeleted={setPlayerDeleted}
+            currentUser={currentUser}
           />
         </Table.Body>
       </Table>

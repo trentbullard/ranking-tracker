@@ -8,8 +8,14 @@ import BackArrow from "./utility/BackArrow";
 import history from "../history";
 import { getNewElos } from "../helpers/elo";
 import SportProvider, { SportContext } from "../contexts/SportContext";
+import Log from "../helpers/log";
 
-const PlayAgainButton = ({ show, setRedTeamScore, setBlueTeamScore }) => {
+const PlayAgainButton = ({
+  show,
+  setRedTeamScore,
+  setBlueTeamScore,
+  currentUser,
+}) => {
   const { game, setGame } = useContext(ScoreContext);
   const [loading, setLoading] = useState(false);
 
@@ -36,15 +42,13 @@ const PlayAgainButton = ({ show, setRedTeamScore, setBlueTeamScore }) => {
     const returnedGame = await data;
     setLoading(false);
 
-    await tracker.post(
-      "/logs",
-      {
-        actionType: "GAME_CREATED",
-        objectType: "games",
-        objectId: returnedGame.id,
-        objectJson: JSON.stringify(returnedGame),
-      },
-      { params: { token: getDigest("post", "/logs") } },
+    Log(
+      "GAME_CREATED",
+      returnedGame.id,
+      returnedGame,
+      null,
+      "games",
+      currentUser.id,
     );
 
     return returnedGame.id;
@@ -238,15 +242,13 @@ const ScoreKeeper = props => {
           },
         },
       );
-      await tracker.post(
-        "/logs",
-        {
-          actionType: "UPDATE_ELOS",
-          objectType: "games",
-          objectId: game.id,
-          objectJson: JSON.stringify(updatedElos),
-        },
-        { params: { token: getDigest("post", "/logs") } },
+      Log(
+        "UPDATE_ELOS",
+        game.id,
+        game,
+        null,
+        "games",
+        props.currentUser.id,
       );
     };
 
@@ -305,6 +307,7 @@ const ScoreKeeper = props => {
     blueKeeper,
     blueTeamScore,
     game,
+    props.currentUser.id,
     redForward,
     redKeeper,
     redTeamScore,

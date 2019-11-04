@@ -8,6 +8,7 @@ const PlayerRows = ({
   sorted: { column, order },
   setPlayerUpdated,
   setPlayerDeleted,
+  currentUser,
 }) => {
   const [showEditPlayerModal, setShowEditPlayerModal] = useState(null);
   const rows = _.map(_.orderBy(players, [column], [order]), (player, index) => {
@@ -25,7 +26,9 @@ const PlayerRows = ({
         <Table.Cell>{player.id}</Table.Cell>
         <Table.Cell>{player.name}</Table.Cell>
         <Table.Cell>{player.elo}</Table.Cell>
-        <Table.Cell>{new Date(player.createdat).toLocaleString("en-US")}</Table.Cell>
+        <Table.Cell>
+          {new Date(player.createdat).toLocaleString("en-US")}
+        </Table.Cell>
       </Table.Row>
     );
   });
@@ -37,6 +40,7 @@ const PlayerRows = ({
         setShowModal={setShowEditPlayerModal}
         setPlayerUpdated={setPlayerUpdated}
         setPlayerDeleted={setPlayerDeleted}
+        currentUser={currentUser}
       />
     </>
   );
