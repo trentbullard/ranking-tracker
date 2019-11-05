@@ -39,13 +39,12 @@ const GameItems = () => {
         params: {
           sort: ["started"],
           order: ["desc"],
-          page: 1,
           limit: 10,
           token: getDigest("get", "/games"),
         },
       });
       const returnedGames = await data;
-      setGames(g => getGamesFromRecords(_.concat(g, returnedGames)));
+      setGames(getGamesFromRecords(returnedGames));
     };
     getLatestGames();
   }, []);
