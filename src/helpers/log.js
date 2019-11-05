@@ -1,7 +1,7 @@
 import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
 
-const Log = (
+export const log = (
   actionType,
   objectId,
   objectJson,
@@ -22,5 +22,3 @@ const Log = (
     { params: { token: getDigest("post", "/logs") } },
   );
 };
-
-export default Log;

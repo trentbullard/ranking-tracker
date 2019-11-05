@@ -8,7 +8,7 @@ import { FlashContext } from "../contexts/FlashContext";
 import { encryptData } from "../helpers/aes";
 import { getDigest } from "../helpers/hmac";
 import history from "../history";
-import Log from "../helpers/log";
+import { log } from "../helpers/log";
 
 const Registration = props => {
   const { setCurrentUser, setSessionId } = useContext(AuthContext);
@@ -41,44 +41,55 @@ const Registration = props => {
       password,
     };
 
-    const cipher = encryptData(formValues);
-    const { data } = await tracker.post(
-      "/users",
-      {},
-      {
-        params: {
-          cipher,
-          token: getDigest("post", "/users"),
+    let returnedUser;
+    try {
+      const cipher = encryptData(formValues);
+      const { data } = await tracker.post(
+        "/users",
+        {},
+        {
+          params: {
+            cipher,
+            token: getDigest("post", "/users"),
+          },
         },
-      },
-    );
+      );
 
-    const returnedUser = await data;
+      returnedUser = await data;
 
-    if (!!returnedUser && !!returnedUser.error) {
-      addFlash(returnedUser.message);
-      return null;
-    } else if (!returnedUser) {
-      addFlash("failed to create user");
-      return null;
+      if (!!returnedUser && !!returnedUser.error) {
+        addFlash(returnedUser.message);
+      } else if (!returnedUser) {
+        addFlash("failed to create user");
+      } else {
+        log(
+          "USER_CREATED",
+          returnedUser.id,
+          returnedUser,
+          null,
+          "users",
+          returnedUser.id,
+        );
+        addFlash("registration successful");
+      }
+    } catch (error) {
+      console.log("failed to complete user registration: ", error.stack);
+      addFlash("failed to complete user registration");
     }
 
-    Log(
-      "USER_CREATED",
-      returnedUser.id,
-      returnedUser,
-      null,
-      "users",
-      returnedUser.id,
-    );
-
-    Cookies.set("mrank-session-id", returnedUser.sessionid);
-    setSessionId(returnedUser.sessionid);
-    setCurrentUser(returnedUser);
-    addFlash("logged in successfully");
-
+    if (!!returnedUser && !!returnedUser.error) {
+      try {
+        Cookies.set("mrank-session-id", returnedUser.sessionid);
+        setSessionId(returnedUser.sessionid);
+        setCurrentUser(returnedUser);
+        addFlash("logged in successfully");
+      } catch (error) {
+        console.log("failed to login with registered user: ", error.stack);
+        addFlash("failed to login with registered user");
+      }
+    }
     setLoading(false);
-    return returnedUser.id;
+    history.push(`/users/${returnedUser.id}`);
   };
 
   if (loading) {
@@ -90,18 +101,7 @@ const Registration = props => {
   }
 
   return (
-    <Form
-      className="ui form"
-      onSubmit={event =>
-        handleSubmit(event)
-          .then(userId => {
-            history.push(`/users/${userId}`);
-          })
-          .then(() => {
-            addFlash("user created successfully");
-          })
-      }
-    >
+    <Form className="ui form" onSubmit={handleSubmit}>
       <Form.Input
         name="email"
         type="text"

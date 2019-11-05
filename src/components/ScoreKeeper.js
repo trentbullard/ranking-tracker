@@ -8,7 +8,7 @@ import BackArrow from "./utility/BackArrow";
 import history from "../history";
 import { getNewElos } from "../helpers/elo";
 import SportProvider, { SportContext } from "../contexts/SportContext";
-import Log from "../helpers/log";
+import { log } from "../helpers/log";
 
 const PlayAgainButton = ({
   show,
@@ -42,7 +42,7 @@ const PlayAgainButton = ({
     const returnedGame = await data;
     setLoading(false);
 
-    Log(
+    log(
       "GAME_CREATED",
       returnedGame.id,
       returnedGame,
@@ -242,7 +242,7 @@ const ScoreKeeper = props => {
           },
         },
       );
-      Log(
+      log(
         "UPDATE_ELOS",
         game.id,
         game,

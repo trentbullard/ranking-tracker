@@ -191,6 +191,7 @@ const UsersPane = ({ currentUser }) => {
             sorted={sorted}
             setUserUpdated={setUserUpdated}
             setUserDeleted={setUserDeleted}
+            currentUser={currentUser}
           />
         </Table.Body>
       </Table>

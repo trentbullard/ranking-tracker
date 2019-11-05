@@ -5,7 +5,7 @@ import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
 import { SportContext } from "../../../contexts/SportContext";
-import Log from "../../../helpers/log";
+import { log } from "../../../helpers/log";
 
 const NewPlayerModal = ({
   setPlayerAdded,
@@ -81,22 +81,20 @@ const NewPlayerModal = ({
 
     if (!!returnedPlayer && !!returnedPlayer.error) {
       addFlash(returnedPlayer.message);
-      return null;
     } else if (!returnedPlayer) {
       addFlash("failed to create player");
-      return null;
+    } else {
+      log(
+        "PLAYER_CREATED",
+        returnedPlayer.id,
+        returnedPlayer,
+        null,
+        "players",
+        currentUser.id,
+      );
+      addFlash("player created successfully");
+      setPlayerAdded(returnedPlayer);
     }
-
-    Log(
-      "PLAYER_CREATED",
-      returnedPlayer.id,
-      returnedPlayer,
-      null,
-      "players",
-      currentUser.id,
-    );
-
-    setPlayerAdded(returnedPlayer);
     setShowModal(false);
   };
 

@@ -5,7 +5,7 @@ import tracker from "../../../apis/tracker";
 import { encryptData } from "../../../helpers/aes";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
-import Log from "../../../helpers/log";
+import { log } from "../../../helpers/log";
 import "../../../styles/adminDashboard/usersPane/userModal.css";
 
 const DeleteUserConfirmationModal = ({
@@ -32,10 +32,11 @@ const DeleteUserConfirmationModal = ({
         },
       });
       setUserDeleted(user);
-      Log("USER_DELETED", user.id, user, null, "users", currentUser.id);
+      log("USER_DELETED", user.id, user, null, "users", currentUser.id);
+      addFlash(`user deleted successfully`);
     } catch (error) {
+      console.log(`failed to delete user: `, error.stack);
       addFlash(`failed to delete user`);
-      return null;
     }
     setShowConfirmationModal(false);
     setShowEditModal(false);
@@ -120,7 +121,6 @@ const EditUserModal = ({
     };
 
     const cipher = encryptData(formValues);
-    let returnedUser;
     try {
       const response = await tracker.patch(
         `/users/${formValues.userId}`,
@@ -132,23 +132,22 @@ const EditUserModal = ({
           },
         },
       );
-      returnedUser = await response.data;
+      const returnedUser = await response.data;
+      log(
+        "USER_UPDATED",
+        returnedUser.id,
+        returnedUser,
+        null,
+        "users",
+        currentUser.id,
+      );
+      setUserUpdated(returnedUser);
+      addFlash(`user updated successfully`);
     } catch (error) {
+      console.log("failed to update user: ", error.stack);
       addFlash(`failed to update user`);
-      setShowModal(false);
-      return null;
     }
-    setUserUpdated(returnedUser);
     setShowModal(false);
-
-    Log(
-      "USER_UPDATED",
-      returnedUser.id,
-      returnedUser,
-      null,
-      "users",
-      currentUser.id,
-    );
   };
 
   return (
@@ -201,6 +200,7 @@ const EditUserModal = ({
           user={showModal}
           setUserDeleted={setUserDeleted}
           setShowEditModal={setShowModal}
+          currentUser={currentUser}
         />
         <Button
           className="ui button negative"

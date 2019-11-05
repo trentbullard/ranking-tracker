@@ -4,7 +4,7 @@ import { Button, Modal } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
-import Log from "../../../helpers/log";
+import { log } from "../../../helpers/log";
 
 const DeletePlayerConfirmationModal = ({
   showConfirmationModal,
@@ -31,17 +31,11 @@ const DeletePlayerConfirmationModal = ({
       });
       setPlayerDeleted(player);
 
-      Log(
-        "PLAYER_DELETED",
-        player.id,
-        player,
-        null,
-        "players",
-        currentUser.id,
-      );
+      log("PLAYER_DELETED", player.id, player, null, "players", currentUser.id);
+      addFlash(`player deleted successfully`);
     } catch (error) {
+      console.log(`failed to delete player: `, error.stack);
       addFlash(`failed to delete player`);
-      return null;
     }
     setShowConfirmationModal(false);
     setShowEditModal(false);

@@ -5,6 +5,7 @@ import PlayersPane from "./playersPane/PlayersPane";
 import GamesPane from "./gamesPane/GamesPane";
 import "../../styles/adminDashboard/adminDashboard.css";
 import SportProvider from "../../contexts/SportContext";
+import BackArrow from "../utility/BackArrow";
 
 const panes = currentUser => {
   return [
@@ -35,6 +36,7 @@ const AdminDashboard = ({ currentUser }) => {
         menu={{ secondary: true, pointing: true }}
         panes={panes(currentUser)}
       />
+      <BackArrow url={`/users/${currentUser.id}`} />
     </>
   );
 };

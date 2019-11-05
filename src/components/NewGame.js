@@ -1,12 +1,13 @@
 import _ from "lodash";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Form, Button, Dimmer, Loader, Dropdown } from "semantic-ui-react";
 import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
 import { titleize } from "../helpers/string";
 import history from "../history";
 import BackArrow from "./utility/BackArrow";
-import Log from "../helpers/log";
+import { log } from "../helpers/log";
+import { FlashContext } from "../contexts/FlashContext";
 
 const NewGame = props => {
   const [timestamp] = useState(new Date());
@@ -19,6 +20,8 @@ const NewGame = props => {
   const [blueKeeper, setBlueKeeper] = useState({});
   const [blueForward, setBlueForward] = useState({});
   const [transitioning, setTransitioning] = useState(false);
+
+  const { addFlash } = useContext(FlashContext);
 
   useEffect(() => {
     const getSport = async () => {
@@ -125,22 +128,26 @@ const NewGame = props => {
       ],
     };
 
-    const { data } = await tracker.post(`/games`, formValues, {
-      params: { token: getDigest("post", "/games") },
-    });
-
-    const createdGame = await data;
-
-    Log(
-      "GAME_CREATED",
-      createdGame.id,
-      createdGame,
-      null,
-      "games",
-      props.currentUser.id,
-    );
-
-    return createdGame.id;
+    let createdGame;
+    try {
+      const { data } = await tracker.post(`/games`, formValues, {
+        params: { token: getDigest("post", "/games") },
+      });
+      createdGame = await data;
+      log(
+        "GAME_CREATED",
+        createdGame.id,
+        createdGame,
+        null,
+        "games",
+        props.currentUser.id,
+      );
+      return createdGame.id;
+    } catch (error) {
+      console.log("failed to create game: ", error.stack);
+      addFlash("failed to create game");
+      return null;
+    }
   };
 
   const PlayerSelect = ({ name, label, callback, ...rest }) => {
@@ -192,7 +199,7 @@ const NewGame = props => {
         className="ui form error"
         onSubmit={event =>
           handleSubmit(event).then(gameId => {
-            history.push(`/games/score/${gameId}`);
+            gameId && history.push(`/games/score/${gameId}`);
           })
         }
       >

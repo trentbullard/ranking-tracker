@@ -5,7 +5,7 @@ import tracker from "../../../apis/tracker";
 import { encryptData } from "../../../helpers/aes";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
-import Log from "../../../helpers/log";
+import { log } from "../../../helpers/log";
 import "../../../styles/adminDashboard/usersPane/userModal.css";
 
 const NewUserModal = props => {
@@ -55,23 +55,21 @@ const NewUserModal = props => {
         },
       );
       returnedUser = await response.data;
+      props.userAdded(returnedUser);
+      log(
+        "USER_CREATED",
+        returnedUser.id,
+        returnedUser,
+        null,
+        "users",
+        props.currentUser.id,
+      );
+      addFlash(`user created successfully`);
     } catch (error) {
+      console.log(`failed to create user: `, error.stack);
       addFlash(`failed to create user`);
-      props.setShowModal(false);
-      return null;
     }
-
-    props.userAdded(returnedUser);
     props.setShowModal(false);
-
-    Log(
-      "USER_CREATED",
-      returnedUser.id,
-      returnedUser,
-      null,
-      "users",
-      props.currentUser.id,
-    );
   };
 
   return (

@@ -5,7 +5,7 @@ import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
 import DeletePlayerConfirmationModal from "./DeletePlayerConfirmationModal";
-import Log from "../../../helpers/log";
+import { log } from "../../../helpers/log";
 import "../../../styles/adminDashboard/playersPane/playerModal.css";
 
 const EditPlayerModal = ({
@@ -63,22 +63,21 @@ const EditPlayerModal = ({
         },
       );
       returnedPlayer = await response.data;
+      log(
+        "PLAYER_UPDATED",
+        returnedPlayer.id,
+        returnedPlayer,
+        null,
+        "players",
+        currentUser.id,
+      );
+      addFlash(`player updated successfully`);
     } catch (error) {
+      console.log(`failed to update player: `, error.stack);
       addFlash(`failed to update player`);
-      setShowModal(null);
-      return null;
     }
     setPlayerUpdated(returnedPlayer);
     setShowModal(null);
-
-    Log(
-      "PLAYER_UPDATED",
-      returnedPlayer.id,
-      returnedPlayer,
-      null,
-      "players",
-      currentUser.id,
-    );
   };
 
   return (

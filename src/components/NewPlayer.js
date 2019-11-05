@@ -6,7 +6,7 @@ import { getDigest } from "../helpers/hmac";
 import history from "../history";
 import { FlashContext } from "../contexts/FlashContext";
 import BackArrow from "./utility/BackArrow";
-import Log from "../helpers/log";
+import { log } from "../helpers/log";
 
 const NewPlayer = ({ currentUser }) => {
   const { addFlash } = useContext(FlashContext);
@@ -64,33 +64,35 @@ const NewPlayer = ({ currentUser }) => {
       elo: 100,
     };
 
-    const { data } = await tracker.post("/players", formValues, {
-      params: {
-        token: getDigest("post", "/players"),
-      },
-    });
-
-    const returnedPlayer = await data;
-
-    if (!!returnedPlayer && !!returnedPlayer.error) {
-      addFlash(returnedPlayer.message);
-      return null;
-    } else if (!returnedPlayer) {
+    let returnedPlayer;
+    try {
+      const { data } = await tracker.post("/players", formValues, {
+        params: {
+          token: getDigest("post", "/players"),
+        },
+      });
+      returnedPlayer = await data;
+      if (!!returnedPlayer && !!returnedPlayer.error) {
+        addFlash(returnedPlayer.message);
+      } else if (!returnedPlayer) {
+        addFlash("failed to create player");
+      } else {
+        log(
+          "PLAYER_CREATED",
+          returnedPlayer.id,
+          returnedPlayer,
+          null,
+          "users",
+          currentUser.id,
+        );
+        addFlash("player created successfully");
+      }
+    } catch (error) {
+      console.log("failed to create player: ", error.stack);
       addFlash("failed to create player");
-      return null;
     }
-
-    Log(
-      "PLAYER_CREATED",
-      returnedPlayer.id,
-      returnedPlayer,
-      null,
-      "users",
-      currentUser.id,
-    );
-
     setLoading(false);
-    return returnedPlayer;
+    history.push("/");
   };
 
   if (loading) {
@@ -104,16 +106,7 @@ const NewPlayer = ({ currentUser }) => {
   return (
     <>
       <h3 className="ui center aligned header">Create a New Player</h3>
-      <Form
-        className="ui form error"
-        onSubmit={event =>
-          handleSubmit(event)
-            .then(() => history.push("/"))
-            .then(() => {
-              addFlash("player created successfully");
-            })
-        }
-      >
+      <Form className="ui form error" onSubmit={handleSubmit}>
         <Form.Input
           label="Created At"
           name="created"
