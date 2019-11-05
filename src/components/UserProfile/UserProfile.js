@@ -7,8 +7,8 @@ import { AuthContext } from "../../contexts/AuthContext";
 import SportProvider from "../../contexts/SportContext";
 import { getDigest } from "../../helpers/hmac";
 import BackArrow from "../utility/BackArrow";
-import GamesPane from "./GamesPane";
-import UserInfoPane from "./UserInfoPane";
+import GamesPane from "./GamesPane/GamesPane";
+import UserInfoPane from "./UserInfoPane/UserInfoPane";
 
 const panes = userId => {
   return [

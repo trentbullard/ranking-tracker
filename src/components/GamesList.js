@@ -67,28 +67,29 @@ const GameItems = ({ term }) => {
   useEffect(() => {
     if (_.isEmpty(term)) {
       setFilteredGames(games);
-    }
-    setFilteredGames(g => {
-      return _.filter(games, value => {
-        const started = new Date(Date.parse(value.started)).toLocaleDateString(
-          "en-us",
-        );
-        if (started.includes(term)) {
-          return true;
-        }
-        return _.map(value.teams, team => {
-          return _.map(team.positions, position => {
-            return position.player.name
-              .toLowerCase()
-              .includes(term.toLowerCase());
+    } else {
+      setFilteredGames(g => {
+        return _.filter(games, value => {
+          const started = new Date(
+            Date.parse(value.started),
+          ).toLocaleDateString("en-us");
+          if (started.includes(term)) {
+            return true;
+          }
+          return _.map(value.teams, team => {
+            return _.map(team.positions, position => {
+              return position.player.name
+                .toLowerCase()
+                .includes(term.toLowerCase());
+            }).some(v => {
+              return !!v;
+            });
           }).some(v => {
             return !!v;
           });
-        }).some(v => {
-          return !!v;
         });
       });
-    });
+    }
   }, [games, term]);
 
   const getNextPage = async page => {
@@ -160,8 +161,8 @@ const GamesList = props => {
         onChange={(_event, { value }) => setTerm(value)}
       />
       <GameItems term={term} />
-      <BackArrow url="/" key="back-arrow" />
-      <Footer key="footer" />
+      <BackArrow url="/" />
+      <Footer />
     </>
   );
 };
