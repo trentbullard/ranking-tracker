@@ -9,6 +9,7 @@ import history from "../history";
 import { getNewElos } from "../helpers/elo";
 import SportProvider, { SportContext } from "../contexts/SportContext";
 import { log } from "../helpers/log";
+import { FlashContext } from "../contexts/FlashContext";
 
 const PlayAgainButton = ({
   show,
@@ -17,55 +18,55 @@ const PlayAgainButton = ({
   currentUser,
 }) => {
   const { game, setGame } = useContext(ScoreContext);
+  const { addFlash } = useContext(FlashContext);
   const [loading, setLoading] = useState(false);
 
   const handleClick = async event => {
     event.preventDefault();
     setLoading(true);
+
     let { id, ...noIdValues } = {
       ...game,
       eloAwarded: false,
       started: new Date().toISOString(),
     };
-
-    const { data } = await tracker.post(
-      `/games`,
-      {
-        ...noIdValues,
-      },
-      {
-        params: {
-          token: getDigest("post", "/games"),
+    try {
+      const { data } = await tracker.post(
+        `/games`,
+        {
+          ...noIdValues,
         },
-      },
-    );
-    const returnedGame = await data;
+        {
+          params: {
+            token: getDigest("post", "/games"),
+          },
+        },
+      );
+      const returnedGame = await data;
+      log(
+        "GAME_CREATED",
+        returnedGame.id,
+        returnedGame,
+        null,
+        "games",
+        currentUser.id,
+      );
+      setGame(null);
+      setRedTeamScore(0);
+      setBlueTeamScore(0);
+      history.push(`/games/score/${returnedGame.id}`);
+    } catch (error) {
+      console.log("failed to create new game: ", error.stack);
+      addFlash("failed to create new game");
+    }
     setLoading(false);
-
-    log(
-      "GAME_CREATED",
-      returnedGame.id,
-      returnedGame,
-      null,
-      "games",
-      currentUser.id,
-    );
-
-    return returnedGame.id;
   };
 
   return show ? (
     <div className="ui center aligned header">
       <div
         className={`ui positive ${loading ? "disabled" : ""} button`}
-        onClick={event =>
-          handleClick(event).then(gameId => {
-            setGame(null);
-            setRedTeamScore(0);
-            setBlueTeamScore(0);
-            history.push(`/games/score/${gameId}`);
-          })
-        }
+        onClick={handleClick}
       >
         Play Again
       </div>
@@ -242,14 +243,7 @@ const ScoreKeeper = props => {
           },
         },
       );
-      log(
-        "UPDATE_ELOS",
-        game.id,
-        game,
-        null,
-        "games",
-        props.currentUser.id,
-      );
+      log("UPDATE_ELOS", game.id, game, null, "games", props.currentUser.id);
     };
 
     if (!game) {
@@ -367,6 +361,7 @@ const ScoreKeeper = props => {
         show={gameOver}
         setRedTeamScore={setRedTeamScore}
         setBlueTeamScore={setBlueTeamScore}
+        currentUser={props.currentUser}
       />
       <BackArrow url="/" />
     </>
