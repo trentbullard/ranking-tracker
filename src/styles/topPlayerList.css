@@ -1,0 +1,7 @@
+.ui.basic.table tbody tr {
+  cursor: default;
+}
+
+table.ui.table tbody tr:hover {
+  background-color: initial !important;
+}

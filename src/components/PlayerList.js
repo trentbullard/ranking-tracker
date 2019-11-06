@@ -139,10 +139,7 @@ const PlayerList = () => {
         icon="search"
         onChange={(_event, { value }) => setTerm(value)}
       />
-      <table
-        className="ui very basic unstackable celled striped table"
-        key="player-rank-table"
-      >
+      <table className="ui very basic unstackable celled striped table">
         <thead>
           <tr>
             <th key="rank">Rank</th>

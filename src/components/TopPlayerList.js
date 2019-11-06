@@ -5,6 +5,7 @@ import { getDigest } from "../helpers/hmac";
 import { Link } from "react-router-dom";
 import { icons } from "../img/icons";
 import { SportContext } from "../contexts/SportContext";
+import "../styles/topPlayerList.css";
 
 const SportSelectorList = () => {
   const { sports, selectedSport, setSelectedSport } = useContext(SportContext);
@@ -76,9 +77,7 @@ const TopPlayerList = props => {
           <SportSelectorList />
         </div>
       </div>
-      <table
-        className="ui very basic unstackable celled striped table"
-      >
+      <table className="ui very basic unstackable celled striped table">
         <thead>
           <tr>
             <th key="rank">Rank</th>
