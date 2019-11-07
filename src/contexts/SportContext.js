@@ -12,7 +12,7 @@ const SportProvider = props => {
     const getSports = async () => {
       const { data } = await tracker.get("/sports", {
         params: {
-          enabled: true,
+          where: { enabled: true },
           token: getDigest("get", "/sports"),
         },
       });
