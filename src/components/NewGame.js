@@ -3,130 +3,143 @@ import React, { useState, useEffect, useContext } from "react";
 import { Form, Button, Dimmer, Loader, Dropdown } from "semantic-ui-react";
 import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
-import { titleize } from "../helpers/string";
 import history from "../history";
 import BackArrow from "./utility/BackArrow";
 import { log } from "../helpers/log";
 import { FlashContext } from "../contexts/FlashContext";
+import PlayerSelect from "./newGame/PlayerSelect";
+import SportProvider, { SportContext } from "../contexts/SportContext";
 
 const NewGame = props => {
   const [timestamp] = useState(new Date());
   const [sport, setSport] = useState(null);
   const [players, setPlayers] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
+  const [selectedValues, setSelectedValues] = useState({});
   const [valid, setValid] = useState(false);
-  const [redKeeper, setRedKeeper] = useState({});
-  const [redForward, setRedForward] = useState({});
-  const [blueKeeper, setBlueKeeper] = useState({});
-  const [blueForward, setBlueForward] = useState({});
+  const [teamNames, setTeamNames] = useState(null);
+  const [positionNames, setPositionNames] = useState(null);
+  const [availablePlayers, setAvailablePlayers] = useState([]);
   const [transitioning, setTransitioning] = useState(false);
 
   const { addFlash } = useContext(FlashContext);
+  const { sports } = useContext(SportContext);
 
+  // get sport
   useEffect(() => {
-    const getSport = async () => {
-      const { data } = await tracker.get("/sports", {
-        params: {
-          enabled: true,
-          token: getDigest("get", "/sports"),
-        },
-      });
-      const returnedSports = await data;
-      return returnedSports.find(value => {
-        return value.name === titleize(props.match.params.sport);
-      });
-    };
+    if (!_.isEmpty(sports)) {
+      setSport(
+        sports.find(value => {
+          return (
+            value.name.toLowerCase() === props.match.params.sport.toLowerCase()
+          );
+        }),
+      );
+    }
+  }, [props.match.params.sport, sports]);
 
+  // get players
+  useEffect(() => {
     const getPlayers = async sportId => {
       const { data } = await tracker.get(`/players`, {
         params: { sportId, token: getDigest("get", "/players") },
       });
       const returnedPlayers = await data;
-      return _.map(returnedPlayers, player => {
-        return {
-          key: player.name,
-          text: player.name,
-          value: player.id,
-        };
-      });
+      setPlayers(
+        _.map(returnedPlayers, player => {
+          return {
+            key: player.name,
+            text: player.name,
+            value: player.id,
+          };
+        }),
+      );
     };
 
-    getSport()
-      .then(returnedSport => {
-        setSport(returnedSport);
-        return returnedSport.id;
-      })
-      .then(sportId => {
-        getPlayers(sportId).then(returnedPlayers => {
-          setPlayers(returnedPlayers);
-        });
-      });
-  }, [props.match.params.sport]);
+    if (!!sport) {
+      getPlayers(sport.id);
+    }
+  }, [sport]);
 
+  // set available players
   useEffect(() => {
-    setSelectedValues(
-      _.reduce(
-        [redKeeper, redForward, blueKeeper, blueForward],
-        (sigma, position) => {
-          if (!_.isEmpty(position)) {
-            return _.concat(sigma, position.value);
-          }
-          return sigma;
-        },
-        [],
-      ),
+    setAvailablePlayers(
+      _.filter(players, value => {
+        return !_.reduce(
+          teamNames,
+          (acc, team) => {
+            return (
+              acc ||
+              _.reduce(
+                positionNames,
+                (acc2, position) => {
+                  return (
+                    acc2 ||
+                    value.value === selectedValues[team][position || "Player"]
+                  );
+                },
+                false,
+              )
+            );
+          },
+          false,
+        );
+      }),
     );
-  }, [blueForward, blueKeeper, redForward, redKeeper]);
+  }, [players, positionNames, selectedValues, teamNames]);
 
+  // set valid
   useEffect(() => {
-    setValid(selectedValues.length === 4);
-  }, [selectedValues.length]);
+    const { length } = selectedValues;
+    setValid(length === 4);
+  }, [selectedValues]);
+
+  // set team and position names
+  useEffect(() => {
+    if (!!sport) {
+      setTeamNames(sport.teamNames.split(","));
+      if (sport.playersPerTeam > 1) {
+        setPositionNames(sport.positionNames.split(","));
+      } else {
+        setPositionNames([""]);
+      }
+      setSelectedValues(sv => {
+        const sportTeams = {};
+        _.each(sport.teamNames.split(","), team => {
+          sportTeams[team] = {};
+        });
+        return sportTeams;
+      });
+    }
+  }, [sport]);
 
   const handleSubmit = async event => {
     event.preventDefault();
     setTransitioning(true);
 
+    const teams = _.reduce(
+      teamNames,
+      (acc, team) => {
+        return acc.push({
+          name: team,
+          positions: _.reduce(positionNames, (acc2, position) => {
+            return acc2.push({
+              name: position,
+              player: { id: selectedValues[team][position] },
+            });
+          }),
+        });
+      },
+      [],
+    );
+
     const formValues = {
       eloAwarded: false,
       sport: sport.id,
       started: timestamp.toISOString(),
-      teams: [
-        {
-          name: "Red",
-          positions: [
-            {
-              name: "Keeper",
-              player: {
-                id: redKeeper.value,
-              },
-            },
-            {
-              name: "Forward",
-              player: {
-                id: redForward.value,
-              },
-            },
-          ],
-        },
-        {
-          name: "Blue",
-          positions: [
-            {
-              name: "Keeper",
-              player: {
-                id: blueKeeper.value,
-              },
-            },
-            {
-              name: "Forward",
-              player: {
-                id: blueForward.value,
-              },
-            },
-          ],
-        },
-      ],
+      teams,
     };
+    console.log(`TCL: formValues`, formValues);
+    return null;
 
     let createdGame;
     try {
@@ -150,36 +163,26 @@ const NewGame = props => {
     }
   };
 
-  const PlayerSelect = ({ name, label, callback, ...rest }) => {
-    const availablePlayers = _.reduce(
-      players,
-      (sigma, player) => {
-        if (
-          rest.value === player.value ||
-          !selectedValues.includes(player.value)
-        ) {
-          return _.concat(sigma, player);
-        }
-        return sigma;
-      },
-      [],
-    );
-    return (
-      <Form.Field
-        {...rest}
-        name={name || label}
-        label={label}
-        placeholder="Select Player"
-        options={availablePlayers}
-        search
-        selection
-        control={Dropdown}
-        onChange={(_event, { value }) => {
-          callback(_.find(players, { value }) || {});
-        }}
-        clearable
-      />
-    );
+  const PlayerFields = () => {
+    return _.map(teamNames, team => {
+      return _.map(positionNames, position => {
+        const selectedPlayer = _.find(players, [
+          "value",
+          selectedValues[team][position || "Player"],
+        ]);
+        return (
+          <PlayerSelect
+            team={team}
+            position={position}
+            label={`${team} ${position}`}
+            value={selectedPlayer}
+            availablePlayers={availablePlayers}
+            setSelectedValues={setSelectedValues}
+            key={`select-${team}-${position}`}
+          />
+        );
+      });
+    });
   };
 
   if (!sport || _.isEmpty(players) || transitioning) {
@@ -212,26 +215,7 @@ const NewGame = props => {
           autoComplete="off"
         />
         <Form.Field name="sport" value={sport.id} hidden />
-        <PlayerSelect
-          label="Red Keeper"
-          value={redKeeper.value}
-          callback={setRedKeeper}
-        />
-        <PlayerSelect
-          label="Red Forward"
-          value={redForward.value}
-          callback={setRedForward}
-        />
-        <PlayerSelect
-          label="Blue Keeper"
-          value={blueKeeper.value}
-          callback={setBlueKeeper}
-        />
-        <PlayerSelect
-          label="Blue Forward"
-          value={blueForward.value}
-          callback={setBlueForward}
-        />
+        <PlayerFields />
         <Button type="submit" disabled={!valid}>
           Submit
         </Button>
@@ -241,4 +225,10 @@ const NewGame = props => {
   );
 };
 
-export default NewGame;
+const NewGameProvider = props => (
+  <SportProvider>
+    <NewGame {...props} />
+  </SportProvider>
+);
+
+export default NewGameProvider;

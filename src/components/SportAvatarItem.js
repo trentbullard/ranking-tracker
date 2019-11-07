@@ -13,7 +13,7 @@ const SportAvatarItem = ({ sport }) => (
     <img
       className="ui avatar image"
       alt={`${sport.name.toLowerCase()} icon`}
-      src={icons()[sport.name.toLowerCase()]}
+      src={icons()[sport.iconName]}
       style={{ fontSize: "1.5em" }}
     />
     <div className="header">{sport.name}</div>
