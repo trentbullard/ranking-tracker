@@ -1,7 +1,7 @@
-.ui.basic.table tbody tr {
+.ui.basic.table.unselectable tbody tr {
   cursor: default;
 }
 
-table.ui.table tbody tr:hover {
+table.ui.table.unselectable tbody tr:hover {
   background-color: initial !important;
 }

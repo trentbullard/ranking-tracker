@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from "react";
+import React from "react";
 
 const UserInfoPane = props => {
   return <div>user info pane</div>;

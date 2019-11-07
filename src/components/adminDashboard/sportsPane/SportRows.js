@@ -2,9 +2,15 @@ import _ from "lodash";
 import React from "react";
 import { Table } from "semantic-ui-react";
 
-const SportRow = ({ sport }) => {
+const SportRow = ({ sport, setShowModal, setSelectedSport }) => {
+  const handleClickRow = event => {
+    event.preventDefault();
+    setSelectedSport(sport);
+    setShowModal(true);
+  };
+
   return (
-    <Table.Row>
+    <Table.Row onClick={handleClickRow}>
       <Table.Cell>{sport.id}</Table.Cell>
       <Table.Cell>{sport.name}</Table.Cell>
       <Table.Cell>{sport.winningScore}</Table.Cell>
@@ -17,9 +23,16 @@ const SportRow = ({ sport }) => {
   );
 };
 
-const SportRows = ({ sports }) => {
+const SportRows = ({ sports, setSelectedSport, setShowModal }) => {
   return _.map(sports, sport => {
-    return <SportRow sport={sport} key={`sport-${sport.id}`} />;
+    return (
+      <SportRow
+        sport={sport}
+        setSelectedSport={setSelectedSport}
+        setShowModal={setShowModal}
+        key={`sport-${sport.id}`}
+      />
+    );
   });
 };
 

@@ -1,13 +1,22 @@
 import React from "react";
-import { Button, Input } from "semantic-ui-react";
+import { Input, Button } from "semantic-ui-react";
 
-const TabControls = ({ ButtonWrapper, buttonWrapperProps, buttonIcon }) => {
+const TabControls = ({ modalProps, buttonIcon }) => {
+  const handleClickButton = event => {
+    event.preventDefault();
+    modalProps.onClickButton(null);
+    modalProps.setShowModal(true);
+  };
+
   return (
     <div className="flex-container">
       <div className="tab pane menu button">
-        <ButtonWrapper {...buttonWrapperProps}>
-          <Button className="green" icon={buttonIcon || "add"} circular />
-        </ButtonWrapper>
+        <Button
+          className="green"
+          icon={buttonIcon || "add"}
+          circular
+          onClick={handleClickButton}
+        />
       </div>
       <div className="tab pane menu divider" />
       <div className="tab pane menu search">

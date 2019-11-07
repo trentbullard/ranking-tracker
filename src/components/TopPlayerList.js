@@ -52,7 +52,7 @@ const TopPlayerList = props => {
     <>
       <h2 className="ui center aligned header">Top 10 Ranks</h2>
       <SportSelectorList />
-      <table className="ui very basic unstackable celled striped table">
+      <table className="ui very basic unstackable celled striped table unselectable">
         <thead>
           <tr>
             <th key="rank">Rank</th>

@@ -6,6 +6,7 @@ import Loading from "../../utility/Loading";
 import TabControls from "../TabControls";
 import SortIcon from "../SortIcon";
 import SportRows from "./SportRows";
+import SportModal from "./SportModal";
 
 const fieldMap = {
   id: "id",
@@ -22,6 +23,8 @@ const fieldMap = {
 const SportsPane = _props => {
   const [sorted, setSorted] = useState({ column: "id", order: "asc" });
   const [sortedSports, setSortedSports] = useState([]);
+  const [selectedSport, setSelectedSport] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const { sports } = useContext(SportContext);
 
   useEffect(() => {
@@ -51,7 +54,13 @@ const SportsPane = _props => {
 
   return (
     <Tab.Pane attached={false}>
-      <TabControls ButtonWrapper={"div"} />
+      <TabControls
+        modalProps={{
+          onClickButton: setSelectedSport,
+          showModal,
+          setShowModal,
+        }}
+      />
       <Table celled striped id="sportsTable">
         <Table.Header className="center aligned">
           <Table.Row>
@@ -107,9 +116,18 @@ const SportsPane = _props => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          <SportRows sports={sortedSports} />
+          <SportRows
+            sports={sortedSports}
+            setShowModal={setShowModal}
+            setSelectedSport={setSelectedSport}
+          />
         </Table.Body>
       </Table>
+      <SportModal
+        sport={selectedSport}
+        showModal={showModal}
+        setShowModal={setShowModal}
+      ></SportModal>
     </Tab.Pane>
   );
 };
