@@ -25,8 +25,10 @@ const SportsPane = _props => {
   const [sortedSports, setSortedSports] = useState([]);
   const [selectedSport, setSelectedSport] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
   const { sports } = useContext(SportContext);
 
+  // set column sorts
   useEffect(() => {
     const { column, order } = sorted;
     if (!_.isEmpty(sports)) {

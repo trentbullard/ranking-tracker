@@ -7,6 +7,9 @@ export const SportContext = React.createContext();
 const SportProvider = props => {
   const [sports, setSports] = useState(null);
   const [selectedSport, setSelectedSport] = useState(null);
+  const [sportDeleted, setSportDeleted] = useState(null);
+  const [sportUpdated, setSportUpdated] = useState(null);
+  const [sportAdded, setSportAdded] = useState(null);
 
   useEffect(() => {
     const getSports = async () => {
@@ -21,13 +24,16 @@ const SportProvider = props => {
       setSelectedSport(returnedSports[0]);
     };
     getSports();
-  }, []);
+  }, [sportDeleted, sportUpdated, sportAdded]);
 
   const state = {
     sports,
     setSports,
     selectedSport,
     setSelectedSport,
+    setSportDeleted,
+    setSportUpdated,
+    setSportAdded,
   };
 
   return (

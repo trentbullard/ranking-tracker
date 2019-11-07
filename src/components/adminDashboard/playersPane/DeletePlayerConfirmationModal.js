@@ -4,6 +4,7 @@ import { Button, Modal } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
+import { AuthContext } from "../../../contexts/AuthContext";
 import { log } from "../../../helpers/log";
 
 const DeletePlayerConfirmationModal = ({
@@ -12,9 +13,9 @@ const DeletePlayerConfirmationModal = ({
   player,
   setPlayerDeleted,
   setShowEditModal,
-  currentUser,
 }) => {
   const { addFlash } = useContext(FlashContext);
+  const { currentUser } = useContext(AuthContext);
   const [disabled, setDisabled] = useState(true);
 
   useEffect(() => {

@@ -1,6 +1,13 @@
 import _ from "lodash";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Modal, Icon, Form, Button } from "semantic-ui-react";
+import { SportContext } from "../../../contexts/SportContext";
+import { FlashContext } from "../../../contexts/FlashContext";
+import { AuthContext } from "../../../contexts/AuthContext";
+import tracker from "../../../apis/tracker";
+import { getDigest } from "../../../helpers/hmac";
+import { log } from "../../../helpers/log";
+import DeleteSportConfirmationModal from "./DeleteSportConfirmationModal";
 
 const emptySport = {
   name: "",
@@ -13,8 +20,13 @@ const emptySport = {
 };
 
 const SportModal = ({ sport, showModal, setShowModal }) => {
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [formValues, setFormValues] = useState(emptySport);
   const [errors, setErrors] = useState({});
+
+  const { setSportUpdated, setSportAdded } = useContext(SportContext);
+  const { addFlash } = useContext(FlashContext);
+  const { currentUser } = useContext(AuthContext);
 
   // set form values from sport
   useEffect(() => {
@@ -70,6 +82,78 @@ const SportModal = ({ sport, showModal, setShowModal }) => {
     setErrors(tempErrors);
   }, [formValues]);
 
+  const handleSubmit = async event => {
+    event.preventDefault();
+    if (!!sport) {
+      try {
+        const { data } = await tracker.patch(
+          `/sports/${sport.id}`,
+          formValues,
+          {
+            params: {
+              token: getDigest("patch", "/sports/:id"),
+            },
+          },
+        );
+        const returnedSport = await data;
+        setSportUpdated(returnedSport);
+        log(
+          "SPORT_UPDATED",
+          sport.id,
+          returnedSport,
+          null,
+          "sports",
+          currentUser.id,
+        );
+        addFlash(`sport updated successfully`);
+      } catch (error) {
+        console.log("failed to update sport: ", error.stack);
+        addFlash(`failed to update sport`);
+      }
+    } else {
+      try {
+        const { data } = await tracker.post(
+          `/sports`,
+          { ...formValues, startingElo: 100 },
+          {
+            params: {
+              token: getDigest("post", "/sports"),
+            },
+          },
+        );
+        const returnedSport = await data;
+        setSportAdded(returnedSport);
+        log(
+          "SPORT_CREATED",
+          returnedSport.id,
+          returnedSport,
+          null,
+          "sports",
+          currentUser.id,
+        );
+        addFlash(`sport created successfully`);
+      } catch (error) {
+        console.log("failed to create sport: ", error.stack);
+        addFlash(`failed to create sport`);
+      }
+    }
+    setShowModal(false);
+  };
+
+  const ShowDelete = props => {
+    if (!!sport) {
+      return (
+        <DeleteSportConfirmationModal
+          showModal={showConfirmationModal}
+          setShowModal={setShowConfirmationModal}
+          setShowSportModal={setShowModal}
+          sport={sport}
+        />
+      );
+    }
+    return null;
+  };
+
   return (
     <Modal
       trigger={null}
@@ -85,7 +169,7 @@ const SportModal = ({ sport, showModal, setShowModal }) => {
         {!!sport ? "Edit" : "Create"} Sport
       </Modal.Header>
       <Modal.Content>
-        <Form inverted onSubmit={() => {}} error>
+        <Form inverted error>
           <Form.Input
             error={errors.name}
             label="name"
@@ -168,22 +252,15 @@ const SportModal = ({ sport, showModal, setShowModal }) => {
           id="submit-btn"
           content="Submit"
           color="green"
-          onClick={() => {}}
+          onClick={handleSubmit}
           disabled={!_.isEmpty(errors)}
         />
         <Button
           content="Cancel"
-          color="red"
+          secondary
           onClick={() => setShowModal(false)}
         />
-        {/* <DeletePlayerConfirmationModal
-            showConfirmationModal={showConfirmationModal}
-            setShowConfirmationModal={setShowConfirmationModal}
-            player={showModal}
-            setPlayerDeleted={setPlayerDeleted}
-            setShowEditModal={setShowModal}
-            currentUser={currentUser}
-          /> */}
+        <ShowDelete />
       </Modal.Actions>
     </Modal>
   );
