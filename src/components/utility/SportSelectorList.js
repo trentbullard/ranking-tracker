@@ -2,31 +2,37 @@ import _ from "lodash";
 import React, { useContext } from "react";
 import { SportContext } from "../../contexts/SportContext";
 import { icons } from "../../img/icons";
+import "../../styles/utility/SportSelectorList.css";
+import { List, Image } from "semantic-ui-react";
+import Loading from "../utility/Loading";
 
-const SportSelectorList = props => {
+const SportSelectorList = _props => {
   const { sports, selectedSport, setSelectedSport } = useContext(SportContext);
-  if (!selectedSport) {
-    return null;
-  }
 
-  const sportIcons = _.map(sports, sport => {
-    const disabled = selectedSport.id === sport.id ? "" : "disabled";
-    return (
-      <div className="item" key={`${sport.name.toLowerCase()}-selector`}>
-        <img
-          className={`ui avatar image ${disabled}`}
-          src={icons()[sport.name.toLowerCase()]}
-          onClick={() => setSelectedSport(sport)}
-          alt={`${sport.name}-selector`}
-        ></img>
-      </div>
-    );
-  });
+  const SportIcons = _props => {
+    if (!selectedSport || _.isEmpty(sports)) {
+      return <Loading />;
+    }
 
-  const className = props.className || "sport-selector";
+    return _.map(sports, sport => {
+      return (
+        <List.Item key={`${sport.iconName}-selector`}>
+          <Image
+            avatar
+            src={icons()[sport.iconName]}
+            disabled={selectedSport.id !== sport.id}
+            onClick={() => setSelectedSport(sport)}
+          ></Image>
+        </List.Item>
+      );
+    });
+  };
+
   return (
-    <div className={className}>
-      <div className="ui huge horizontal list">{sportIcons}</div>
+    <div className="sport-selector">
+      <List horizontal size="huge">
+        <SportIcons />
+      </List>
     </div>
   );
 };

@@ -1,32 +1,11 @@
 import _ from "lodash";
-import React, { useState, useEffect, useContext } from "react";
-import tracker from "../apis/tracker";
-import { getDigest } from "../helpers/hmac";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { icons } from "../img/icons";
+import tracker from "../apis/tracker";
 import { SportContext } from "../contexts/SportContext";
+import { getDigest } from "../helpers/hmac";
 import "../styles/topPlayerList.css";
-
-const SportSelectorList = () => {
-  const { sports, selectedSport, setSelectedSport } = useContext(SportContext);
-  if (!selectedSport) {
-    return null;
-  }
-
-  return _.map(sports, sport => {
-    const disabled = selectedSport.id === sport.id ? "" : "disabled";
-    return (
-      <div className="item" key={`${sport.name.toLowerCase()}-selector`}>
-        <img
-          className={`ui avatar image ${disabled}`}
-          src={icons()[sport.name.toLowerCase()]}
-          onClick={() => setSelectedSport(sport)}
-          alt={`${sport.name}-selector`}
-        ></img>
-      </div>
-    );
-  });
-};
+import SportSelectorList from "./utility/SportSelectorList";
 
 const PlayerList = () => {
   const [players, setPlayers] = useState([]);
@@ -72,11 +51,7 @@ const TopPlayerList = props => {
   return (
     <>
       <h2 className="ui center aligned header">Top 10 Ranks</h2>
-      <div className="ui center aligned header">
-        <div className="ui huge horizontal list">
-          <SportSelectorList />
-        </div>
-      </div>
+      <SportSelectorList />
       <table className="ui very basic unstackable celled striped table">
         <thead>
           <tr>

@@ -11,8 +11,6 @@ const PlayerSelect = ({
   setSelectedValues,
   ...rest
 }) => {
-  // console.log(`TCL: availablePlayers`, availablePlayers);
-  console.log(`TCL: rest.value`, rest.value);
   return (
     <Form.Field
       {...rest}

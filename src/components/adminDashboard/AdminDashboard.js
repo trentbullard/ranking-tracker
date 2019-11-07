@@ -6,6 +6,7 @@ import GamesPane from "./gamesPane/GamesPane";
 import "../../styles/adminDashboard/adminDashboard.css";
 import SportProvider from "../../contexts/SportContext";
 import BackArrow from "../utility/BackArrow";
+import SportsPane from "./sportsPane/SportsPane";
 
 const panes = currentUser => {
   return [
@@ -15,15 +16,15 @@ const panes = currentUser => {
     },
     {
       menuItem: "players",
-      render: () => (
-        <SportProvider>
-          <PlayersPane currentUser={currentUser} />
-        </SportProvider>
-      ),
+      render: () => <PlayersPane currentUser={currentUser} />,
     },
     {
       menuItem: "games",
       render: () => <GamesPane currentUser={currentUser} />,
+    },
+    {
+      menuItem: "sports",
+      render: () => <SportsPane currentUser={currentUser} />,
     },
   ];
 };
@@ -32,10 +33,12 @@ const AdminDashboard = ({ currentUser }) => {
   return (
     <>
       <h3 className="ui center aligned header">Admin Dashboard</h3>
-      <Tab
-        menu={{ secondary: true, pointing: true }}
-        panes={panes(currentUser)}
-      />
+      <SportProvider>
+        <Tab
+          menu={{ secondary: true, pointing: true }}
+          panes={panes(currentUser)}
+        />
+      </SportProvider>
       <BackArrow url={`/users/${currentUser.id}`} />
     </>
   );

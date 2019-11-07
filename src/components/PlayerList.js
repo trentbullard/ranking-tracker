@@ -5,30 +5,9 @@ import InfiniteScroll from "react-infinite-scroller";
 import tracker from "../apis/tracker";
 import { SportContext } from "../contexts/SportContext";
 import { getDigest } from "../helpers/hmac";
-import { icons } from "../img/icons";
 import Footer from "./Footer";
 import BackArrow from "./utility/BackArrow";
-
-const SportSelectorList = () => {
-  const { sports, selectedSport, setSelectedSport } = useContext(SportContext);
-  if (!selectedSport) {
-    return null;
-  }
-
-  return _.map(sports, sport => {
-    const disabled = selectedSport.id === sport.id ? "" : "disabled";
-    return (
-      <div className="item" key={`${sport.name.toLowerCase()}-selector`}>
-        <img
-          className={`ui avatar image ${disabled}`}
-          src={icons()[sport.name.toLowerCase()]}
-          onClick={() => setSelectedSport(sport)}
-          alt={`${sport.name}-selector`}
-        ></img>
-      </div>
-    );
-  });
-};
+import SportSelectorList from "./utility/SportSelectorList";
 
 const PlayerItems = ({ term }) => {
   const { selectedSport } = useContext(SportContext);
