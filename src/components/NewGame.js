@@ -9,6 +9,7 @@ import { log } from "../helpers/log";
 import { FlashContext } from "../contexts/FlashContext";
 import PlayerSelect from "./newGame/PlayerSelect";
 import SportProvider, { SportContext } from "../contexts/SportContext";
+import Loading from "./utility/Loading";
 
 const NewGame = props => {
   const [timestamp] = useState(new Date());
@@ -89,9 +90,21 @@ const NewGame = props => {
 
   // set valid
   useEffect(() => {
-    const { length } = selectedValues;
-    setValid(length === 4);
-  }, [selectedValues]);
+    if (!!sport) {
+      const teamCount = sport.teamNames.split(",").length;
+      const positionCount = sport.positionNames.split(",").length;
+      const validPlayerCount = teamCount * positionCount;
+      const selectedTeams = Object.values(selectedValues);
+      const selectedPlayerCount = _.reduce(
+        selectedTeams,
+        (acc, team) => {
+          return acc + Object.values(team).length;
+        },
+        0,
+      );
+      setValid(validPlayerCount === selectedPlayerCount);
+    }
+  }, [selectedValues, sport]);
 
   // set team and position names
   useEffect(() => {
@@ -119,15 +132,21 @@ const NewGame = props => {
     const teams = _.reduce(
       teamNames,
       (acc, team) => {
-        return acc.push({
+        acc.push({
           name: team,
-          positions: _.reduce(positionNames, (acc2, position) => {
-            return acc2.push({
-              name: position,
-              player: { id: selectedValues[team][position] },
-            });
-          }),
+          positions: _.reduce(
+            positionNames,
+            (acc2, position) => {
+              acc2.push({
+                name: position,
+                player: { id: selectedValues[team][position] },
+              });
+              return acc2;
+            },
+            [],
+          ),
         });
+        return acc;
       },
       [],
     );
@@ -185,11 +204,7 @@ const NewGame = props => {
   };
 
   if (!sport || _.isEmpty(players) || transitioning) {
-    return (
-      <Dimmer active inverted>
-        <Loader>Loading</Loader>
-      </Dimmer>
-    );
+    return <Loading dim caption />;
   }
 
   return (
