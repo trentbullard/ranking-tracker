@@ -1,5 +1,8 @@
+import _ from "lodash";
 import React from "react";
 import { Form, Dropdown } from "semantic-ui-react";
+
+let ctr = 1;
 
 const PlayerSelect = ({
   name,
@@ -8,16 +11,23 @@ const PlayerSelect = ({
   position,
   availablePlayers,
   setSelectedValues,
+  value,
   ...rest
 }) => {
+  const updatedPlayers = _.map(availablePlayers, value => {
+    return {
+      ...value,
+      key: value.text + ctr++,
+    };
+  });
   return (
-    <Form.Field
+    <Form.Input
       {...rest}
-      value={rest.value}
+      value={value}
       name={name || label}
       label={label}
       placeholder="Select Player"
-      options={availablePlayers}
+      options={updatedPlayers}
       search
       selection
       control={Dropdown}
@@ -33,7 +43,6 @@ const PlayerSelect = ({
         });
       }}
       clearable
-      key={`field-${team}-${position}`}
     />
   );
 };

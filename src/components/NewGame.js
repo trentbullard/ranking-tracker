@@ -138,8 +138,6 @@ const NewGame = props => {
       started: timestamp.toISOString(),
       teams,
     };
-    console.log(`TCL: formValues`, formValues);
-    return null;
 
     let createdGame;
     try {
@@ -166,17 +164,18 @@ const NewGame = props => {
   const PlayerFields = () => {
     return _.map(teamNames, team => {
       return _.map(positionNames, position => {
-        const selectedPlayer = _.find(players, [
-          "value",
-          selectedValues[team][position || "Player"],
-        ]);
+        const selectedPlayer =
+          _.find(players, [
+            "value",
+            selectedValues[team][position || "Player"],
+          ]) || {};
         return (
           <PlayerSelect
             team={team}
             position={position}
             label={`${team} ${position}`}
-            value={selectedPlayer}
-            availablePlayers={availablePlayers}
+            value={selectedPlayer.value}
+            availablePlayers={_.concat(availablePlayers, selectedPlayer)}
             setSelectedValues={setSelectedValues}
             key={`select-${team}-${position}`}
           />
