@@ -113,7 +113,7 @@ const NewGame = props => {
       if (sport.playersPerTeam > 1) {
         setPositionNames(sport.positionNames.split(","));
       } else {
-        setPositionNames([""]);
+        setPositionNames(_.castArray(sport.positionNames));
       }
       setSelectedValues(sv => {
         const sportTeams = {};
@@ -174,6 +174,7 @@ const NewGame = props => {
       );
       return createdGame.id;
     } catch (error) {
+      setTransitioning(false);
       console.log("failed to create game: ", error.stack);
       addFlash("failed to create game");
       return null;

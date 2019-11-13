@@ -15,7 +15,7 @@ import Registration from "./Registration";
 import AdminRoute from "./routes/AdminRoute";
 import AnyUserRoute from "./routes/AnyUserRoute";
 import UserProfileRoute from "./routes/UserProfileRoute";
-import ScoreKeeper from "./ScoreKeeper";
+import ScoreKeeper from "./scoreKeeper/ScoreKeeper";
 import UserProfile from "./userProfile/UserProfile";
 import ErrorBoundary from "./utility/ErrorBoundary";
 import Flash from "./utility/Flash";

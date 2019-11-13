@@ -18,7 +18,17 @@ const PlayerItems = ({ teams, winningScore, gameId }) => {
       },
       0,
     );
-    const teamString = `${positions[0].player.name} & ${positions[1].player.name}: ${teamScore}`;
+    let amp = "";
+    let teamString = _.reduce(
+      positions,
+      (acc, position) => {
+        const result = `${amp}${position.player.name}`;
+        amp = " & ";
+        return `${acc}${result}`;
+      },
+      "",
+    );
+    teamString = `${teamString}: ${teamScore}`;
     const teamElement =
       teamScore >= winningScore ? <b>{teamString}</b> : teamString;
     return (
@@ -73,11 +83,7 @@ const GameItems = () => {
         <div className="right floated content game-date">
           {new Date(game.started).toLocaleDateString("en-US")}
         </div>
-        <img
-          className="ui avatar image"
-          src={icons()[sport.name.toLowerCase()]}
-          alt=""
-        />
+        <img className="ui avatar image" src={icons()[sport.iconName]} alt="" />
         <div className="content">
           <div className="ui list" style={{ padding: "0" }}>
             <PlayerItems

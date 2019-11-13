@@ -1,0 +1,57 @@
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2em;
+  grid-template-rows: auto;
+  justify-items: stretch;
+  justify-content: center;
+}
+
+.team-column {
+  display: flex;
+  align-content: stretch;
+  flex-direction: column;
+}
+
+.team-heading {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  align-items: center;
+  margin-bottom: 1.5em;
+}
+
+.team-heading > .team-name {
+  font-weight: 600;
+  line-height: 1.2em;
+  font-size: 1.2em;
+}
+
+.team-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.team-buttons > .score-buttons {
+  margin: 1.5em 0;
+}
+
+.team-buttons > .score-buttons > .labeled.button {
+  margin: 0;
+  display: flex;
+  justify-items: stretch;
+  justify-content: center;
+}
+
+.team-buttons > .score-buttons > .labeled.button > .label {
+  flex-grow: 1;
+  flex-shrink: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.team-buttons > .score-buttons > .labeled.button > .button {
+  flex-grow: 3;
+  flex-shrink: 3;
+}
