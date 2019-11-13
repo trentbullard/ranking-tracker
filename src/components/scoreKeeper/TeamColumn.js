@@ -4,6 +4,7 @@ import ScoreButton from "./ScoreButton";
 
 const ScoreButtons = ({
   buttonColor,
+  textColor,
   positions,
   disabled,
   left,
@@ -12,7 +13,9 @@ const ScoreButtons = ({
     return (
       <ScoreButton
         player={position.player}
+        positionName={position.name}
         buttonColor={buttonColor}
+        textColor={textColor}
         disabled={disabled}
         left={left}
         key={position.player.name}
@@ -57,6 +60,7 @@ const TeamColumn = ({ team, color, left, disabled }) => {
       <div className="team-buttons">
         <ScoreButtons
           buttonColor={colorName}
+          textColor={colorCode}
           positions={team.positions}
           left={left}
           disabled={_.isEmpty(team) || disabled}

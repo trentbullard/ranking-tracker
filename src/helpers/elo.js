@@ -1,4 +1,5 @@
-const K = 30;
+import _ from "lodash";
+
 const FOOSBALL = "Foosball";
 
 // Foosball Win/Loss Keeper/Forward Goals/GoalsAgainst Weight
@@ -12,84 +13,93 @@ const FB_W_F_GA_WT = "1";
 // const FB_L_F_GA_WT = "1";
 
 const CORNHOLE = "Cornhole";
+const TABLE_TENNIS = "Table Tennis";
 
-export const getNewElos = (wTeam, lTeam, sport) => {
-  const wTeamName = wTeam.name;
-  const lTeamName = lTeam.name;
-  const position1 = wTeam.positions[0].name;
-  const position2 = wTeam.positions[1].name;
-  const wPlayer1 = wTeam.positions[0].player;
-  const wPlayer2 = wTeam.positions[1].player;
-  const lPlayer1 = lTeam.positions[0].player;
-  const lPlayer2 = lTeam.positions[1].player;
-  const wTeamGoals = wPlayer1.score + wPlayer2.score;
-  const lTeamGoals = lPlayer1.score + lPlayer2.score;
-  const wTeamAvgElo = (wPlayer1.elo + wPlayer2.elo) / 2.0;
-  const lTeamAvgElo = (lPlayer1.elo + lPlayer2.elo) / 2.0;
-  const wProb = probability(wTeamAvgElo, lTeamAvgElo);
-  const lProb = probability(lTeamAvgElo, wTeamAvgElo);
-  const wTeamDelta = K * (1 - wProb);
-  const lTeamDelta = K * (0 - lProb);
-  const wPlayer1Gain = gainCalculation(
-    wTeamDelta,
-    position1,
-    wPlayer1,
-    lTeamGoals,
-    sport,
-  );
-  const wPlayer2Gain = gainCalculation(
-    wTeamDelta,
-    position2,
-    wPlayer2,
-    lTeamGoals,
-    sport,
-  );
-  const lPlayer1Gain = gainCalculation(
-    lTeamDelta,
-    position1,
-    lPlayer1,
-    wTeamGoals,
-    sport,
-  );
-  const lPlayer2Gain = gainCalculation(
-    lTeamDelta,
-    position2,
-    lPlayer2,
-    wTeamGoals,
-    sport,
-  );
-
-  return [
-    {
-      ...wPlayer1,
-      elo: wPlayer1.elo + wPlayer1Gain <= 0 ? 0 : wPlayer1.elo + wPlayer1Gain,
-      teamName: wTeamName,
-      position: position1,
-    },
-    {
-      ...wPlayer2,
-      elo: wPlayer2.elo + wPlayer2Gain <= 0 ? 0 : wPlayer2.elo + wPlayer2Gain,
-      teamName: wTeamName,
-      position: position2,
-    },
-    {
-      ...lPlayer1,
-      elo: lPlayer1.elo + lPlayer1Gain <= 0 ? 0 : lPlayer1.elo + lPlayer1Gain,
-      teamName: lTeamName,
-      position: position1,
-    },
-    {
-      ...lPlayer2,
-      elo: lPlayer2.elo + lPlayer2Gain <= 0 ? 0 : lPlayer2.elo + lPlayer2Gain,
-      teamName: lTeamName,
-      position: position2,
-    },
-  ];
+const K = {
+  [FOOSBALL]: 30.0,
+  [CORNHOLE]: 30.0,
+  [TABLE_TENNIS]: 30.0,
 };
 
-const probability = (team1, team2) => {
-  const transformedTeam1Avg = 10.0 ** (team1 / 40.0);
-  const transformedTeam2Avg = 10.0 ** (team2 / 40.0);
+const COEF = {
+  [FOOSBALL]: 50.0,
+  [CORNHOLE]: 40.0,
+  [TABLE_TENNIS]: 40.0,
+};
+
+export const getNewElos = (wTeam, lTeam, sport) => {
+  const wTeamScore = _.reduce(
+    wTeam.positions,
+    (acc, position) => {
+      return acc + position.player.score;
+    },
+    0,
+  );
+
+  const wTeamElo =
+    _.reduce(
+      wTeam.positions,
+      (acc, position) => {
+        return acc + position.player.elo;
+      },
+      0,
+    ) /
+    (wTeam.positions.length * 1.0);
+
+  const lTeamScore = _.reduce(
+    lTeam.positions,
+    (acc, position) => {
+      return acc + position.player.score;
+    },
+    0,
+  );
+
+  const lTeamElo =
+    _.reduce(
+      lTeam.positions,
+      (acc, position) => {
+        return acc + position.player.elo;
+      },
+      0,
+    ) /
+    (lTeam.positions.length * 1.0);
+
+  const wProb = probability(wTeamElo, lTeamElo, sport);
+  const lProb = probability(lTeamElo, wTeamElo, sport);
+
+  const wTeamDelta = K[sport.name] * (1 - wProb);
+  const lTeamDelta = K[sport.name] * (0 - lProb);
+
+  const wTeamUpdatedElos = _.map(wTeam.positions, position => {
+    const positionName = position.name;
+    const player = position.player;
+    let newElo =
+      player.elo +
+      gainCalculation(wTeamDelta, positionName, player, lTeamScore, sport);
+    return {
+      elo: newElo,
+      id: player.id,
+    };
+  });
+
+  const lTeamUpdatedElos = _.map(lTeam.positions, position => {
+    const positionName = position.name;
+    const player = position.player;
+    let newElo =
+      player.elo +
+      gainCalculation(lTeamDelta, positionName, player, wTeamScore, sport);
+    return {
+      elo: newElo,
+      id: player.id,
+    };
+  });
+
+  return _.concat(wTeamUpdatedElos, lTeamUpdatedElos);
+};
+
+const probability = (team1, team2, sport) => {
+  const transformedTeam1Avg = 10.0 ** (team1 / COEF[sport.name]);
+  const transformedTeam2Avg = 10.0 ** (team2 / COEF[sport.name]);
   return transformedTeam1Avg / (transformedTeam1Avg + transformedTeam2Avg);
 };
 
@@ -98,7 +108,9 @@ const gainCalculation = (delta, position, player, goalsAgainst, sport) => {
     case FOOSBALL:
       return foosballCalculation(delta, position, player, goalsAgainst);
     case CORNHOLE:
-      return cornholeCalculation(delta, player);
+      return cornholeCalculation(delta);
+    case TABLE_TENNIS:
+      return tableTennisCalculation(delta);
     default:
       return 0;
   }
@@ -123,7 +135,11 @@ const foosballCalculation = (delta, position, player, goalsAgainst) => {
   return Math.round(earned);
 };
 
-const cornholeCalculation = (delta, player) => {
+const cornholeCalculation = delta => {
   let earned = delta / 2.0;
   return Math.round(earned);
+};
+
+const tableTennisCalculation = delta => {
+  return Math.round(delta);
 };

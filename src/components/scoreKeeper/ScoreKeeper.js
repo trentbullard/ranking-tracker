@@ -1,9 +1,8 @@
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import tracker from "../../apis/tracker";
-import ScoreProvider, { ScoreContext } from "../../contexts/ScoreContext";
-import { getGamesFromRecords } from "../../helpers/games";
 import { getDigest } from "../../helpers/hmac";
+import ScoreProvider, { ScoreContext } from "../../contexts/ScoreContext";
 import BackArrow from "../utility/BackArrow";
 import history from "../../history";
 import { getNewElos } from "../../helpers/elo";
@@ -23,7 +22,7 @@ const COLORS = [
 ];
 
 const PlayAgainButton = ({ show }) => {
-  const { game, setGame } = useContext(ScoreContext);
+  const { game, setGameId } = useContext(ScoreContext);
   const { currentUser } = useContext(AuthContext);
   const { addFlash } = useContext(FlashContext);
   const [loading, setLoading] = useState(false);
@@ -58,7 +57,7 @@ const PlayAgainButton = ({ show }) => {
         "games",
         currentUser.id,
       );
-      setGame(null);
+      setGameId(null);
       history.push(`/games/score/${returnedGame.id}`);
     } catch (error) {
       console.log("failed to create new game: ", error.stack);
@@ -79,76 +78,7 @@ const PlayAgainButton = ({ show }) => {
   ) : null;
 };
 
-const ScoreButton = props => {
-  const [disabled, setDisabled] = useState(true);
-  const [currentPlayerTeamId, setCurrentPlayerTeamId] = useState(null);
-  const [currentPlayerScore, setCurrentPlayerScore] = useState(0);
-  const [currentPlayerName, setCurrentPlayerName] = useState("");
-
-  const linkClassName = `ui ${disabled ? "disabled" : ""} ${
-    props.left
-  } labeled button`;
-  const nameClassName = `ui ${props.color} ${props.left} button`;
-  const scoreClassName = `ui ${props.color} basic ${props.left} label`;
-
-  // update disabled
-  useEffect(() => {
-    setDisabled(props.disabled || !currentPlayerTeamId);
-  }, [currentPlayerTeamId, props.disabled]);
-
-  // update player from props
-  useEffect(() => {
-    if (props.player) {
-      const { teamPlayerId, name, score } = props.player;
-      setCurrentPlayerTeamId(teamPlayerId);
-      setCurrentPlayerScore(score);
-      setCurrentPlayerName(name);
-    }
-  }, [props.player]);
-
-  const handleClick = async event => {
-    event.preventDefault();
-    const alreadyDisabled = disabled;
-    setDisabled(true);
-    await tracker.patch(
-      "/goal",
-      {
-        teamPlayerId: currentPlayerTeamId,
-        newScore: currentPlayerScore + 1,
-      },
-      {
-        params: {
-          token: getDigest("patch", "/goal"),
-        },
-      },
-    );
-    props.setScored(s => s + 1);
-    setDisabled(alreadyDisabled);
-  };
-
-  return (
-    <div
-      className={linkClassName}
-      style={{ maxWidth: "100%", minWidth: "100%", margin: "0 0 2em" }}
-      onClick={handleClick}
-    >
-      <div
-        className={nameClassName}
-        style={{ maxWidth: "70%", minWidth: "70%" }}
-      >
-        {currentPlayerName}
-      </div>
-      <div
-        className={scoreClassName}
-        style={{ maxWidth: "30%", minWidth: "30%" }}
-      >
-        {currentPlayerScore}
-      </div>
-    </div>
-  );
-};
-
-const TeamColumns = ({ teams }) => {
+const TeamColumns = ({ teams, disabled }) => {
   if (_.isEmpty(teams)) {
     return <Loading />;
   }
@@ -159,43 +89,34 @@ const TeamColumns = ({ teams }) => {
         return !!c[team.name];
       }) || COLORS[index];
     return (
-      <TeamColumn team={team} color={color} left={!!index} key={team.name} />
+      <TeamColumn
+        team={team}
+        color={color}
+        left={!!index}
+        disabled={disabled}
+        key={team.name}
+      />
     );
   });
 };
 
 const ScoreKeeper = props => {
-  const { game, setGame, scores, setScores } = useContext(ScoreContext);
+  const { game, setGameId } = useContext(ScoreContext);
   const { sports } = useContext(SportContext);
   const { currentUser } = useContext(AuthContext);
 
   const [disabled, setDisabled] = useState(true);
   const [sport, setSport] = useState(null);
   const [sportName, setSportName] = useState("");
-  const [teamNames, setTeamNames] = useState([]);
-  const [positionNames, setPositionNames] = useState([]);
   const [teams, setTeams] = useState([]);
   const [wTeam, setWTeam] = useState(null);
   const [lTeam, setLTeam] = useState(null);
   const [gameOver, setGameOver] = useState(false);
 
-  // get game from db
+  // set gameId
   useEffect(() => {
-    const getGame = async () => {
-      const { data } = await tracker.get(`/games`, {
-        params: {
-          id: props.match.params.id,
-          sort: ["id"],
-          order: ["asc"],
-          token: getDigest("get", "/games"),
-        },
-      });
-      const returnedGame = await data;
-      setGame(_.first(getGamesFromRecords(returnedGame)));
-    };
-
-    getGame();
-  }, [props.match.params.id, setGame, scores]);
+    setGameId(props.match.params.id);
+  }, [props.match.params.id, setGameId]);
 
   // set sport from game
   useEffect(() => {
@@ -220,35 +141,6 @@ const ScoreKeeper = props => {
     }
   }, [game]);
 
-  // update teamNames and positionNames
-  useEffect(() => {
-    if (!!sport && !_.isEmpty(teams)) {
-      if (sport.playersPerTeam === 1) {
-        setTeamNames(
-          _.map(teams, team => {
-            return team.name;
-          }),
-        );
-        setPositionNames();
-      }
-    }
-  }, [sport, teams]);
-
-  // initialize scores
-  useEffect(() => {
-    if (
-      !_.isEmpty(teamNames) &&
-      !_.isEmpty(positionNames) &&
-      _.isEmpty(scores)
-    ) {
-      _.each(teamNames, teamName => {
-        _.each(positionNames, positionName => {
-          setScores({ [teamName]: { [positionName]: 0 } });
-        });
-      });
-    }
-  }, [teamNames, positionNames, scores, setScores]);
-
   // check game end
   useEffect(() => {
     if (!game) {
@@ -268,11 +160,26 @@ const ScoreKeeper = props => {
     const gameIsOver = _.reduce(
       teams,
       (acc, team) => {
-        return acc || team.score >= winningScore;
+        const teamScore = _.reduce(
+          team.positions,
+          (acc2, position) => {
+            return acc2 + position.player.score;
+          },
+          0,
+        );
+        if (teamScore >= winningScore) {
+          setWTeam(team);
+        } else {
+          setLTeam(team);
+        }
+        return acc || teamScore >= winningScore;
       },
       false,
     );
     setGameOver(gameIsOver);
+    if (gameIsOver) {
+      setDisabled(true);
+    }
   }, [game, sport, teams]);
 
   // update elos when game ends
@@ -312,7 +219,7 @@ const ScoreKeeper = props => {
       <div className="team-grid">
         <TeamColumns teams={teams} disabled={disabled} />
       </div>
-      <PlayAgainButton show={gameOver} setGame={setGame} />
+      <PlayAgainButton show={gameOver} />
       <BackArrow url="/" />
     </>
   );

@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Button, Label } from "semantic-ui-react";
+import { ScoreContext } from "../../contexts/ScoreContext";
+import { getDigest } from "../../helpers/hmac";
+import tracker from "../../apis/tracker";
 
-const ScoreButton = ({ buttonColor, player, left, disabled }) => {
-  const handleClick = event => {
+const ScoreButton = ({
+  buttonColor,
+  textColor,
+  player,
+  positionName,
+  left,
+  disabled,
+}) => {
+  const { setScored } = useContext(ScoreContext);
+  const [selfDisabled, setSelfDisabled] = useState(false);
+
+  const handleClick = async event => {
     event.preventDefault();
-    console.log(`${player.name} clicked: ${player.score}`);
+    const alreadyDisabled = disabled;
+    setSelfDisabled(true);
+    await tracker.patch(
+      "/goal",
+      {
+        teamPlayerId: player.teamPlayerId,
+        newScore: player.score + 1,
+      },
+      {
+        params: {
+          token: getDigest("patch", "/goal"),
+        },
+      },
+    );
+    setScored(s => s + 1);
+    setSelfDisabled(alreadyDisabled);
   };
 
   const ButtonContent = _props => {
@@ -30,10 +58,13 @@ const ScoreButton = ({ buttonColor, player, left, disabled }) => {
 
   return (
     <div className="score-buttons">
+      <div className="position-title" style={{ color: textColor }}>
+        {positionName}
+      </div>
       <Button
         labelPosition={left ? "left" : "right"}
         onClick={handleClick}
-        disabled={disabled}
+        disabled={disabled || selfDisabled}
         as="div"
       >
         <ButtonContent />
