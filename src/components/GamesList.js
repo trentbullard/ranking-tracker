@@ -107,6 +107,9 @@ const GameItems = ({ term }) => {
 
   const items = _.map(filteredGames, game => {
     const sport = _.find(sports, { id: game.sport });
+    if (!sport) {
+      return null;
+    }
     let winningScore = sport.winningScore;
     return (
       <Link

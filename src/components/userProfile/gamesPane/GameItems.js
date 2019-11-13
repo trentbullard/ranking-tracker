@@ -8,6 +8,9 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import "../../../styles/userProfile/gamesPane.css";
 
 const GameItem = ({ game, sport }) => {
+  if (!sport) {
+    return null;
+  }
   let winningScore = sport.winningScore;
   return (
     <Link
