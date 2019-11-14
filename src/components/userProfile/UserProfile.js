@@ -4,22 +4,20 @@ import { Link } from "react-router-dom";
 import { Header, Tab } from "semantic-ui-react";
 import tracker from "../../apis/tracker";
 import { AuthContext } from "../../contexts/AuthContext";
-import SportProvider from "../../contexts/SportContext";
 import { getDigest } from "../../helpers/hmac";
 import BackArrow from "../utility/BackArrow";
-import GamesPane from "./gamesPane/GamesPane";
 import UserInfoPane from "./userInfoPane/UserInfoPane";
 
 const panes = userId => {
   return [
-    {
-      menuItem: "games",
-      render: () => (
-        <SportProvider>
-          <GamesPane userId={userId} />
-        </SportProvider>
-      ),
-    },
+    // {
+    //   menuItem: "games",
+    //   render: () => (
+    //     <SportProvider>
+    //       <GamesPane userId={userId} />
+    //     </SportProvider>
+    //   ),
+    // },
     {
       menuItem: "info",
       render: () => <UserInfoPane userId={userId} />,
