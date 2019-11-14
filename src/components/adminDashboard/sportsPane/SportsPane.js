@@ -1,7 +1,8 @@
 import _ from "lodash";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Tab, Table } from "semantic-ui-react";
-import { SportContext } from "../../../contexts/SportContext";
+import tracker from "../../../apis/tracker";
+import { getDigest } from "../../../helpers/hmac";
 import Loading from "../../utility/Loading";
 import TabControls from "../TabControls";
 import SortIcon from "../SortIcon";
@@ -25,8 +26,20 @@ const SportsPane = _props => {
   const [sortedSports, setSortedSports] = useState([]);
   const [selectedSport, setSelectedSport] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [sports, setSports] = useState([]);
 
-  const { sports } = useContext(SportContext);
+  useEffect(() => {
+    const getSports = async () => {
+      const { data } = await tracker.get("/sports", {
+        params: {
+          token: getDigest("get", "/sports"),
+        },
+      });
+      const returnedSports = await data;
+      setSports(returnedSports);
+    };
+    getSports();
+  }, [showModal]);
 
   // set column sorts
   useEffect(() => {

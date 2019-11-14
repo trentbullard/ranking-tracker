@@ -21,8 +21,8 @@ const COLORS = [
   { Blue: "#2185d0" },
 ];
 
-const PlayAgainButton = ({ show }) => {
-  const { game, setGameId } = useContext(ScoreContext);
+const PlayAgainButton = ({ show, setNewGame }) => {
+  const { game } = useContext(ScoreContext);
   const { currentUser } = useContext(AuthContext);
   const { addFlash } = useContext(FlashContext);
   const [loading, setLoading] = useState(false);
@@ -57,7 +57,7 @@ const PlayAgainButton = ({ show }) => {
         "games",
         currentUser.id,
       );
-      setGameId(null);
+      setNewGame(returnedGame);
       history.push(`/games/score/${returnedGame.id}`);
     } catch (error) {
       console.log("failed to create new game: ", error.stack);
@@ -112,6 +112,7 @@ const ScoreKeeper = props => {
   const [wTeam, setWTeam] = useState(null);
   const [lTeam, setLTeam] = useState(null);
   const [gameOver, setGameOver] = useState(false);
+  const [newGame, setNewGame] = useState(null);
 
   // set gameId
   useEffect(() => {
@@ -177,9 +178,6 @@ const ScoreKeeper = props => {
       false,
     );
     setGameOver(gameIsOver);
-    if (gameIsOver) {
-      setDisabled(true);
-    }
   }, [game, sport, teams]);
 
   // update elos when game ends
@@ -207,6 +205,16 @@ const ScoreKeeper = props => {
     }
   }, [currentUser.id, game, gameOver, lTeam, sport, wTeam]);
 
+  // clear state for new game
+  useEffect(() => {
+    if (!!newGame) {
+      setGameOver(false);
+      setTeams([]);
+      setWTeam(null);
+      setLTeam(null);
+    }
+  }, [newGame]);
+
   return (
     <>
       <h3
@@ -219,7 +227,7 @@ const ScoreKeeper = props => {
       <div className="team-grid">
         <TeamColumns teams={teams} disabled={disabled} />
       </div>
-      <PlayAgainButton show={gameOver} />
+      <PlayAgainButton show={gameOver} setNewGame={setNewGame} />
       <BackArrow url="/" />
     </>
   );
