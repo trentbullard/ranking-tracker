@@ -11,7 +11,17 @@ const PlayerItems = ({ teams, winningScore, gameId }) => {
       },
       0,
     );
-    const teamString = `${positions[0].player.name} & ${positions[1].player.name}: ${teamScore}`;
+    let amp = "";
+    let teamString = _.reduce(
+      positions,
+      (acc, position) => {
+        const result = `${amp}${position.player.name}`;
+        amp = " & ";
+        return `${acc}${result}`;
+      },
+      "",
+    );
+    teamString = `${teamString}: ${teamScore}`;
     const teamElement =
       teamScore >= winningScore ? <b>{teamString}</b> : teamString;
     return (

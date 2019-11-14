@@ -217,11 +217,11 @@ const SportModal = ({ sport, showModal, setShowModal }) => {
           <Form.Checkbox
             label="enabled"
             checked={formValues.enabled}
-            onChange={(_event, { value }) =>
+            onChange={(_event, { checked }) => {
               setFormValues(fv => {
-                return { ...fv, enabled: value };
-              })
-            }
+                return { ...fv, enabled: checked };
+              });
+            }}
           />
           <Form.Input
             error={errors.playersPerTeam}

@@ -10,12 +10,13 @@ const SportProvider = props => {
   const [sportDeleted, setSportDeleted] = useState(null);
   const [sportUpdated, setSportUpdated] = useState(null);
   const [sportAdded, setSportAdded] = useState(null);
+  const [showDisabled, setShowDisabled] = useState(false);
 
   useEffect(() => {
     const getSports = async () => {
       const { data } = await tracker.get("/sports", {
         params: {
-          where: { enabled: true },
+          where: showDisabled ? null : { enabled: true },
           token: getDigest("get", "/sports"),
         },
       });
@@ -24,7 +25,7 @@ const SportProvider = props => {
       setSelectedSport(returnedSports[0]);
     };
     getSports();
-  }, [sportDeleted, sportUpdated, sportAdded]);
+  }, [sportDeleted, sportUpdated, sportAdded, showDisabled]);
 
   const state = {
     sports,
@@ -34,6 +35,7 @@ const SportProvider = props => {
     setSportDeleted,
     setSportUpdated,
     setSportAdded,
+    setShowDisabled,
   };
 
   return (

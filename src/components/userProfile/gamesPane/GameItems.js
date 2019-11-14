@@ -23,7 +23,7 @@ const GameItem = ({ game, sport }) => {
       </div>
       <img
         className="ui avatar image"
-        src={icons()[sport.name.toLowerCase()]}
+        src={icons()[sport.iconName]}
         alt=""
       />
       <div className="content">
