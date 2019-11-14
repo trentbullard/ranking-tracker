@@ -12,6 +12,8 @@ import "../../../styles/adminDashboard/usersPane/usersPane.css";
 const fieldMap = {
   id: "id",
   username: "email",
+  "first name": "firstName",
+  "last name": "lastName",
   "is admin?": "isAdmin",
 };
 
@@ -38,6 +40,8 @@ const UserRows = ({
         <Table.Cell>{user.id}</Table.Cell>
         <Table.Cell>{user.email}</Table.Cell>
         <Table.Cell>{user.isAdmin.toString()}</Table.Cell>
+        <Table.Cell>{user.firstName}</Table.Cell>
+        <Table.Cell>{user.lastName}</Table.Cell>
       </Table.Row>
     );
   });
@@ -182,6 +186,18 @@ const UsersPane = ({ currentUser }) => {
               onClick={handleClickHeader}
             >
               is admin? <SortIcon header="isAdmin" sorted={sorted} />
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="sortable-header"
+              onClick={handleClickHeader}
+            >
+              first name <SortIcon header="firstName" sorted={sorted} />
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="sortable-header"
+              onClick={handleClickHeader}
+            >
+              last name <SortIcon header="lastName" sorted={sorted} />
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
