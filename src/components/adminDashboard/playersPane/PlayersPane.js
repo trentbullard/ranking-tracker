@@ -1,8 +1,7 @@
 import _ from "lodash";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Tab, Table, Button } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
-import { FlashContext } from "../../../contexts/FlashContext";
 import { SportContext } from "../../../contexts/SportContext";
 import { getDigest } from "../../../helpers/hmac";
 import SportSelectorList from "../../utility/SportSelectorList";
@@ -27,12 +26,6 @@ const PlayersPane = ({ currentUser }) => {
   const [playerAdded, setPlayerAdded] = useState(null);
   const [playerUpdated, setPlayerUpdated] = useState(null);
   const [playerDeleted, setPlayerDeleted] = useState(null);
-
-  const { addFlash } = useContext(FlashContext);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const memoizedAddFlash = useCallback(message => addFlash(message), [
-    playerAdded,
-  ]);
 
   const { selectedSport } = useContext(SportContext);
   useEffect(() => {}, [selectedSport]);
@@ -74,14 +67,6 @@ const PlayersPane = ({ currentUser }) => {
     const { column, order } = sorted;
     setFilteredPlayers(fp => _.orderBy(fp, [column], [order]));
   }, [sorted]);
-
-  // addFlash on player create
-  useEffect(() => {
-    if (!!playerAdded) {
-      const { name } = playerAdded;
-      memoizedAddFlash(`player created successfully: ${name}`);
-    }
-  }, [memoizedAddFlash, playerAdded]);
 
   const handleSearch = event => {
     event.preventDefault();

@@ -18,12 +18,14 @@ const PlayerItems = ({ term }) => {
   const [players, setPlayers] = useState([]);
   const [filteredPlayers, setFilteredPlayers] = useState([]);
 
+  // reset infinite scroll on sport change
   useEffect(() => {
     setPage(1);
     setHasMore(false);
     setPlayers([]);
   }, [selectedSport]);
 
+  // get players for infinite scroll
   useEffect(() => {
     const getPlayers = async (sportId, currentPage, itemLimit = 10) => {
       const { data } = await tracker.get(`/players`, {
@@ -50,9 +52,10 @@ const PlayerItems = ({ term }) => {
     setHasMore(false);
   };
 
+  // filter players
   useEffect(() => {
     if (_.isEmpty(term)) {
-      setFilteredPlayers(players);
+      setFilteredPlayers(_.orderBy(players, ["elo", "name"], ["desc", "asc"]));
       return;
     }
     setFilteredPlayers(p => {

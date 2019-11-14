@@ -84,6 +84,9 @@ const NewPlayerModal = ({
     } else if (!returnedPlayer) {
       addFlash("failed to create player");
     } else {
+      addFlash("player created successfully");
+      setPlayerAdded(returnedPlayer);
+      setName("");
       log(
         "PLAYER_CREATED",
         returnedPlayer.id,
@@ -92,8 +95,6 @@ const NewPlayerModal = ({
         "players",
         currentUser.id,
       );
-      addFlash("player created successfully");
-      setPlayerAdded(returnedPlayer);
     }
     setShowModal(false);
   };
