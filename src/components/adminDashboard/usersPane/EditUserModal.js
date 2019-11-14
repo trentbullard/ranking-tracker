@@ -1,12 +1,23 @@
 import _ from "lodash";
 import React, { useContext, useState, useEffect } from "react";
-import { Button, Modal, Form, Header, Icon, Message } from "semantic-ui-react";
+import { Button, Modal, Form, Header, Icon } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { encryptData } from "../../../helpers/aes";
 import { getDigest } from "../../../helpers/hmac";
 import { FlashContext } from "../../../contexts/FlashContext";
 import { log } from "../../../helpers/log";
 import "../../../styles/adminDashboard/usersPane/userModal.css";
+import AdminCheckbox from "./AdminCheckbox";
+
+const emptyValues = {
+  createdAt: new Date().toLocaleString("en-us"),
+  email: "",
+  password: "",
+  passwordConfirmation: "",
+  firstName: "",
+  lastName: "",
+  isAdmin: false,
+};
 
 const DeleteUserConfirmationModal = ({
   showConfirmationModal,
@@ -80,50 +91,46 @@ const EditUserModal = ({
   currentUser,
 }) => {
   const { addFlash } = useContext(FlashContext);
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
-  const [userPasswordConfirmation, setUserPasswordConfirmation] = useState("");
-  const [userFormValid, setUserFormValid] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
+  const [formValues, setFormValues] = useState(emptyValues);
+  const [errors, setErrors] = useState({});
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
+  // populate form on selection
   useEffect(() => {
-    const userEmailBlank = _.isEmpty(userEmail);
-    const passwordConfirmed = userPassword === userPasswordConfirmation;
-    setUserFormValid(!userEmailBlank && passwordConfirmed);
-    setFormErrors(oErrors => {
-      return {
-        ...oErrors,
-        email: userEmailBlank ? (
-          <Message error content="email cannot be blank" />
-        ) : null,
-        password: passwordConfirmed ? null : (
-          <Message error content="password and confirmation do not match" />
-        ),
-      };
-    });
-  }, [userEmail, userPassword, userPasswordConfirmation]);
-
-  useEffect(() => {
-    if (!!showModal) {
-      const { email } = showModal;
-      setUserEmail(email);
-    }
+    setFormValues(showModal);
   }, [showModal]);
+
+  // validate form
+  useEffect(() => {
+    setErrors({});
+    if (_.isEmpty(formValues)) {
+      return;
+    }
+    if (_.isEmpty(formValues.email)) {
+      setErrors(e => {
+        return { ...e, email: "required" };
+      });
+    }
+    if (
+      !_.isEmpty(formValues.password) ||
+      !_.isEmpty(formValues.passwordConfirmation)
+    ) {
+      if (formValues.password !== formValues.passwordConfirmation) {
+        setErrors(e => {
+          return { ...e, passwordConfirmation: "doesn't match" };
+        });
+      } else {
+      }
+    }
+  }, [formValues]);
 
   const handleSubmit = async event => {
     event.preventDefault();
 
-    const formValues = {
-      userId: showModal.id,
-      email: userEmail,
-      password: userPassword,
-    };
-
     const cipher = encryptData(formValues);
     try {
-      const response = await tracker.patch(
-        `/users/${formValues.userId}`,
+      const { data } = await tracker.patch(
+        `/users/${formValues.id}`,
         {},
         {
           params: {
@@ -132,7 +139,12 @@ const EditUserModal = ({
           },
         },
       );
-      const returnedUser = await response.data;
+      const returnedUser = await data;
+      if (!returnedUser || _.isEmpty(returnedUser)) {
+        console.log("failed to update user: check api logs");
+        addFlash(`failed to update user, reason unknown`);
+        return;
+      }
       log(
         "USER_UPDATED",
         returnedUser.id,
@@ -143,12 +155,20 @@ const EditUserModal = ({
       );
       setUserUpdated(returnedUser);
       addFlash(`user updated successfully`);
-    } catch (error) {
-      console.log("failed to update user: ", error.stack);
-      addFlash(`failed to update user`);
+    } catch ({ message }) {
+      console.log("failed to update user: ", message);
+      if (message.includes("status code 403")) {
+        addFlash(`email already taken`);
+      } else {
+        addFlash(`failed to update user`);
+      }
     }
     setShowModal(false);
   };
+
+  if (_.isEmpty(formValues)) {
+    return null;
+  }
 
   return (
     <Modal
@@ -165,33 +185,82 @@ const EditUserModal = ({
         Edit User
       </Header>
       <Form inverted onSubmit={handleSubmit} error>
+        <AdminCheckbox
+          user={currentUser}
+          checked={formValues.isAdmin}
+          setFormValues={setFormValues}
+        />
         <Form.Input
+          name="joined"
+          label="joined (read-only)"
+          value={new Date(formValues.createdAt).toLocaleString("en-US")}
+          readOnly
+          autoComplete="off"
+        />
+        <Form.Input
+          error={errors.email}
           name="email"
-          type="text"
           label="email"
           placeholder="email..."
-          value={userEmail}
-          onChange={(_event, { value }) => setUserEmail(value)}
+          value={formValues.email}
+          onChange={(_event, { value }) =>
+            setFormValues(fv => {
+              return { ...fv, email: value };
+            })
+          }
         />
-        {formErrors.email}
+        Leave blank for no change
         <Form.Input
+          error={errors.password}
           name="password"
           type="password"
-          label="edit password"
+          label="password"
           placeholder="password..."
-          value={userPassword}
-          onChange={(_event, { value }) => setUserPassword(value)}
+          value={formValues.password}
+          onChange={(_event, { value }) =>
+            setFormValues(fv => {
+              return { ...fv, password: value };
+            })
+          }
         />
         <Form.Input
+          error={errors.passwordConfirmation}
           name="passwordConfirmation"
           type="password"
-          label="edit password confirmation"
+          label="password confirmation"
           placeholder="password again..."
-          value={userPasswordConfirmation}
-          onChange={(_event, { value }) => setUserPasswordConfirmation(value)}
+          value={formValues.passwordConfirmation}
+          onChange={(_event, { value }) =>
+            setFormValues(fv => {
+              return { ...fv, passwordConfirmation: value };
+            })
+          }
         />
-        {formErrors.password}
-        <Button disabled={!userFormValid} id="submit-btn">
+        <Form.Input
+          error={errors.firstName}
+          name="firstName"
+          label="first name"
+          placeholder="first name"
+          value={formValues.firstName}
+          onChange={(_event, { value }) =>
+            setFormValues(fv => {
+              return { ...fv, firstName: value };
+            })
+          }
+        />
+        <Form.Input
+          error={errors.lastName}
+          name="lastName"
+          label="last name"
+          placeholder="last name"
+          value={formValues.lastName}
+          onChange={(_event, { value }) =>
+            setFormValues(fv => {
+              return { ...fv, lastName: value };
+            })
+          }
+        />
+        <Button disabled={!_.isEmpty(errors)} id="submit-btn">
           Submit
         </Button>
         <DeleteUserConfirmationModal

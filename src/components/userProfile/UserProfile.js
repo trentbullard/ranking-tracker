@@ -8,19 +8,19 @@ import { getDigest } from "../../helpers/hmac";
 import BackArrow from "../utility/BackArrow";
 import UserInfoPane from "./userInfoPane/UserInfoPane";
 
-const panes = userId => {
+const panes = currentUser => {
   return [
     // {
     //   menuItem: "games",
     //   render: () => (
     //     <SportProvider>
-    //       <GamesPane userId={userId} />
+    //       <GamesPane userId={currentUser} />
     //     </SportProvider>
     //   ),
     // },
     {
       menuItem: "info",
-      render: () => <UserInfoPane userId={userId} />,
+      render: () => <UserInfoPane currentUser={currentUser} />,
     },
   ];
 };
@@ -95,7 +95,10 @@ const UserProfile = ({
         </Header.Content>
       </Header>
       <BackArrow url="/" key="back-arrow" />
-      <Tab menu={{ secondary: true, pointing: true }} panes={panes(userId)} />
+      <Tab
+        menu={{ secondary: true, pointing: true }}
+        panes={panes(currentUser)}
+      />
     </>
   );
 };
