@@ -5,6 +5,7 @@ import { FlashContext } from "../../../contexts/FlashContext";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { SportContext } from "../../../contexts/SportContext";
 import { icons } from "../../../img/icons";
+import DeleteGameConfirmationModal from "./DeleteGameConfirmationModal";
 
 const emptyGame = {
   id: 0,
@@ -35,8 +36,6 @@ const GameModal = ({
   game,
   showModal,
   setShowModal,
-  setGameUpdated,
-  setGameAdded,
 }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [formValues, setFormValues] = useState(emptyGame);
@@ -89,6 +88,20 @@ const GameModal = ({
     console.log("formValues:", formValues);
   };
 
+  const ShowDelete = props => {
+    if (!!game) {
+      return (
+        <DeleteGameConfirmationModal
+          showModal={showConfirmationModal}
+          setShowModal={setShowConfirmationModal}
+          setShowGameModal={setShowModal}
+          game={game}
+        />
+      );
+    }
+    return null;
+  };
+
   return (
     <Modal
       trigger={null}
@@ -138,7 +151,7 @@ const GameModal = ({
           secondary
           onClick={() => setShowModal(false)}
         />
-        {/* <ShowDelete /> */}
+        <ShowDelete />
       </Modal.Actions>
     </Modal>
   );

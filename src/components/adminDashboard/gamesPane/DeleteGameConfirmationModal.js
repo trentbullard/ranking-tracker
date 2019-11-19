@@ -5,39 +5,35 @@ import { getDigest } from "../../../helpers/hmac";
 import { log } from "../../../helpers/log";
 import { FlashContext } from "../../../contexts/FlashContext";
 import { AuthContext } from "../../../contexts/AuthContext";
-import { SportContext } from "../../../contexts/SportContext";
 
-const DeleteSportConfirmationModal = ({
-  sport,
+const DeleteGameConfirmationModal = ({
+  game,
   setShowModal,
   showModal,
-  setShowSportModal,
+  setShowGameModal,
 }) => {
   const { addFlash } = useContext(FlashContext);
   const { currentUser } = useContext(AuthContext);
 
-  const { setSportDeleted } = useContext(SportContext);
-
   const handleConfirm = async event => {
     event.preventDefault();
     try {
-      await tracker.delete(`/sports/${sport.id}`, {
+      await tracker.delete(`/games/${game.id}`, {
         params: {
-          token: getDigest("delete", "/sports/:id"),
+          token: getDigest("delete", "/games/:id"),
         },
       });
-      setSportDeleted(sport);
-      log("SPORT_DELETED", sport.id, sport, null, "sports", currentUser.id);
-      addFlash(`sport deleted successfully`);
+      log("GAME_DELETED", game.id, game, null, "games", currentUser.id);
+      addFlash(`game deleted successfully`);
     } catch (error) {
-      console.log(`failed to delete sport: `, error.stack);
-      addFlash(`failed to delete sport`);
+      console.log(`failed to delete game: `, error.stack);
+      addFlash(`failed to delete game`);
     }
     setShowModal(false);
-    setShowSportModal(false);
+    setShowGameModal(false);
   };
 
-  return (
+  return(
     <Modal
       trigger={
         <Button
@@ -51,13 +47,13 @@ const DeleteSportConfirmationModal = ({
       onClose={() => setShowModal(false)}
       basic
     >
-      <Modal.Content>Are you sure you want to delete this sport? This cannot be undone!</Modal.Content>
+      <Modal.Content>Are you sure you want to delete this game? This cannot be undone!</Modal.Content>
       <Modal.Actions>
         <Button color="red" content="Do it!" onClick={handleConfirm} />
         <Button secondary content="nvm" onClick={() => setShowModal(false)} />
       </Modal.Actions>
     </Modal>
   );
-};
+}
 
-export default DeleteSportConfirmationModal;
+export default DeleteGameConfirmationModal
