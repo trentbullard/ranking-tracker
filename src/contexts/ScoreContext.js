@@ -1,4 +1,3 @@
-import _ from "lodash";
 import React, { useState, useEffect } from "react";
 import tracker from "../apis/tracker";
 import { getDigest } from "../helpers/hmac";
@@ -9,8 +8,11 @@ export const ScoreContext = React.createContext();
 const ScoreProvider = props => {
   const [game, setGame] = useState(null);
   const [gameId, setGameId] = useState(null);
-  const [scored, setScored] = useState(0);
+  const [sport, setSport] = useState(null);
+  const [gameOver, setGameOver] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // fetch game
   useEffect(() => {
     const getGame = async () => {
       const { data } = await tracker.get(`/games`, {
@@ -22,7 +24,8 @@ const ScoreProvider = props => {
         },
       });
       const returnedGame = await data;
-      setGame(_.first(getGamesFromRecords(returnedGame)));
+      const compiledGameDetails = getGamesFromRecords(returnedGame)[0];
+      setGame(compiledGameDetails);
     };
 
     if (!!gameId) {
@@ -30,12 +33,17 @@ const ScoreProvider = props => {
     } else {
       setGame(null);
     }
-  }, [gameId, scored]);
+  }, [gameId]);
 
   const state = {
     game,
     setGameId,
-    setScored,
+    setSport,
+    sport,
+    gameOver,
+    setGameOver,
+    loading,
+    setLoading,
   };
 
   return (

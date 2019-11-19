@@ -29,6 +29,7 @@ export const getGamesFromRecords = records => {
         team = {
           ...team,
           name: record.teamName,
+          id: record.teamId,
         };
         team.positions.push(position);
         game = {
@@ -47,32 +48,4 @@ export const getGamesFromRecords = records => {
     return _.find(games, { id });
   });
   return games;
-};
-
-export const getTeamsFromForm = positions => {
-  let teams = [];
-  _.each(positions, (playerId, key) => {
-    let splitKey = key.split(" ");
-    let teamName = splitKey[0];
-    let positionName = splitKey[1];
-    let current_team = _.find(teams, { name: teamName });
-    if (!current_team) {
-      let team = {
-        name: teamName,
-        positions: [
-          {
-            name: positionName,
-            player: { id: playerId },
-          },
-        ],
-      };
-      teams.push(team);
-    } else {
-      current_team.positions.push({
-        name: positionName,
-        player: { id: playerId },
-      });
-    }
-  });
-  return teams;
 };

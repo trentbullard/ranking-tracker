@@ -28,6 +28,7 @@ const SportsPane = _props => {
   const [showModal, setShowModal] = useState(false);
   const [sports, setSports] = useState([]);
 
+  // update sports
   useEffect(() => {
     const getSports = async () => {
       const { data } = await tracker.get("/sports", {

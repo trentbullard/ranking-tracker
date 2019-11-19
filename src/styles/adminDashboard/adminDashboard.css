@@ -16,3 +16,14 @@
 .tab.pane.menu.button {
   padding-top: 1px;
 }
+
+.page-controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.page-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

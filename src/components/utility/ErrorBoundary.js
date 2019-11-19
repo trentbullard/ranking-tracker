@@ -7,7 +7,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.log(`TCL: componentDidCatch -> error`, error);
+    console.log(`An error occured:`, error.stack);
     this.setState({
       error,
       errorInfo,
