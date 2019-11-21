@@ -1,8 +1,8 @@
 import _ from "lodash";
 import React, { useContext, useState, useEffect } from "react";
 import { Modal, Icon, Form, Button } from "semantic-ui-react";
-import { FlashContext } from "../../../contexts/FlashContext";
-import { AuthContext } from "../../../contexts/AuthContext";
+// import { FlashContext } from "../../../contexts/FlashContext";
+// import { AuthContext } from "../../../contexts/AuthContext";
 import { SportContext } from "../../../contexts/SportContext";
 import { icons } from "../../../img/icons";
 import DeleteGameConfirmationModal from "./DeleteGameConfirmationModal";
@@ -32,18 +32,14 @@ const EloAwardedCheckbox = ({ game, setFormValues }) => {
   );
 };
 
-const GameModal = ({
-  game,
-  showModal,
-  setShowModal,
-}) => {
+const GameModal = ({ game, showModal, setShowModal }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [formValues, setFormValues] = useState(emptyGame);
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   const [sportOptions, setSportOptions] = useState([]);
 
-  const { addFlash } = useContext(FlashContext);
-  const { currentUser } = useContext(AuthContext);
+  // const { addFlash } = useContext(FlashContext);
+  // const { currentUser } = useContext(AuthContext);
   const { sports } = useContext(SportContext);
 
   // set form values from game
@@ -144,7 +140,7 @@ const GameModal = ({
           content="Submit"
           color="green"
           onClick={handleSubmit}
-          disabled={!_.isEmpty(errors)}
+          // disabled={!_.isEmpty(errors)}
         />
         <Button
           content="Cancel"

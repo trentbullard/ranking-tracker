@@ -1,12 +1,11 @@
 import _ from "lodash";
 import React, { useState, useEffect } from "react";
-import { Tab, Table } from "semantic-ui-react";
+import { Tab } from "semantic-ui-react";
 import tracker from "../../../apis/tracker";
 import { getDigest } from "../../../helpers/hmac";
 import Loading from "../../utility/Loading";
 import TabControls from "../TabControls";
 import GameModal from "./GameModal";
-import SortIcon from "../SortIcon";
 import GameRows from "./GameRows";
 import { getGamesFromRecords } from "../../../helpers/games";
 import Paginator from "../../utility/Paginator";
@@ -20,18 +19,7 @@ const fields = [
   { "start time": "started" },
 ];
 
-const TeamHeaders = ({ teams, handleClickHeader, sorted }) => {
-  return _.map(teams, (team, index) => {
-    return (
-      <Table.HeaderCell className="sortable-header" onClick={handleClickHeader}>
-        {`Team ${index}`}
-        <SortIcon header={`team${index}`} sorted={sorted} />
-      </Table.HeaderCell>
-    );
-  });
-};
-
-const GamesPane = props => {
+const GamesPane = _props => {
   const [sorted, setSorted] = useState({ column: "id", order: "asc" });
   const [sortedGames, setSortedGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
@@ -62,10 +50,6 @@ const GamesPane = props => {
 
   const handleClickHeader = event => {
     event.preventDefault();
-    console.log(
-      `TCL: event.currentTarget.innerText.trim()`,
-      event.currentTarget.innerText.trim(),
-    );
     const field = _.find(fields, field => {
       return Object.keys(field)[0] === event.currentTarget.innerText.trim();
     });

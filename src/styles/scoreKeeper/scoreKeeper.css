@@ -55,3 +55,9 @@
   flex-grow: 3;
   flex-shrink: 3;
 }
+
+.play-again-button {
+  display: flex;
+  justify-content: center;
+  padding: 1em;
+}

@@ -1,7 +1,10 @@
 import _ from "lodash";
 import React, { useContext, useState, useEffect } from "react";
+import tracker from "../../apis/tracker";
+import { getDigest } from "../../helpers/hmac";
 import { ScoreContext } from "../../contexts/ScoreContext";
 import ScoreButtons from "./ScoreButtons";
+import Loading from "../utility/Loading";
 
 const COLORS = [
   { Green: "#21ba45" },
@@ -10,33 +13,77 @@ const COLORS = [
   { Blue: "#2185d0" },
 ];
 
-const TeamColumn = ({ team, color, left, disabled }) => {
-  const { sport, setGameOver } = useContext(ScoreContext);
+const TeamColumn = ({ gameTeam, index, left, disabled }) => {
+  const { sport, setGameOver, setTeams } = useContext(ScoreContext);
+  const [team, setTeam] = useState(null);
   const [winningScore, setWinningScore] = useState(0);
   const [teamScore, setTeamScore] = useState(0);
   const [playerScores, setPlayerScores] = useState({});
-  const colorCode = Object.values(color)[0];
-  const colorName = Object.keys(color)[0].toLowerCase();
+  const [colorCode, setColorCode] = useState("");
+  const [colorName, setColorName] = useState("");
+
+  // get team
+  useEffect(() => {
+    const getTeam = async id => {
+      const { data } = await tracker.get(`/teams/${id}`, {
+        params: {
+          token: getDigest("get", "/teams/:id"),
+        },
+      });
+      const returnedTeam = await data;
+      setTeam(returnedTeam);
+    };
+
+    if (!!gameTeam) {
+      const { teamId } = gameTeam;
+      getTeam(teamId);
+    }
+  }, [gameTeam, setTeams]);
 
   // set winning score
   useEffect(() => {
-    const { winningScore: score } = sport;
-    setWinningScore(score);
+    const { winningScore } = sport;
+    setWinningScore(winningScore);
   }, [sport]);
 
   // update team score
   useEffect(() => {
-    setTeamScore(
-      _.reduce(Object.values(playerScores), (acc, score) => acc + score, 0),
-    );
+    if (!_.isEmpty(playerScores)) {
+      setTeamScore(
+        _.reduce(
+          Object.values(playerScores),
+          (acc, score) => {
+            return acc + score;
+          },
+          0,
+        ),
+      );
+    }
   }, [playerScores]);
 
   // set game over
   useEffect(() => {
-    if (!!winningScore && teamScore >= winningScore) {
+    if (winningScore > 0 && teamScore >= winningScore) {
       setGameOver(true);
     }
   }, [teamScore, winningScore, setGameOver]);
+
+  // set team color
+  useEffect(() => {
+    if (!!team) {
+      const { name } = team;
+      const color =
+        _.find(COLORS, c => {
+          return !!c[name];
+        }) || COLORS[index];
+      setColorCode(Object.values(color)[0]);
+      setColorName(Object.keys(color)[0]);
+    }
+  }, [team, index]);
+
+  if (!team) {
+    return <Loading />;
+  }
 
   return (
     <div className="team-column">
@@ -61,21 +108,26 @@ const TeamColumn = ({ team, color, left, disabled }) => {
 };
 
 const TeamColumns = _props => {
-  const {
-    game: { teams },
-    gameOver,
-    loading,
-  } = useContext(ScoreContext);
+  const { gameTeams, gameOver, loading, updateElos } = useContext(ScoreContext);
+  const [teams, setTeams] = useState([]);
 
-  return _.map(teams, (team, index) => {
-    const color =
-      _.find(COLORS, c => {
-        return !!c[team.name];
-      }) || COLORS[index];
+  // re-render component when gameTeams loads
+  useEffect(() => {
+    setTeams(gameTeams);
+  }, [gameTeams]);
+
+  // update elos when game is over
+  useEffect(() => {
+    if (gameOver && !loading) {
+      updateElos();
+    }
+  }, [loading, gameOver, updateElos]);
+
+  return _.map(teams, (gameTeam, index) => {
     return (
       <TeamColumn
-        team={team}
-        color={color}
+        gameTeam={gameTeam}
+        index={index}
         left={!!index}
         disabled={loading || gameOver}
         key={`team-column-${index}`}

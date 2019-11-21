@@ -78,7 +78,7 @@ export const getNewElos = (wTeam, lTeam, sport) => {
       gainCalculation(wTeamDelta, positionName, player, lTeamScore, sport);
     return {
       elo: newElo,
-      id: player.id,
+      playerId: player.id,
     };
   });
 
@@ -90,7 +90,7 @@ export const getNewElos = (wTeam, lTeam, sport) => {
       gainCalculation(lTeamDelta, positionName, player, wTeamScore, sport);
     return {
       elo: newElo,
-      id: player.id,
+      playerId: player.id,
     };
   });
 

@@ -1,54 +1,93 @@
 import _ from "lodash";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Label } from "semantic-ui-react";
 import { getDigest } from "../../helpers/hmac";
 import tracker from "../../apis/tracker";
+import Loading from "../utility/Loading";
+import { ScoreContext } from "../../contexts/ScoreContext";
 
 const ScoreButton = ({
-  teamPlayerId,
-  setPlayerScores,
+  currentTeamName,
+  teamPlayer,
   left,
   buttonColor,
   textColor,
   disabled,
+  setPlayerScores,
+  setScored,
 }) => {
+  const { setTeams, setLoading, setPlayersLoaded, sport } = useContext(
+    ScoreContext,
+  );
   const [player, setPlayer] = useState(null);
-  const [scored, setScored] = useState(0);
-  const [selfDisabled, setSelfDisabled] = useState(false);
 
   // fetch player
   useEffect(() => {
-    const getPlayer = async teamPlayerId => {
-      const { data } = await tracker.get(`/games/teamPlayers/${teamPlayerId}`, {
+    const getPlayer = async (id, sport) => {
+      const { id: sportId } = sport;
+      const { data } = await tracker.get(`/players/${id}`, {
         params: {
-          token: getDigest("get", "/games/teamPlayers/:id"),
+          sportId,
+          token: getDigest("get", "/players/:id"),
         },
       });
-      const returnedTeamPlayer = await data;
-      setPlayer(returnedTeamPlayer);
+      const returnedPlayer = await data;
+      setPlayer(returnedPlayer);
     };
-    getPlayer(teamPlayerId);
-  }, [teamPlayerId, scored]);
+    if (!!teamPlayer && !!sport) {
+      const { playerId } = teamPlayer;
+      getPlayer(playerId, sport);
+    }
+  }, [teamPlayer, sport]);
+
+  // set team for play again
+  useEffect(() => {
+    if (!!player) {
+      const { position: positionName } = teamPlayer;
+      setTeams(teams => {
+        const teamsClone = _.cloneDeep(teams);
+        _.each(teamsClone, (team, teamIndex) => {
+          if (team.name === currentTeamName) {
+            _.each(team.positions, (position, positionIndex) => {
+              if (position.name === positionName) {
+                _.set(
+                  teamsClone,
+                  `[${teamIndex}].positions[${positionIndex}].player`,
+                  player,
+                );
+                _.set(
+                  teamsClone,
+                  `[${teamIndex}].positions[${positionIndex}].player.score`,
+                  teamPlayer.score,
+                );
+              }
+            });
+          }
+        });
+        return teamsClone;
+      });
+      setPlayersLoaded(count => count + 1);
+    }
+  }, [player, teamPlayer, setTeams, currentTeamName, setPlayersLoaded]);
 
   // update team score
   useEffect(() => {
-    if (!!player) {
-      const { id, score } = player;
+    if (!!teamPlayer) {
+      const { id, score } = teamPlayer;
       setPlayerScores(ts => {
         return { ...ts, [id]: score };
       });
     }
-  }, [player, setPlayerScores]);
+  }, [teamPlayer, setPlayerScores]);
 
   const handleClick = async event => {
     event.preventDefault();
-    const alreadyDisabled = disabled;
-    setSelfDisabled(true);
+    setLoading(true);
     await tracker.patch(
       "/goal",
       {
-        teamPlayerId: teamPlayerId,
-        newScore: player.score + 1,
+        teamPlayerId: teamPlayer.id,
+        newScore: teamPlayer.score + 1,
       },
       {
         params: {
@@ -57,46 +96,43 @@ const ScoreButton = ({
       },
     );
     setScored(s => s + 1);
-    setPlayerScores(ts => {
-      return { ...ts, [player.id]: player.score + 1 };
-    });
-    setSelfDisabled(alreadyDisabled);
+    setLoading(false);
   };
 
   const ButtonContent = _props => {
     if (!!left) {
       return (
         <>
-          <Label color={buttonColor} basic>
-            {player.score}
+          <Label color={buttonColor.toLowerCase()} basic>
+            {teamPlayer.score}
           </Label>
-          <Button color={buttonColor}>{player.name}</Button>
+          <Button color={buttonColor.toLowerCase()}>{player.name}</Button>
         </>
       );
     }
     return (
       <>
-        <Button color={buttonColor}>{player.name}</Button>
-        <Label color={buttonColor} basic>
-          {player.score}
+        <Button color={buttonColor.toLowerCase()}>{player.name}</Button>
+        <Label color={buttonColor.toLowerCase()} basic>
+          {teamPlayer.score}
         </Label>
       </>
     );
   };
 
   if (!player) {
-    return null;
+    return <Loading />;
   }
 
   return (
     <div className="score-buttons">
       <div className="position-title" style={{ color: textColor }}>
-        {player.positionName}
+        {teamPlayer.position}
       </div>
       <Button
         labelPosition={left ? "left" : "right"}
         onClick={handleClick}
-        disabled={disabled || selfDisabled}
+        disabled={disabled}
         as="div"
       >
         <ButtonContent />
@@ -113,16 +149,57 @@ const ScoreButtons = ({
   left,
   disabled,
 }) => {
-  return _.map(team.positions, position => {
+  const [teamPlayers, setTeamPlayers] = useState([]);
+  const [scored, setScored] = useState(0);
+
+  // get team players
+  useEffect(() => {
+    const getTeamPlayers = async teamId => {
+      const { data } = await tracker.get(`/teams/${teamId}/players`, {
+        params: {
+          token: getDigest("get", "/teams/:id/players"),
+        },
+      });
+      const returnedTeamPlayers = await data;
+      setTeamPlayers(_.orderBy(returnedTeamPlayers, ["position"], ["asc"]));
+    };
+    if (!!team) {
+      const { id: teamId } = team;
+      getTeamPlayers(teamId);
+    }
+  }, [team, scored]);
+
+  // update team score
+  useEffect(() => {
+    if (!_.isEmpty(teamPlayers)) {
+      setPlayerScores(ts => {
+        return _.reduce(
+          teamPlayers,
+          (acc, teamPlayer) => {
+            return { ...acc, [teamPlayer.id]: teamPlayer.score };
+          },
+          ts,
+        );
+      });
+    }
+  }, [teamPlayers, setPlayerScores]);
+
+  if (_.isEmpty(teamPlayers)) {
+    return <Loading />;
+  }
+
+  return _.map(teamPlayers, teamPlayer => {
     return (
       <ScoreButton
-        teamPlayerId={position.player.teamPlayerId}
+        currentTeamName={team.name}
+        teamPlayer={teamPlayer}
         left={left}
         buttonColor={buttonColor}
         textColor={textColor}
         disabled={disabled}
         setPlayerScores={setPlayerScores}
-        key={position.player.teamPlayerId}
+        setScored={setScored}
+        key={teamPlayer.id}
       />
     );
   });

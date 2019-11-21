@@ -1,5 +1,6 @@
 import React from "react";
 import { Dimmer, Loader } from "semantic-ui-react";
+import "../../styles/utility/loading.css";
 
 const Loading = ({ dim, caption }) => {
   const text = caption ? "Loading" : null;
@@ -10,7 +11,13 @@ const Loading = ({ dim, caption }) => {
       </Dimmer>
     );
   } else {
-    return <Loader active inline>{text}</Loader>;
+    return (
+      <div className="inline-loader">
+        <Loader active inline>
+          {text}
+        </Loader>
+      </div>
+    );
   }
 };
 

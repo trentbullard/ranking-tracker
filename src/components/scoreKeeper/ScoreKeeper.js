@@ -24,8 +24,8 @@ const ScoreKeeper = props => {
   // set sport from game
   useEffect(() => {
     if (!!game) {
-      const { sport } = game;
-      const currentSport = _.find(sports, { id: sport });
+      const { sportId } = game;
+      const currentSport = _.find(sports, { id: sportId });
       if (!_.isEmpty(currentSport)) {
         setSport(currentSport);
       }
