@@ -108,8 +108,11 @@ const TeamColumn = ({ gameTeam, index, left, disabled }) => {
 };
 
 const TeamColumns = _props => {
-  const { gameTeams, gameOver, loading, updateElos } = useContext(ScoreContext);
+  const { gameTeams, gameOver, loading, updateElos, game } = useContext(
+    ScoreContext,
+  );
   const [teams, setTeams] = useState([]);
+  const [elosUpdated, setElosUpdated] = useState(null);
 
   // re-render component when gameTeams loads
   useEffect(() => {
@@ -118,10 +121,11 @@ const TeamColumns = _props => {
 
   // update elos when game is over
   useEffect(() => {
-    if (gameOver && !loading) {
+    if (gameOver && !loading && elosUpdated !== game.id) {
       updateElos();
+      setElosUpdated(g => game.id);
     }
-  }, [loading, gameOver, updateElos]);
+  }, [loading, gameOver, updateElos, game, elosUpdated]);
 
   return _.map(teams, (gameTeam, index) => {
     return (
