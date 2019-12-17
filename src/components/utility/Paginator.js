@@ -196,7 +196,7 @@ const Paginator = props => {
       </Table>
       <PageControls
         currentPage={currentPage}
-        rowsPerPage={10}
+        rowsPerPage={rowsPerPage}
         pages={pages}
         handleSelectRowsPerPage={setRowsPerPage}
         handlePageSelect={setCurrentPage}
