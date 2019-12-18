@@ -1,11 +1,7 @@
 import React from "react";
 import history from "../../history";
 
-const handleClick = url => {
-  history.push(url);
-};
-
-const BackArrow = ({ url }) => {
+const BackArrow = _props => {
   return (
     <div
       style={{
@@ -14,7 +10,7 @@ const BackArrow = ({ url }) => {
         left: "15px",
         fontSize: "2em",
       }}
-      onClick={() => handleClick(url)}
+      onClick={() => history.goBack()}
     >
       <i className="arrow left blue icon" />
     </div>

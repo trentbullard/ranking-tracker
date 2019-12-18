@@ -133,7 +133,7 @@ const NewPlayer = ({ currentUser }) => {
           Cancel
         </Button>
       </Form>
-      <BackArrow url="/" />
+      <BackArrow />
     </>
   );
 };

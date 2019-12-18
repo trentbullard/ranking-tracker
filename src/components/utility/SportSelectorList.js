@@ -4,25 +4,34 @@ import { SportContext } from "../../contexts/SportContext";
 import { icons } from "../../img/icons";
 import "../../styles/utility/SportSelectorList.css";
 import { List, Image } from "semantic-ui-react";
-import Loading from "../utility/Loading";
+
+const SportSelectorListItem = ({ sport }) => {
+  const { selectedSport, setSelectedSport } = useContext(SportContext);
+  return (
+    <Image
+      avatar
+      src={icons()[sport.iconName]}
+      disabled={!selectedSport || selectedSport.id !== sport.id}
+      onClick={() =>
+        setSelectedSport(s => {
+          if (!_.isEmpty(s) && s.id === sport.id) {
+            return null;
+          }
+          return sport;
+        })
+      }
+    />
+  );
+};
 
 const SportSelectorList = _props => {
-  const { sports, selectedSport, setSelectedSport } = useContext(SportContext);
+  const { sports } = useContext(SportContext);
 
   const SportIcons = _props => {
-    if (!selectedSport || _.isEmpty(sports)) {
-      return <Loading />;
-    }
-
     return _.map(sports, sport => {
       return (
         <List.Item key={`${sport.iconName}-selector`}>
-          <Image
-            avatar
-            src={icons()[sport.iconName]}
-            disabled={selectedSport.id !== sport.id}
-            onClick={() => setSelectedSport(sport)}
-          ></Image>
+          <SportSelectorListItem sport={sport} />
         </List.Item>
       );
     });

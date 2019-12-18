@@ -14,5 +14,10 @@ div.divider.home {
   position: absolute;
   top: 76px;
   right: 15px;
-  font-size: 2em;
+  color: cornflowerblue;
+  cursor: pointer;
+}
+
+.secondary.menu.item .add-player-btn {
+  margin-left: .5rem;
 }

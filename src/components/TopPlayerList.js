@@ -6,6 +6,7 @@ import { SportContext } from "../contexts/SportContext";
 import { getDigest } from "../helpers/hmac";
 import "../styles/topPlayerList.css";
 import SportSelectorList from "./utility/SportSelectorList";
+import history from "../history";
 
 const PlayerList = () => {
   const [players, setPlayers] = useState([]);
@@ -38,7 +39,10 @@ const PlayerList = () => {
 
   return _.map(players, (player, index) => {
     return (
-      <tr key={`player-${player.id}-rank`}>
+      <tr
+        key={`player-${player.id}-rank`}
+        onClick={() => history.push(`/players/${player.id}`)}
+      >
         <td className="collapsing">{index + 1}</td>
         <td>{player.name}</td>
         <td className="collapsing">{player.elo}</td>

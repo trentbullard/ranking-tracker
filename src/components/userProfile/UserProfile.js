@@ -94,7 +94,7 @@ const UserProfile = ({
           <AdminButton />
         </Header.Content>
       </Header>
-      <BackArrow url="/" key="back-arrow" />
+      <BackArrow />
       <Tab
         menu={{ secondary: true, pointing: true }}
         panes={panes(currentUser)}

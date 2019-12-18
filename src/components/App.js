@@ -21,6 +21,7 @@ import ErrorBoundary from "./utility/ErrorBoundary";
 import Flash from "./utility/Flash";
 import NoAuthRoute from "./routes/NoAuthRoute";
 import SportProvider from "../contexts/SportContext";
+import PlayerDetails from "./playerDetails/index";
 
 const App = () => {
   return (
@@ -49,6 +50,16 @@ const App = () => {
                 </SportProvider>
               )}
             />
+            <AnyUserRoute path="/players/new" exact component={NewPlayer} />
+            <Route
+              path="/players/:id"
+              exact
+              render={props => (
+                <SportProvider>
+                  <PlayerDetails {...props} />
+                </SportProvider>
+              )}
+            />
             <Route
               path="/players"
               exact
@@ -58,7 +69,6 @@ const App = () => {
                 </SportProvider>
               )}
             />
-            <AnyUserRoute path="/players/new" exact component={NewPlayer} />
             <NoAuthRoute path="/login" exact component={Login} />
             <NoAuthRoute path="/register" exact component={Registration} />
             <NoAuthRoute path="/users/new" exact component={Registration} />

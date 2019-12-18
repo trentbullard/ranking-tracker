@@ -49,7 +49,7 @@ const ScoreKeeper = props => {
         <TeamColumns />
       </div>
       <PlayAgainButton />
-      <BackArrow url="/" />
+      <BackArrow />
     </>
   );
 };

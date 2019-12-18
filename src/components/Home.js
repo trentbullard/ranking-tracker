@@ -20,7 +20,8 @@ const Home = props => {
           history.push("/players/new");
         }}
       >
-        <Button circular icon="add user" className="blue" />
+        new player
+        <Button circular icon="add user" className="blue add-player-btn" />
       </div>
       <TopPlayerList />
       <div className="ui divider home" />

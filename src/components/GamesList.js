@@ -130,11 +130,7 @@ const GameItems = ({ term }) => {
         <div className="right floated content game-date">
           {new Date(game.started).toLocaleDateString("en-US")}
         </div>
-        <img
-          className="ui avatar image"
-          src={icons()[sport.iconName]}
-          alt=""
-        />
+        <img className="ui avatar image" src={icons()[sport.iconName]} alt="" />
         <div className="content">
           <div className="ui list" style={{ padding: "0" }}>
             <PlayerItems
@@ -174,7 +170,7 @@ const GamesList = props => {
         onChange={(_event, { value }) => setTerm(value)}
       />
       <GameItems term={term} />
-      <BackArrow url="/" />
+      <BackArrow />
       <Footer />
     </>
   );

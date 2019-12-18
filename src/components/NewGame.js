@@ -235,7 +235,7 @@ const NewGame = props => {
           Submit
         </Button>
       </Form>
-      <BackArrow url="/" />
+      <BackArrow />
     </>
   );
 };

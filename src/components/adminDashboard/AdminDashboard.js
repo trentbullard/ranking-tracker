@@ -39,7 +39,7 @@ const AdminDashboard = ({ currentUser }) => {
           panes={panes(currentUser)}
         />
       </SportProvider>
-      <BackArrow url={`/users/${currentUser.id}`} />
+      <BackArrow />
     </>
   );
 };

@@ -1,13 +1,14 @@
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
-import { Input } from "semantic-ui-react";
 import InfiniteScroll from "react-infinite-scroller";
+import { Input } from "semantic-ui-react";
 import tracker from "../apis/tracker";
 import { SportContext } from "../contexts/SportContext";
 import { getDigest } from "../helpers/hmac";
 import Footer from "./Footer";
 import BackArrow from "./utility/BackArrow";
 import SportSelectorList from "./utility/SportSelectorList";
+import history from "../history";
 
 const PlayerItems = ({ term }) => {
   const { selectedSport } = useContext(SportContext);
@@ -79,7 +80,10 @@ const PlayerItems = ({ term }) => {
 
   const items = _.map(filteredPlayers, (player, index) => {
     return (
-      <tr key={`player-${player.id}-rank`}>
+      <tr
+        key={`player-${player.id}-rank`}
+        onClick={() => history.push(`/players/${player.id}`)}
+      >
         <td className="collapsing">{index + 1}</td>
         <td>{player.name}</td>
         <td className="collapsing">{player.elo}</td>
@@ -121,7 +125,7 @@ const PlayerList = () => {
         icon="search"
         onChange={(_event, { value }) => setTerm(value)}
       />
-      <table className="ui very basic unstackable celled striped table unselectable">
+      <table className="ui very basic unstackable celled striped table">
         <thead>
           <tr>
             <th key="rank">Rank</th>
@@ -131,7 +135,7 @@ const PlayerList = () => {
         </thead>
         <PlayerItems term={term} />
       </table>
-      <BackArrow url="/" />
+      <BackArrow />
       <Footer />
     </>
   );
